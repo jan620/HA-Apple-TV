@@ -51,24 +51,37 @@ struct DashboardScreen: View {
         }
         .task(id: dashboard.id) {
             await lovelace.loadConfig(for: dashboard)
+            applyPendingNavigation()
+            // Anything still pending named a view this dashboard does not have.
+            coordinator.requestedViewPath = nil
             selectFirstViewIfNeeded()
         }
         .onChange(of: coordinator.requestedDashboardPath) { path in
             guard let path else { return }
             coordinator.requestedDashboardPath = nil
             if let match = lovelace.dashboards.first(where: { $0.urlPath == path }) {
+                // Switching dashboards re-runs the task above, which resolves
+                // the view path once the new config has actually loaded.
                 dashboard = match
             } else if path == "lovelace" {
                 dashboard = .overview
             }
         }
-        .onChange(of: coordinator.requestedViewPath) { path in
-            guard let path else { return }
-            coordinator.requestedViewPath = nil
-            if let match = tabViews.first(where: { $0.path == path || $0.id == path }) {
-                selectedTab = match.id
-            }
+        .onChange(of: coordinator.requestedViewPath) { _ in
+            applyPendingNavigation()
         }
+    }
+
+    /// Consumes a pending view path only when the target view exists. A
+    /// `navigate` action into another dashboard arrives long before that
+    /// dashboard's config is loaded, so discarding it on the first miss would
+    /// drop the navigation entirely.
+    private func applyPendingNavigation() {
+        guard let path = coordinator.requestedViewPath,
+              let match = tabViews.first(where: { $0.path == path || $0.id == path })
+        else { return }
+        coordinator.requestedViewPath = nil
+        selectedTab = match.id
     }
 
     private var moreInfoBinding: Binding<EntityIdentifier?> {

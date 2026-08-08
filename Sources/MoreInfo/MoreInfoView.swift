@@ -93,7 +93,7 @@ struct MoreInfoView: View {
             Text("Attribute")
                 .font(.headline)
 
-            ForEach(entity.attributes.keys.sorted().filter { !Self.hiddenAttributes.contains($0) }, id: \.self) { key in
+            ForEach(visibleAttributeKeys(of: entity), id: \.self) { key in
                 HStack(alignment: .top) {
                     Text(key.replacingOccurrences(of: "_", with: " "))
                         .foregroundStyle(.secondary)
@@ -108,6 +108,23 @@ struct MoreInfoView: View {
         }
         .frame(maxWidth: 1100, alignment: .leading)
     }
+
+    private func visibleAttributeKeys(of entity: HAEntity) -> [String] {
+        var hidden = Self.hiddenAttributes
+        // A TV is a shared screen. "Is someone home" is what a dashboard needs;
+        // a housemate's exact coordinates and phone battery in front of whoever
+        // is in the room is not.
+        if entity.domain == "person" || entity.domain == "device_tracker" {
+            hidden.formUnion(Self.locationAttributes)
+        }
+        return entity.attributes.keys.sorted().filter { !hidden.contains($0) }
+    }
+
+    /// Precise-location and device attributes of presence entities.
+    private static let locationAttributes: Set<String> = [
+        "latitude", "longitude", "gps_accuracy", "altitude", "course", "speed",
+        "source", "battery_level", "mac", "ip",
+    ]
 
     /// Attributes already surfaced elsewhere in the sheet, or pure plumbing.
     private static let hiddenAttributes: Set<String> = [

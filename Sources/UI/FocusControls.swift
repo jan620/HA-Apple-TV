@@ -17,6 +17,7 @@ struct RemoteSlider: View {
 
     @FocusState private var isFocused: Bool
     @State private var commitTask: Task<Void, Never>?
+    @State private var pendingValue: Double?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -60,7 +61,15 @@ struct RemoteSlider: View {
             default: break
             }
         }
-        .onDisappear { commitTask?.cancel() }
+        .onDisappear {
+            commitTask?.cancel()
+            // Leaving the sheet right after the last nudge must not swallow the
+            // change — flush whatever the debounce was still holding.
+            if let pendingValue {
+                onCommit(pendingValue)
+                self.pendingValue = nil
+            }
+        }
     }
 
     private var fraction: Double {
@@ -78,10 +87,12 @@ struct RemoteSlider: View {
 
     private func scheduleCommit(_ newValue: Double) {
         commitTask?.cancel()
+        pendingValue = newValue
         commitTask = Task {
             try? await Task.sleep(nanoseconds: 400 * NSEC_PER_MSEC)
             guard !Task.isCancelled else { return }
             onCommit(newValue)
+            pendingValue = nil
         }
     }
 }
