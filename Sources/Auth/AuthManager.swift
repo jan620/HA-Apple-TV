@@ -1,0 +1,153 @@
+import Combine
+import Foundation
+import OSLog
+
+/// Owns the configured server, the token pair, and the single place that hands
+/// out a currently-valid access token.
+@MainActor
+final class AuthManager: ObservableObject {
+    enum State: Equatable {
+        case unconfigured
+        case needsLogin
+        case authenticated
+    }
+
+    @Published private(set) var state: State = .unconfigured
+    @Published private(set) var server: HAServer?
+
+    private var tokens: HATokens?
+    private var refreshTask: Task<HATokens, Error>?
+    private var cachedSession: URLSession?
+
+    private let defaults: UserDefaults
+    private let logger = Logger(subsystem: "io.homeassistant.tvos", category: "auth")
+
+    private static let serverDefaultsKey = "ha.server"
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        restore()
+    }
+
+    // MARK: Session
+
+    /// Shared session for REST calls, camera images and the WebSocket, so the
+    /// "allow untrusted certificate" decision applies everywhere.
+    var session: URLSession {
+        if let cachedSession { return cachedSession }
+        let session = HASessionFactory.makeSession(
+            allowsUntrustedCertificate: server?.allowsUntrustedCertificate ?? false
+        )
+        cachedSession = session
+        return session
+    }
+
+    var authClient: HAAuthClient? {
+        guard let server else { return nil }
+        return HAAuthClient(server: server, session: session)
+    }
+
+    // MARK: Lifecycle
+
+    private func restore() {
+        guard let data = defaults.data(forKey: Self.serverDefaultsKey),
+              let server = try? JSONDecoder().decode(HAServer.self, from: data)
+        else {
+            state = .unconfigured
+            return
+        }
+
+        self.server = server
+        tokens = KeychainStore.loadJSON(HATokens.self, account: server.origin.absoluteString)
+        // An expired access token is fine at this point — the refresh token is
+        // what decides whether the session survives, and it is exercised lazily.
+        state = tokens == nil ? .needsLogin : .authenticated
+    }
+
+    /// Selects the server to log into. Does not authenticate.
+    func configure(server: HAServer) {
+        self.server = server
+        cachedSession = nil
+        tokens = nil
+        refreshTask?.cancel()
+        refreshTask = nil
+        persistServer()
+        state = .needsLogin
+    }
+
+    func completeLogin(with tokens: HATokens) {
+        guard let server else { return }
+        self.tokens = tokens
+        try? KeychainStore.saveJSON(tokens, account: server.origin.absoluteString)
+        state = .authenticated
+    }
+
+    /// Revokes the refresh token and returns to the login screen, keeping the
+    /// server configured so the user does not retype the URL.
+    func signOut() async {
+        if let server, let tokens {
+            await HAAuthClient(server: server, session: session).revoke(refreshToken: tokens.refreshToken)
+            KeychainStore.delete(account: server.origin.absoluteString)
+        }
+        tokens = nil
+        refreshTask?.cancel()
+        refreshTask = nil
+        state = server == nil ? .unconfigured : .needsLogin
+    }
+
+    /// Forgets the server entirely.
+    func reset() async {
+        await signOut()
+        server = nil
+        cachedSession = nil
+        defaults.removeObject(forKey: Self.serverDefaultsKey)
+        state = .unconfigured
+    }
+
+    private func persistServer() {
+        guard let server, let data = try? JSONEncoder().encode(server) else { return }
+        defaults.set(data, forKey: Self.serverDefaultsKey)
+    }
+
+    // MARK: Tokens
+
+    /// Returns a token that is valid right now, refreshing it if needed.
+    /// Concurrent callers share a single refresh.
+    func validAccessToken() async throws -> String {
+        guard let server, let current = tokens else {
+            throw HAAuthError.notAuthenticated
+        }
+
+        if current.isValid() {
+            return current.accessToken
+        }
+
+        if let refreshTask {
+            return try await refreshTask.value.accessToken
+        }
+
+        let client = HAAuthClient(server: server, session: session)
+        let task = Task { try await client.refresh(using: current.refreshToken) }
+        refreshTask = task
+
+        do {
+            let refreshed = try await task.value
+            refreshTask = nil
+            tokens = refreshed
+            try? KeychainStore.saveJSON(refreshed, account: server.origin.absoluteString)
+            return refreshed.accessToken
+        } catch {
+            refreshTask = nil
+            logger.error("Token-Refresh fehlgeschlagen: \(error.localizedDescription, privacy: .public)")
+            // A rejected refresh token is terminal: the user revoked it, or the
+            // instance was reset. Anything else (network blips) keeps the
+            // session so a reconnect can retry later.
+            if case HAAuthError.http(let status, _) = error, status == 400 || status == 401 || status == 403 {
+                KeychainStore.delete(account: server.origin.absoluteString)
+                tokens = nil
+                state = .needsLogin
+            }
+            throw error
+        }
+    }
+}
