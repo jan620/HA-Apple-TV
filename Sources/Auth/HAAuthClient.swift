@@ -26,37 +26,75 @@ enum HAAuthError: LocalizedError {
     }
 }
 
-/// Accepts any server certificate. Only installed when the user explicitly
-/// enables it for a server, which is the practical escape hatch for the
-/// self-signed certificates common on home installs.
-private final class PermissiveTrustDelegate: NSObject, URLSessionDelegate {
+/// Guards the two ways this app's credentials could leave the configured
+/// server.
+///
+/// The certificate exception is scoped to a single host. Accepting any
+/// certificate session-wide would turn the "trust my self-signed cert" switch
+/// into a blanket man-in-the-middle hole: every host the session ever talks to
+/// — including one it was redirected to — would be trusted unconditionally.
+private final class HASessionDelegate: NSObject, URLSessionTaskDelegate {
+    /// Host whose certificate the user explicitly chose to trust, if any.
+    private let trustedHost: String?
+
+    init(trustedHost: String?) {
+        self.trustedHost = trustedHost
+    }
+
     func urlSession(
         _ session: URLSession,
         didReceive challenge: URLAuthenticationChallenge,
         completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
     ) {
         guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
-              let trust = challenge.protectionSpace.serverTrust
+              let trust = challenge.protectionSpace.serverTrust,
+              let trustedHost,
+              challenge.protectionSpace.host.caseInsensitiveCompare(trustedHost) == .orderedSame
         else {
+            // Every other host keeps full TLS validation.
             completionHandler(.performDefaultHandling, nil)
             return
         }
         completionHandler(.useCredential, URLCredential(trust: trust))
     }
+
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        willPerformHTTPRedirection response: HTTPURLResponse,
+        newRequest request: URLRequest,
+        completionHandler: @escaping (URLRequest?) -> Void
+    ) {
+        guard let originalHost = task.originalRequest?.url?.host,
+              let newHost = request.url?.host,
+              originalHost.caseInsensitiveCompare(newHost) != .orderedSame
+        else {
+            completionHandler(request)
+            return
+        }
+
+        // A redirect to a different host must not carry the bearer token with
+        // it — otherwise a compromised server could harvest the access token by
+        // pointing any endpoint at itself.
+        var stripped = request
+        stripped.setValue(nil, forHTTPHeaderField: "Authorization")
+        completionHandler(stripped)
+    }
 }
 
 enum HASessionFactory {
-    static func makeSession(allowsUntrustedCertificate: Bool) -> URLSession {
+    /// One session for REST, images and the WebSocket, so the certificate
+    /// decision and the redirect guard apply everywhere.
+    static func makeSession(for server: HAServer?) -> URLSession {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.waitsForConnectivity = true
         configuration.timeoutIntervalForRequest = 20
         configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
-        guard allowsUntrustedCertificate else {
-            return URLSession(configuration: configuration)
-        }
+
+        let trustedHost = (server?.allowsUntrustedCertificate ?? false) ? server?.baseURL.host : nil
         return URLSession(
             configuration: configuration,
-            delegate: PermissiveTrustDelegate(),
+            delegate: HASessionDelegate(trustedHost: trustedHost),
             delegateQueue: nil
         )
     }
@@ -71,9 +109,7 @@ struct HAAuthClient {
 
     init(server: HAServer, session: URLSession? = nil) {
         self.server = server
-        self.session = session ?? HASessionFactory.makeSession(
-            allowsUntrustedCertificate: server.allowsUntrustedCertificate
-        )
+        self.session = session ?? HASessionFactory.makeSession(for: server)
     }
 
     // MARK: Login flow

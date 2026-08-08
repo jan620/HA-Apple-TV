@@ -4,9 +4,10 @@ import Security
 /// Minimal keychain wrapper for the one secret this app owns: the Home
 /// Assistant refresh token.
 ///
-/// tvOS keychain items are device-local and never synced to iCloud, which is
-/// what we want here — a refresh token is bound to a single Home Assistant
-/// installation and revoking it should not cascade to the user's other devices.
+/// The token is stored with `…ThisDeviceOnly`, which keeps it out of encrypted
+/// device backups as well as out of iCloud. A refresh token is bound to one
+/// Home Assistant installation on one Apple TV; letting it ride along into a
+/// backup would extend its reach to whatever device that backup is restored to.
 enum KeychainStore {
     enum KeychainError: LocalizedError {
         case unexpectedStatus(OSStatus)
@@ -31,7 +32,7 @@ enum KeychainStore {
 
         let attributes: [String: Any] = [
             kSecValueData as String: data,
-            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock,
+            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
         ]
 
         let updateStatus = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)

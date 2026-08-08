@@ -74,6 +74,7 @@ final class EntityStore: ObservableObject {
         devices.removeAll()
         registry.removeAll()
         config = nil
+        lastServiceError = nil
         hasLoadedStates = false
         isPrimed = false
         stateSubscription = nil
@@ -202,6 +203,9 @@ final class EntityStore: ObservableObject {
 
         do {
             _ = try await client.send(payload)
+            // Without this the settings screen keeps showing a single old
+            // failure forever, long after everything works again.
+            lastServiceError = nil
         } catch {
             logger.error("\(domain, privacy: .public).\(service, privacy: .public) fehlgeschlagen: \(error.localizedDescription, privacy: .public)")
             lastServiceError = error.localizedDescription

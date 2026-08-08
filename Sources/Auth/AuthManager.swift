@@ -35,9 +35,7 @@ final class AuthManager: ObservableObject {
     /// "allow untrusted certificate" decision applies everywhere.
     var session: URLSession {
         if let cachedSession { return cachedSession }
-        let session = HASessionFactory.makeSession(
-            allowsUntrustedCertificate: server?.allowsUntrustedCertificate ?? false
-        )
+        let session = HASessionFactory.makeSession(for: server)
         cachedSession = session
         return session
     }
@@ -78,7 +76,7 @@ final class AuthManager: ObservableObject {
     func completeLogin(with tokens: HATokens) {
         guard let server else { return }
         self.tokens = tokens
-        try? KeychainStore.saveJSON(tokens, account: server.origin.absoluteString)
+        persistTokens(tokens, for: server)
         state = .authenticated
     }
 
@@ -102,6 +100,16 @@ final class AuthManager: ObservableObject {
         cachedSession = nil
         defaults.removeObject(forKey: Self.serverDefaultsKey)
         state = .unconfigured
+    }
+
+    /// Swallowing a keychain failure would leave the app "logged in" until the
+    /// next launch, with nothing in the log explaining where the session went.
+    private func persistTokens(_ tokens: HATokens, for server: HAServer) {
+        do {
+            try KeychainStore.saveJSON(tokens, account: server.origin.absoluteString)
+        } catch {
+            logger.error("Token nicht im Keychain gespeichert: \(error.localizedDescription, privacy: .public)")
+        }
     }
 
     private func persistServer() {
@@ -134,7 +142,7 @@ final class AuthManager: ObservableObject {
             let refreshed = try await task.value
             refreshTask = nil
             tokens = refreshed
-            try? KeychainStore.saveJSON(refreshed, account: server.origin.absoluteString)
+            persistTokens(refreshed, for: server)
             return refreshed.accessToken
         } catch {
             refreshTask = nil

@@ -22,13 +22,10 @@ struct HAServer: Codable, Hashable {
 
         if !text.contains("://") {
             // Nabu Casa and other public hostnames are TLS; anything that looks
-            // like a LAN address is far more likely to be plain http.
-            let looksLocal = text.hasPrefix("192.168.")
-                || text.hasPrefix("10.")
-                || text.hasPrefix("172.")
-                || text.contains(".local")
-                || text.hasPrefix("localhost")
-            text = (looksLocal ? "http://" : "https://") + text
+            // like a LAN address is far more likely to be plain http. The
+            // 172.16–172.31 range matters: plain `172.` would also capture
+            // public addresses and silently downgrade them to cleartext.
+            text = (isPrivateAddress(text) ? "http://" : "https://") + text
         }
 
         while text.hasSuffix("/") {
@@ -45,6 +42,26 @@ struct HAServer: Codable, Hashable {
         components.query = nil
         components.fragment = nil
         return components.url
+    }
+
+    /// RFC 1918 ranges plus loopback and mDNS names — the addresses where a
+    /// Home Assistant install realistically serves plain HTTP.
+    private static func isPrivateAddress(_ text: String) -> Bool {
+        let host = text.split(separator: "/").first.map(String.init) ?? text
+        let hostname = host.split(separator: ":").first.map(String.init) ?? host
+
+        if hostname == "localhost" || hostname.hasSuffix(".local") || hostname == "127.0.0.1" {
+            return true
+        }
+        if hostname.hasPrefix("192.168.") || hostname.hasPrefix("10.") {
+            return true
+        }
+
+        let octets = hostname.split(separator: ".")
+        guard octets.count == 4, octets[0] == "172", let second = Int(octets[1]) else {
+            return false
+        }
+        return (16...31).contains(second)
     }
 
     /// IndieAuth requires the client identifier to be a URL. Home Assistant
