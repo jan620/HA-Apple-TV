@@ -200,6 +200,10 @@
 			fileRef = 13806616878DEA403F55DC57;
 			isa = PBXBuildFile;
 		};
+		3AEE4FA9BB26CD44E4419F9D = {
+			fileRef = DBD47CD8D1A65F17993FDC1D;
+			isa = PBXBuildFile;
+		};
 		3CF4E9D5F428595D9FF08E91 = {
 			buildConfigurations = (
 				FEE7AE1A1C8291DDE6965C1D,
@@ -320,6 +324,7 @@
 			children = (
 				108A636204E5962800E7B6ED,
 				79F8B68EFAFA1263E933896E,
+				DBD47CD8D1A65F17993FDC1D,
 				FA32A0D0A613D59CABA37A4C,
 			);
 			isa = PBXGroup;
@@ -614,6 +619,12 @@
 			path = HAWebSocketClient.swift;
 			sourceTree = "<group>";
 		};
+		DBD47CD8D1A65F17993FDC1D = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = EnergyDistributionView.swift;
+			sourceTree = "<group>";
+		};
 		E15E14E009AE2E766F61265F = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
@@ -664,6 +675,7 @@
 				3788075B432A790015AC4DE3,
 				394C594008F79D7EF57DF5D6,
 				3996B39B24481F9DB3B24ADB,
+				3AEE4FA9BB26CD44E4419F9D,
 				41ABB613C75D2512839CB027,
 				472900110E283DD0F3EE961C,
 				4ECF62775419DA45B2263259,
