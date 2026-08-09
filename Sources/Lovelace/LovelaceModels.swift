@@ -18,6 +18,19 @@ struct LovelaceDashboard: Identifiable, Hashable {
         requiresAdmin: false
     )
 
+    /// Not a server-side dashboard: the area-based view the app assembles
+    /// itself. Modelled as a dashboard so it slots into the same picker and
+    /// renderer as the real ones.
+    static let rooms = LovelaceDashboard(
+        id: "__rooms__",
+        urlPath: nil,
+        title: "Räume",
+        icon: "mdi:sofa",
+        requiresAdmin: false
+    )
+
+    var isRooms: Bool { id == Self.rooms.id }
+
     init(id: String, urlPath: String?, title: String, icon: String?, requiresAdmin: Bool) {
         self.id = id
         self.urlPath = urlPath

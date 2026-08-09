@@ -13,6 +13,7 @@ struct HomeAssistantTVApp: App {
                 .environmentObject(container.store)
                 .environmentObject(container.lovelace)
                 .environmentObject(container.coordinator)
+                .environmentObject(container.preferences)
                 .preferredColorScheme(.dark)
         }
     }
@@ -23,6 +24,7 @@ struct RootView: View {
     @EnvironmentObject private var auth: AuthManager
     @EnvironmentObject private var connection: HAWebSocketClient
     @EnvironmentObject private var store: EntityStore
+    @EnvironmentObject private var preferences: AppPreferences
 
     var body: some View {
         content
@@ -39,10 +41,14 @@ struct RootView: View {
         case .needsLogin:
             LoginFlowView()
         case .authenticated:
-            if store.isPrimed {
-                DashboardScreen()
-            } else {
+            if !store.isPrimed {
                 ConnectingView()
+            } else if !preferences.hasCompletedOnboarding {
+                // Runs once after the first login, and again whenever the user
+                // asks to reconfigure from the settings tab.
+                OnboardingView()
+            } else {
+                DashboardScreen()
             }
         }
     }
