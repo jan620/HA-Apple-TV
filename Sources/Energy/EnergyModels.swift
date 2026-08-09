@@ -10,6 +10,10 @@ struct EnergyPreferences: Equatable {
     struct Device: Identifiable, Equatable {
         let statisticID: String
         let name: String?
+        /// Statistic of the device this one is already counted inside — a
+        /// sub-meter hanging off a circuit, for instance. Summing everything
+        /// flat would count that energy twice.
+        let includedInStat: String?
         var id: String { statisticID }
     }
 
@@ -86,7 +90,13 @@ struct EnergyPreferences: Equatable {
 
         for entry in json["device_consumption"]?.arrayValue ?? [] {
             guard let statisticID = entry["stat_consumption"]?.stringValue else { continue }
-            devices.append(Device(statisticID: statisticID, name: entry["name"]?.stringValue))
+            devices.append(
+                Device(
+                    statisticID: statisticID,
+                    name: entry["name"]?.stringValue,
+                    includedInStat: entry["included_in_stat"]?.stringValue
+                )
+            )
         }
     }
 
@@ -129,9 +139,14 @@ struct EnergySummary: Equatable {
     }
 
     struct DeviceUsage: Identifiable, Equatable {
+        let statisticID: String
         let name: String
         let value: Double
-        var id: String { name }
+        /// Nesting level from `included_in_stat`, for indentation.
+        let depth: Int
+        /// Share of the parent's consumption this device accounts for.
+        let shareOfParent: Double?
+        var id: String { statisticID }
     }
 
     var gridImport: Double = 0
@@ -177,4 +192,85 @@ struct EnergySummary: Equatable {
             || batteryDischarge > 0 || batteryCharge > 0
             || gas > 0 || water > 0 || !devices.isEmpty
     }
+
+    /// Only top-level devices — nested ones are already inside their parent.
+    var trackedDeviceTotal: Double {
+        devices.filter { $0.depth == 0 }.reduce(0) { $0 + $1.value }
+    }
+
+    /// Consumption no device accounts for.
+    var untrackedConsumption: Double {
+        max(consumption - trackedDeviceTotal, 0)
+    }
+
+    /// Where the energy came from and went, following the same reasoning as
+    /// Home Assistant's distribution card.
+    ///
+    /// The individual paths are not measured anywhere — only the totals are —
+    /// so they are derived: solar covers battery charging and export first,
+    /// the grid makes up whatever the battery still needed, and the rest of
+    /// each source flows into the house.
+    var flowLinks: [EnergyFlowLink] {
+        let solarSurplus = max(solar - gridExport, 0)
+        let batteryFromGrid = max(batteryCharge - solarSurplus, 0)
+        let solarToBattery = max(batteryCharge - batteryFromGrid, 0)
+        let solarToGrid = min(gridExport, max(solar - solarToBattery, 0))
+        let solarToHome = max(solar - solarToGrid - solarToBattery, 0)
+        let gridToHome = max(gridImport - batteryFromGrid, 0)
+
+        let candidates: [EnergyFlowLink] = [
+            EnergyFlowLink(source: .solar, target: .home, value: solarToHome),
+            EnergyFlowLink(source: .solar, target: .batteryIn, value: solarToBattery),
+            EnergyFlowLink(source: .solar, target: .gridExport, value: solarToGrid),
+            EnergyFlowLink(source: .grid, target: .home, value: gridToHome),
+            EnergyFlowLink(source: .grid, target: .batteryIn, value: batteryFromGrid),
+            EnergyFlowLink(source: .batteryOut, target: .home, value: batteryDischarge),
+        ]
+        return candidates.filter { $0.value > 0.001 }
+    }
+}
+
+/// One end of the energy distribution diagram.
+enum EnergyNode: String, Identifiable, Equatable {
+    case solar
+    case grid
+    case batteryOut
+    case home
+    case gridExport
+    case batteryIn
+
+    var id: String { rawValue }
+
+    static let sources: [EnergyNode] = [.solar, .grid, .batteryOut]
+    static let sinks: [EnergyNode] = [.home, .batteryIn, .gridExport]
+
+    var title: String {
+        switch self {
+        case .solar: return "Solar"
+        case .grid: return "Netz"
+        case .batteryOut: return "Batterie"
+        case .home: return "Zuhause"
+        case .gridExport: return "Einspeisung"
+        case .batteryIn: return "Batterie"
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .solar: return "sun.max.fill"
+        case .grid: return "bolt.horizontal.fill"
+        case .batteryOut: return "battery.100.bolt"
+        case .home: return "house.fill"
+        case .gridExport: return "arrow.up.right"
+        case .batteryIn: return "battery.50"
+        }
+    }
+}
+
+struct EnergyFlowLink: Identifiable, Equatable {
+    let source: EnergyNode
+    let target: EnergyNode
+    let value: Double
+
+    var id: String { "\(source.rawValue)->\(target.rawValue)" }
 }

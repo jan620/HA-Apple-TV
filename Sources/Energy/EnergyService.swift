@@ -180,18 +180,69 @@ final class EnergyService: ObservableObject {
         summary.gasCost = cost(of: preferences.gas)
         summary.waterCost = cost(of: preferences.water)
 
-        summary.devices = preferences.devices
-            .map { device in
-                EnergySummary.DeviceUsage(
-                    name: device.name ?? Self.readableName(from: device.statisticID),
-                    value: total(of: [device.statisticID])
-                )
-            }
-            .filter { $0.value > 0 }
-            .sorted { $0.value > $1.value }
+        summary.devices = deviceTree(preferences: preferences, total: total)
 
         summary.buckets = buckets(byStatistic: byStatistic, preferences: preferences)
         return summary
+    }
+
+    /// Flattens the device list into a depth-annotated tree.
+    ///
+    /// `included_in_stat` means "this device's energy is already part of that
+    /// other device's". Summing everything flat would double count, so nested
+    /// devices are indented under their parent and only top-level entries feed
+    /// the total.
+    private static func deviceTree(
+        preferences: EnergyPreferences,
+        total: ([String]) -> Double
+    ) -> [EnergySummary.DeviceUsage] {
+        let values = Dictionary(
+            uniqueKeysWithValues: preferences.devices.map { ($0.statisticID, total([$0.statisticID])) }
+        )
+        let known = Set(preferences.devices.map(\.statisticID))
+        var childrenByParent: [String: [EnergyPreferences.Device]] = [:]
+        var roots: [EnergyPreferences.Device] = []
+
+        for device in preferences.devices {
+            // A parent that is not itself a tracked device cannot be nested
+            // under anything, so such devices are treated as top level.
+            if let parent = device.includedInStat, known.contains(parent), parent != device.statisticID {
+                childrenByParent[parent, default: []].append(device)
+            } else {
+                roots.append(device)
+            }
+        }
+
+        func flatten(
+            _ devices: [EnergyPreferences.Device],
+            depth: Int,
+            parentValue: Double?
+        ) -> [EnergySummary.DeviceUsage] {
+            devices
+                .map { device -> (EnergyPreferences.Device, Double) in
+                    (device, values[device.statisticID] ?? 0)
+                }
+                .filter { $0.1 > 0 }
+                .sorted { $0.1 > $1.1 }
+                .flatMap { device, value -> [EnergySummary.DeviceUsage] in
+                    let share = parentValue.flatMap { $0 > 0 ? value / $0 : nil }
+                    let entry = EnergySummary.DeviceUsage(
+                        statisticID: device.statisticID,
+                        name: device.name ?? readableName(from: device.statisticID),
+                        value: value,
+                        depth: depth,
+                        shareOfParent: share
+                    )
+                    let children = flatten(
+                        childrenByParent[device.statisticID] ?? [],
+                        depth: depth + 1,
+                        parentValue: value
+                    )
+                    return [entry] + children
+                }
+        }
+
+        return flatten(roots, depth: 0, parentValue: nil)
     }
 
     /// Groups the per-statistic series into one entry per time bucket so the

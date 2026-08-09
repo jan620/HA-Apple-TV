@@ -19,6 +19,9 @@ struct EnergyView: View {
                     if summary.hasCostData {
                         costTiles(for: summary)
                     }
+                    if !summary.flowLinks.isEmpty {
+                        distribution(for: summary)
+                    }
                     if !summary.buckets.isEmpty {
                         chart(for: summary)
                     }
@@ -201,22 +204,68 @@ struct EnergyView: View {
         }
     }
 
+    private func distribution(for summary: EnergySummary) -> some View {
+        CardSurface {
+            VStack(alignment: .leading, spacing: 16) {
+                CardHeader(
+                    title: "Energieverteilung",
+                    subtitle: "Woher die Energie kam und wohin sie ging"
+                )
+                EnergyDistributionView(links: summary.flowLinks)
+            }
+        }
+    }
+
     private func devices(for summary: EnergySummary) -> some View {
         CardSurface {
             VStack(alignment: .leading, spacing: 14) {
                 CardHeader(title: "Geräte", subtitle: "Größte Verbraucher")
 
-                ForEach(summary.devices.prefix(10)) { device in
-                    HStack {
+                ForEach(summary.devices.prefix(14)) { device in
+                    HStack(spacing: 12) {
+                        // Nested devices are sub-meters of the row above them.
+                        if device.depth > 0 {
+                            Rectangle()
+                                .fill(Theme.inactive.opacity(0.5))
+                                .frame(width: 2)
+                                .padding(.leading, CGFloat(device.depth - 1) * 24)
+                            Image(systemName: "arrow.turn.down.right")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
                         Text(device.name)
                             .lineLimit(1)
+                            .foregroundStyle(device.depth > 0 ? .secondary : .primary)
+
                         Spacer(minLength: 20)
+
+                        if let share = device.shareOfParent {
+                            Text("\(Int((share * 100).rounded())) %")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
                         Text("\(HANumber.format(device.value, maximumFractionDigits: 2)) kWh")
                             .monospacedDigit()
                             .foregroundStyle(.secondary)
                     }
                     .font(.body)
+                    .frame(height: 34)
                     Divider()
+                }
+
+                if summary.untrackedConsumption > 0 {
+                    HStack {
+                        Text("Nicht erfasst")
+                            .foregroundStyle(.secondary)
+                        Spacer(minLength: 20)
+                        Text("\(HANumber.format(summary.untrackedConsumption, maximumFractionDigits: 2)) kWh")
+                            .monospacedDigit()
+                            .foregroundStyle(.secondary)
+                    }
+                    .font(.body)
+                    .padding(.top, 4)
                 }
             }
         }

@@ -145,8 +145,16 @@ Energie-Setup nur ein Preis hinterlegt, erzeugt Home Assistant den Kosten-Sensor
 selbst und schreibt ihn *nicht* in die Einstellungen zurück — die Zuordnung
 kommt dann aus `energy/info`. Beide Wege werden unterstützt.
 
-Nicht umgesetzt: die Sankey-artige Energieverteilung des Originals und die
-Verschachtelung der Gerätewerte über `included_in_stat`.
+Die Energieverteilung wird als Sankey-Diagramm gezeichnet. Die einzelnen Pfade
+sind nirgends gemessen — Home Assistant kennt nur die Summen —, sie werden also
+nach derselben Logik wie in der Original-Karte hergeleitet: Solar deckt zuerst
+Batterieladung und Einspeisung, das Netz ergänzt, was die Batterie noch
+brauchte, der Rest jeder Quelle fließt ins Haus.
+
+Geräte mit `included_in_stat` erscheinen eingerückt unter ihrem Übergerät samt
+Anteil daran; in die Summe geht nur die oberste Ebene ein, sonst würde
+derselbe Verbrauch doppelt zählen. Die Differenz zum Gesamtverbrauch steht als
+„Nicht erfasst" darunter.
 
 ## Onboarding
 
