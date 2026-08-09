@@ -54,7 +54,7 @@ struct LightCardView: View {
                 }
             }
         }
-        .onChange(of: currentBrightness) { newValue in
+        .onChange(of: currentBrightness) { _, newValue in
             brightness = newValue
         }
         .onAppear { brightness = currentBrightness }

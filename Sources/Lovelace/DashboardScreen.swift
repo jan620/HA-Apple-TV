@@ -56,7 +56,7 @@ struct DashboardScreen: View {
             coordinator.requestedViewPath = nil
             selectFirstViewIfNeeded()
         }
-        .onChange(of: coordinator.requestedDashboardPath) { path in
+        .onChange(of: coordinator.requestedDashboardPath) { _, path in
             guard let path else { return }
             coordinator.requestedDashboardPath = nil
             if let match = lovelace.dashboards.first(where: { $0.urlPath == path }) {
@@ -67,7 +67,7 @@ struct DashboardScreen: View {
                 dashboard = .overview
             }
         }
-        .onChange(of: coordinator.requestedViewPath) { _ in
+        .onChange(of: coordinator.requestedViewPath) { _, _ in
             applyPendingNavigation()
         }
     }
