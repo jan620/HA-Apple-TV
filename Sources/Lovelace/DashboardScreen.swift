@@ -30,6 +30,14 @@ struct DashboardScreen: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
+            // Deliberately the leading tab: a dashboard with a dozen areas
+            // produces a dozen view tabs, and anything after them is a long
+            // journey with a remote. Switching dashboards is a primary action,
+            // not a setting.
+            SettingsScreen(dashboard: $dashboard)
+                .tabItem { Label("Dashboards", systemImage: "square.grid.2x2.fill") }
+                .tag(Self.settingsTag)
+
             ForEach(tabViews) { view in
                 LovelaceViewRenderer(view: view)
                     .tabItem {
@@ -40,12 +48,10 @@ struct DashboardScreen: View {
                     }
                     .tag(view.id)
             }
-
-            SettingsScreen(dashboard: $dashboard)
-                .tabItem { Label("Einstellungen", systemImage: "gearshape.fill") }
-                .tag(Self.settingsTag)
         }
-        .overlay(alignment: .top) { connectionBanner }
+        // Bottom, not top: an overlay at the top draws over the tab bar and
+        // would hide navigation exactly when the connection is troubled.
+        .overlay(alignment: .bottom) { connectionBanner }
         .sheet(item: moreInfoBinding) { target in
             MoreInfoView(entityID: target.id)
         }
@@ -109,14 +115,14 @@ struct DashboardScreen: View {
             .padding(.horizontal, 24)
             .padding(.vertical, 12)
             .background(.thinMaterial, in: Capsule())
-            .padding(.top, 20)
+            .padding(.bottom, 40)
         } else if connection.connectionState == .connecting {
             Label("Verbinde …", systemImage: "arrow.triangle.2.circlepath")
                 .font(.callout)
                 .padding(.horizontal, 24)
                 .padding(.vertical, 12)
                 .background(.thinMaterial, in: Capsule())
-                .padding(.top, 20)
+                .padding(.bottom, 40)
         }
     }
 }
