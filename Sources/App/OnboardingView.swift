@@ -10,6 +10,7 @@ struct OnboardingView: View {
     @EnvironmentObject private var store: EntityStore
     @EnvironmentObject private var lovelace: LovelaceService
     @EnvironmentObject private var preferences: AppPreferences
+    @EnvironmentObject private var energy: EnergyService
 
     private enum Step {
         case welcome
@@ -24,10 +25,10 @@ struct OnboardingView: View {
     @State private var selectedDashboardIDs: Set<String> = []
     @State private var selectedAreaIDs: Set<String> = []
 
-    /// Dashboards the user can pick from — the built-in overview plus whatever
-    /// the server reports.
+    /// Dashboards the user can pick from: the built-in overview, whatever the
+    /// server reports, and the energy panel when one is configured.
     private var offeredDashboards: [LovelaceDashboard] {
-        lovelace.dashboards
+        lovelace.dashboards + (energy.isConfigured ? [.energy] : [])
     }
 
     var body: some View {
@@ -121,7 +122,7 @@ struct OnboardingView: View {
             ForEach(offeredDashboards) { dashboard in
                 selectionRow(
                     title: dashboard.title,
-                    subtitle: dashboard.urlPath.map { "/\($0)" } ?? "Standard-Übersicht",
+                    subtitle: dashboardSubtitle(dashboard),
                     symbol: IconMapper.symbol(forMDI: dashboard.icon, domain: nil),
                     isSelected: selectedDashboardIDs.contains(dashboard.id)
                 ) {
@@ -278,6 +279,13 @@ struct OnboardingView: View {
     }
 
     // MARK: Logic
+
+    private func dashboardSubtitle(_ dashboard: LovelaceDashboard) -> String {
+        if dashboard.isEnergy {
+            return "Energie-Panel, nativ nachgebaut"
+        }
+        return dashboard.urlPath.map { "/\($0)" } ?? "Standard-Übersicht"
+    }
 
     private var selectedDashboardTitles: String {
         let titles = offeredDashboards

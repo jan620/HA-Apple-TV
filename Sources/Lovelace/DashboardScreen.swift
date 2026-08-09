@@ -13,12 +13,14 @@ struct DashboardScreen: View {
     @EnvironmentObject private var lovelace: LovelaceService
     @EnvironmentObject private var coordinator: DashboardCoordinator
     @EnvironmentObject private var preferences: AppPreferences
+    @EnvironmentObject private var energy: EnergyService
 
     @State private var dashboard: LovelaceDashboard = .overview
     @State private var selectedTab = Self.settingsTag
     @State private var hasChosenInitialDashboard = false
 
     private static let settingsTag = "__settings__"
+    private static let energyTag = "__energy_tab__"
 
     /// What onboarding left us with: the chosen dashboards, plus the synthetic
     /// rooms entry when the user asked for areas.
@@ -27,7 +29,7 @@ struct DashboardScreen: View {
 
         if preferences.contentMode.includesDashboards {
             let selected = preferences.selectedDashboardIDs
-            result += lovelace.dashboards.filter { selected.isEmpty || selected.contains($0.id) }
+            result += offeredDashboards.filter { selected.isEmpty || selected.contains($0.id) }
         }
         if preferences.contentMode.includesAreas {
             result.append(.rooms)
@@ -35,6 +37,12 @@ struct DashboardScreen: View {
 
         // Never strand the user with nothing to look at.
         return result.isEmpty ? [.overview] : result
+    }
+
+    /// Everything the server offers, plus the energy panel when one is set up.
+    /// Kept in sync with the same list in onboarding.
+    private var offeredDashboards: [LovelaceDashboard] {
+        lovelace.dashboards + (energy.isConfigured ? [.energy] : [])
     }
 
     private var config: LovelaceConfig? {
@@ -57,15 +65,22 @@ struct DashboardScreen: View {
                 .tabItem { Label("Dashboards", systemImage: "square.grid.2x2.fill") }
                 .tag(Self.settingsTag)
 
-            ForEach(tabViews) { view in
-                LovelaceViewRenderer(view: view)
-                    .tabItem {
-                        Label(
-                            view.displayTitle,
-                            systemImage: IconMapper.symbol(forMDI: view.icon, domain: nil)
-                        )
-                    }
-                    .tag(view.id)
+            if dashboard.isEnergy {
+                // The energy panel has no Lovelace views to turn into tabs.
+                EnergyView()
+                    .tabItem { Label("Energie", systemImage: "bolt.fill") }
+                    .tag(Self.energyTag)
+            } else {
+                ForEach(tabViews) { view in
+                    LovelaceViewRenderer(view: view)
+                        .tabItem {
+                            Label(
+                                view.displayTitle,
+                                systemImage: IconMapper.symbol(forMDI: view.icon, domain: nil)
+                            )
+                        }
+                        .tag(view.id)
+                }
             }
         }
         // Bottom, not top: an overlay at the top draws over the tab bar and
@@ -84,6 +99,10 @@ struct DashboardScreen: View {
             }
         }
         .task(id: dashboard.id) {
+            guard !dashboard.isEnergy else {
+                selectedTab = Self.energyTag
+                return
+            }
             await lovelace.loadConfig(for: dashboard, areaIDs: preferences.selectedAreaIDs)
             applyPendingNavigation()
             // Anything still pending named a view this dashboard does not have.

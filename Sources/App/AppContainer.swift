@@ -11,6 +11,7 @@ final class AppContainer: ObservableObject {
     let lovelace: LovelaceService
     let coordinator: DashboardCoordinator
     let preferences: AppPreferences
+    let energy: EnergyService
 
     init() {
         let auth = AuthManager()
@@ -23,11 +24,14 @@ final class AppContainer: ObservableObject {
         self.lovelace = LovelaceService(client: connection, store: store)
         self.coordinator = DashboardCoordinator()
         self.preferences = AppPreferences()
+        self.energy = EnergyService(client: connection)
 
         connection.onConnected = { [weak self] in
             guard let self else { return }
             await self.store.prime()
             await self.lovelace.loadDashboards()
+            // Decides whether the energy entry is offered at all.
+            await self.energy.loadPreferences()
             // No-op on the first connect; after a reconnect it picks up
             // dashboard edits made while the app was offline.
             await self.lovelace.refreshLoadedConfigs()
@@ -43,12 +47,14 @@ final class AppContainer: ObservableObject {
             connection.disconnect()
             store.clear()
             lovelace.reset()
+            energy.reset()
         case .unconfigured:
             // A different server means different dashboards and areas, so the
             // onboarding choices no longer apply. A plain sign-out keeps them.
             connection.disconnect()
             store.clear()
             lovelace.reset()
+            energy.reset()
             preferences.reset()
         }
     }

@@ -14,6 +14,7 @@ struct HomeAssistantTVApp: App {
                 .environmentObject(container.lovelace)
                 .environmentObject(container.coordinator)
                 .environmentObject(container.preferences)
+                .environmentObject(container.energy)
                 .preferredColorScheme(.dark)
         }
     }
