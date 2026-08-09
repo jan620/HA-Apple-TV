@@ -3,6 +3,8 @@ import Foundation
 enum HAAuthError: LocalizedError {
     case invalidResponse
     case http(status: Int, message: String?)
+    case notHomeAssistant(path: String, status: Int, contentType: String?, preview: String)
+    case unexpectedPayload(path: String, preview: String)
     case flowAborted(String?)
     case noProviders
     case notAuthenticated
@@ -16,6 +18,19 @@ enum HAAuthError: LocalizedError {
                 return "Server antwortete mit \(status): \(message)"
             }
             return "Server antwortete mit HTTP \(status)."
+        case .notHomeAssistant(let path, let status, let contentType, let preview):
+            return """
+            Unter dieser Adresse antwortet kein Home Assistant.
+            \(path) lieferte HTTP \(status) als \(contentType ?? "unbekannten Inhaltstyp") statt JSON.
+            Prüfe Adresse und Port — und ob ein Reverse Proxy die Home-Assistant-API wirklich durchreicht.
+            Antwort beginnt mit: \(preview)
+            """
+        case .unexpectedPayload(let path, let preview):
+            return """
+            \(path) hat geantwortet, aber nicht in der erwarteten Form.
+            Läuft dort eine andere Home-Assistant-Version oder ein Zwischenserver?
+            Antwort beginnt mit: \(preview)
+            """
         case .flowAborted(let reason):
             return "Anmeldung abgebrochen\(reason.map { " (\($0))" } ?? "")."
         case .noProviders:
@@ -117,7 +132,16 @@ struct HAAuthClient {
     func providers() async throws -> [AuthProvider] {
         let request = URLRequest(url: server.url(path: "/auth/providers"))
         let data = try await perform(request)
-        let providers = try JSONDecoder().decode([AuthProvider].self, from: data)
+
+        // Current releases wrap the list in an object alongside
+        // `preselect_remember_me`; older ones answered with a bare array.
+        let providers: [AuthProvider]
+        if let wrapped = try? JSONDecoder().decode(ProvidersResponse.self, from: data) {
+            providers = wrapped.providers
+        } else {
+            providers = try decode([AuthProvider].self, from: data, path: "/auth/providers")
+        }
+
         guard !providers.isEmpty else { throw HAAuthError.noProviders }
         return providers
     }
@@ -191,6 +215,10 @@ struct HAAuthClient {
 
     // MARK: Plumbing
 
+    private struct ProvidersResponse: Decodable {
+        let providers: [AuthProvider]
+    }
+
     private struct TokenResponse: Decodable {
         let accessToken: String
         let expiresIn: TimeInterval
@@ -225,7 +253,7 @@ struct HAAuthClient {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try JSONEncoder().encode(body)
         let data = try await perform(request)
-        return try JSONDecoder().decode(LoginFlowStep.self, from: data)
+        return try decode(LoginFlowStep.self, from: data, path: url.path)
     }
 
     private func postForm(_ fields: [String: String]) async throws -> TokenResponse {
@@ -234,7 +262,7 @@ struct HAAuthClient {
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.httpBody = Self.formEncode(fields)
         let data = try await perform(request)
-        return try JSONDecoder().decode(TokenResponse.self, from: data)
+        return try decode(TokenResponse.self, from: data, path: "/auth/token")
     }
 
     private func perform(_ request: URLRequest) async throws -> Data {
@@ -242,11 +270,47 @@ struct HAAuthClient {
         guard let http = response as? HTTPURLResponse else {
             throw HAAuthError.invalidResponse
         }
+
+        let path = request.url?.path ?? "Die Anfrage"
+
         guard (200..<300).contains(http.statusCode) else {
             let decoded = try? JSONDecoder().decode(ErrorResponse.self, from: data)
             throw HAAuthError.http(status: http.statusCode, message: decoded?.text)
         }
+
+        // A reverse proxy that does not forward the Home Assistant API happily
+        // answers 200 with its own HTML. Catching that here turns Foundation's
+        // useless "data isn't in the correct format" into something the user
+        // can act on.
+        let contentType = http.value(forHTTPHeaderField: "Content-Type")
+        guard contentType?.localizedCaseInsensitiveContains("json") == true else {
+            throw HAAuthError.notHomeAssistant(
+                path: path,
+                status: http.statusCode,
+                contentType: contentType,
+                preview: Self.preview(of: data)
+            )
+        }
+
         return data
+    }
+
+    private func decode<T: Decodable>(_ type: T.Type, from data: Data, path: String) throws -> T {
+        do {
+            return try JSONDecoder().decode(type, from: data)
+        } catch {
+            throw HAAuthError.unexpectedPayload(path: path, preview: Self.preview(of: data))
+        }
+    }
+
+    /// First readable characters of a response body, for error messages.
+    private static func preview(of data: Data) -> String {
+        let text = String(decoding: data.prefix(400), as: UTF8.self)
+            .replacingOccurrences(of: "\n", with: " ")
+            .replacingOccurrences(of: "\r", with: " ")
+            .trimmingCharacters(in: .whitespaces)
+        guard !text.isEmpty else { return "(leere Antwort)" }
+        return text.count > 140 ? String(text.prefix(140)) + " …" : text
     }
 
     private static func formEncode(_ fields: [String: String]) -> Data {
