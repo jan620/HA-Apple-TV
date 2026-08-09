@@ -106,6 +106,7 @@
 				B895AC4866F0FF702C96B06B,
 				C41DDA692BD8A439D7890429,
 				C53EB0BACE5B32071A019821,
+				ED2B73088895013E0E6D1631,
 			);
 			isa = PBXGroup;
 			path = Cards;
@@ -129,6 +130,10 @@
 			isa = PBXGroup;
 			path = Support;
 			sourceTree = "<group>";
+		};
+		2339442EE139528B75084EA4 = {
+			fileRef = ED2B73088895013E0E6D1631;
+			isa = PBXBuildFile;
 		};
 		25E61F7B96A5D23C00ABBAB1 = {
 			isa = PBXFileReference;
@@ -629,6 +634,12 @@
 			fileRef = 0A844C254EC87B80AE0AB093;
 			isa = PBXBuildFile;
 		};
+		ED2B73088895013E0E6D1631 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = FallbackEntityCard.swift;
+			sourceTree = "<group>";
+		};
 		F0C53425F7C187113AF2A19E = {
 			fileRef = C53EB0BACE5B32071A019821;
 			isa = PBXBuildFile;
@@ -648,6 +659,7 @@
 				124964F4AE63DCDC648B5187,
 				14321ACA7BFA46EC92C2791C,
 				1D78830883146F29043656DF,
+				2339442EE139528B75084EA4,
 				31777B2D20400620228835BB,
 				3788075B432A790015AC4DE3,
 				394C594008F79D7EF57DF5D6,

@@ -217,6 +217,14 @@ struct LovelaceCardConfig: Identifiable, Hashable {
 
     subscript(key: String) -> JSONValue? { raw[key] }
 
+    /// The entity a card is "about", wherever it keeps it. Used to salvage
+    /// something useful from card types the app cannot render.
+    var primaryEntityID: String? {
+        entityID
+            ?? raw["camera_image"]?.stringValue
+            ?? entityRows.compactMap(\.entityID).first
+    }
+
     var title: String? { raw["title"]?.stringValue ?? raw["name"]?.stringValue }
     var entityID: String? { raw["entity"]?.stringValue }
     var icon: String? { raw["icon"]?.stringValue }

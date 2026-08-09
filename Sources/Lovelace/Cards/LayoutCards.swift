@@ -168,13 +168,23 @@ struct AreaCardView: View {
     }
 }
 
-/// Views the app deliberately does not implement, rendered as an explicit note
-/// rather than a blank space so the dashboard stays self-explanatory.
+/// Card types the app cannot render.
+///
+/// Custom cards are JavaScript web components and will never run on tvOS — but
+/// most of them are just a presentation of one entity, and that entity's data
+/// is fully available over the API. So rather than printing a shrug, this falls
+/// back to showing what the card was about.
 struct KnownUnsupportedCardView: View {
     let card: LovelaceCardConfig
 
+    @EnvironmentObject private var store: EntityStore
+
     var body: some View {
-        UnsupportedCardView(type: card.type, reason: Self.reason(for: card.type))
+        if let entityID = card.primaryEntityID, let entity = store.entity(entityID) {
+            FallbackEntityCardView(card: card, entity: entity)
+        } else {
+            UnsupportedCardView(type: card.type, reason: Self.reason(for: card.type))
+        }
     }
 
     private static func reason(for type: String) -> String? {
