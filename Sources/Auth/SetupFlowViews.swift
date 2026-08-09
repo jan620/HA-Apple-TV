@@ -25,6 +25,10 @@ struct ServerSetupView: View {
                     Label(errorMessage, systemImage: "exclamationmark.triangle.fill")
                         .foregroundStyle(Theme.unavailable)
                         .font(.callout)
+                        // Diagnostics can run several lines; without this they
+                        // get truncated to exactly the part that does not help.
+                        .fixedSize(horizontal: false, vertical: true)
+                        .multilineTextAlignment(.leading)
                 }
             }
             .padding(.horizontal, Theme.screenInset)
@@ -164,6 +168,10 @@ struct LoginFlowView: View {
                     Label(errorMessage, systemImage: "exclamationmark.triangle.fill")
                         .foregroundStyle(Theme.unavailable)
                         .font(.callout)
+                        // Diagnostics can run several lines; without this they
+                        // get truncated to exactly the part that does not help.
+                        .fixedSize(horizontal: false, vertical: true)
+                        .multilineTextAlignment(.leading)
                 }
 
                 Button("Anderen Server wählen", role: .destructive) {
