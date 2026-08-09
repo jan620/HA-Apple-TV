@@ -12,11 +12,30 @@ struct DashboardScreen: View {
     @EnvironmentObject private var store: EntityStore
     @EnvironmentObject private var lovelace: LovelaceService
     @EnvironmentObject private var coordinator: DashboardCoordinator
+    @EnvironmentObject private var preferences: AppPreferences
 
     @State private var dashboard: LovelaceDashboard = .overview
     @State private var selectedTab = Self.settingsTag
+    @State private var hasChosenInitialDashboard = false
 
     private static let settingsTag = "__settings__"
+
+    /// What onboarding left us with: the chosen dashboards, plus the synthetic
+    /// rooms entry when the user asked for areas.
+    private var availableDashboards: [LovelaceDashboard] {
+        var result: [LovelaceDashboard] = []
+
+        if preferences.contentMode.includesDashboards {
+            let selected = preferences.selectedDashboardIDs
+            result += lovelace.dashboards.filter { selected.isEmpty || selected.contains($0.id) }
+        }
+        if preferences.contentMode.includesAreas {
+            result.append(.rooms)
+        }
+
+        // Never strand the user with nothing to look at.
+        return result.isEmpty ? [.overview] : result
+    }
 
     private var config: LovelaceConfig? {
         lovelace.configs[dashboard.id]
@@ -34,7 +53,7 @@ struct DashboardScreen: View {
             // produces a dozen view tabs, and anything after them is a long
             // journey with a remote. Switching dashboards is a primary action,
             // not a setting.
-            SettingsScreen(dashboard: $dashboard)
+            SettingsScreen(dashboard: $dashboard, dashboards: availableDashboards)
                 .tabItem { Label("Dashboards", systemImage: "square.grid.2x2.fill") }
                 .tag(Self.settingsTag)
 
@@ -55,8 +74,17 @@ struct DashboardScreen: View {
         .sheet(item: moreInfoBinding) { target in
             MoreInfoView(entityID: target.id)
         }
+        .task {
+            // Land on what onboarding picked instead of the built-in overview.
+            guard !hasChosenInitialDashboard else { return }
+            hasChosenInitialDashboard = true
+            if !availableDashboards.contains(where: { $0.id == dashboard.id }),
+               let first = availableDashboards.first {
+                dashboard = first
+            }
+        }
         .task(id: dashboard.id) {
-            await lovelace.loadConfig(for: dashboard)
+            await lovelace.loadConfig(for: dashboard, areaIDs: preferences.selectedAreaIDs)
             applyPendingNavigation()
             // Anything still pending named a view this dashboard does not have.
             coordinator.requestedViewPath = nil
@@ -129,11 +157,13 @@ struct DashboardScreen: View {
 
 struct SettingsScreen: View {
     @Binding var dashboard: LovelaceDashboard
+    let dashboards: [LovelaceDashboard]
 
     @EnvironmentObject private var auth: AuthManager
     @EnvironmentObject private var connection: HAWebSocketClient
     @EnvironmentObject private var store: EntityStore
     @EnvironmentObject private var lovelace: LovelaceService
+    @EnvironmentObject private var preferences: AppPreferences
 
     var body: some View {
         ScrollView {
@@ -145,10 +175,13 @@ struct SettingsScreen: View {
                 statusSection
 
                 HStack(spacing: 20) {
+                    Button("Ansicht neu einrichten") {
+                        preferences.restartOnboarding()
+                    }
                     Button("Dashboards neu laden") {
                         Task {
                             await lovelace.loadDashboards()
-                            await lovelace.reloadConfig(for: dashboard)
+                            await lovelace.reloadConfig(for: dashboard, areaIDs: preferences.selectedAreaIDs)
                         }
                     }
                     Button("Abmelden", role: .destructive) {
@@ -183,7 +216,7 @@ struct SettingsScreen: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 20) {
-                    ForEach(lovelace.dashboards) { entry in
+                    ForEach(dashboards) { entry in
                         Button {
                             dashboard = entry
                         } label: {

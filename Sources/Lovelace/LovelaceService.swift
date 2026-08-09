@@ -38,15 +38,15 @@ final class LovelaceService: ObservableObject {
     }
 
     @discardableResult
-    func loadConfig(for dashboard: LovelaceDashboard) async -> LovelaceConfig {
+    func loadConfig(for dashboard: LovelaceDashboard, areaIDs: Set<String> = []) async -> LovelaceConfig {
         if let cached = configs[dashboard.id] { return cached }
-        let config = await fetchConfig(for: dashboard)
+        let config = await fetchConfig(for: dashboard, areaIDs: areaIDs)
         configs[dashboard.id] = config
         return config
     }
 
-    func reloadConfig(for dashboard: LovelaceDashboard) async {
-        configs[dashboard.id] = await fetchConfig(for: dashboard)
+    func reloadConfig(for dashboard: LovelaceDashboard, areaIDs: Set<String> = []) async {
+        configs[dashboard.id] = await fetchConfig(for: dashboard, areaIDs: areaIDs)
     }
 
     /// Re-fetches the dashboards already on screen. Called after a reconnect so
@@ -62,7 +62,12 @@ final class LovelaceService: ObservableObject {
         }
     }
 
-    private func fetchConfig(for dashboard: LovelaceDashboard) async -> LovelaceConfig {
+    private func fetchConfig(for dashboard: LovelaceDashboard, areaIDs: Set<String> = []) async -> LovelaceConfig {
+        // The rooms entry has no server-side counterpart to fetch.
+        guard !dashboard.isRooms else {
+            return generatedConfig(title: dashboard.title, limitedTo: areaIDs)
+        }
+
         loadingDashboardID = dashboard.id
         defer { loadingDashboardID = nil }
 
@@ -96,10 +101,11 @@ final class LovelaceService: ObservableObject {
 
     /// Mirrors Home Assistant's "original states" strategy: one view per area,
     /// controls grouped by domain, sensors collected in a list.
-    func generatedConfig(title: String) -> LovelaceConfig {
+    /// - Parameter areaIDs: restricts the result to these areas; empty means all.
+    func generatedConfig(title: String, limitedTo areaIDs: Set<String> = []) -> LovelaceConfig {
         var views: [LovelaceViewConfig] = []
 
-        for area in store.areas {
+        for area in store.areas where areaIDs.isEmpty || areaIDs.contains(area.areaID) {
             let entities = store.primaryEntities(inArea: area.areaID)
             guard !entities.isEmpty else { continue }
             views.append(
@@ -112,7 +118,9 @@ final class LovelaceService: ObservableObject {
             )
         }
 
-        let unassigned = store.primaryEntitiesWithoutArea
+        // Only when showing everything: with an explicit area selection, a
+        // catch-all view would smuggle back exactly what the user deselected.
+        let unassigned = areaIDs.isEmpty ? store.primaryEntitiesWithoutArea : []
         if !unassigned.isEmpty {
             views.append(
                 makeView(
@@ -124,7 +132,7 @@ final class LovelaceService: ObservableObject {
             )
         }
 
-        if views.isEmpty {
+        if views.isEmpty, areaIDs.isEmpty {
             views.append(
                 makeView(
                     id: "generated.all",

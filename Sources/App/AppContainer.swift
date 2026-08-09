@@ -10,6 +10,7 @@ final class AppContainer: ObservableObject {
     let store: EntityStore
     let lovelace: LovelaceService
     let coordinator: DashboardCoordinator
+    let preferences: AppPreferences
 
     init() {
         let auth = AuthManager()
@@ -21,6 +22,7 @@ final class AppContainer: ObservableObject {
         self.store = store
         self.lovelace = LovelaceService(client: connection, store: store)
         self.coordinator = DashboardCoordinator()
+        self.preferences = AppPreferences()
 
         connection.onConnected = { [weak self] in
             guard let self else { return }
@@ -37,10 +39,17 @@ final class AppContainer: ObservableObject {
         switch state {
         case .authenticated:
             connection.connect()
-        case .needsLogin, .unconfigured:
+        case .needsLogin:
             connection.disconnect()
             store.clear()
             lovelace.reset()
+        case .unconfigured:
+            // A different server means different dashboards and areas, so the
+            // onboarding choices no longer apply. A plain sign-out keeps them.
+            connection.disconnect()
+            store.clear()
+            lovelace.reset()
+            preferences.reset()
         }
     }
 }
