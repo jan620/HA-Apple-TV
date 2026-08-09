@@ -107,6 +107,9 @@ struct MoreInfoView: View {
             }
         }
         .frame(maxWidth: 1100, alignment: .leading)
+        // Attribute rows are plain text; without this the remote skips straight
+        // from the controls to the close button and the list scrolls past.
+        .focusableCard()
     }
 
     private func visibleAttributeKeys(of entity: HAEntity) -> [String] {

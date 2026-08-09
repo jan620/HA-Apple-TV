@@ -441,6 +441,7 @@ struct WeatherCardView: View {
                     }
                 }
             }
+            .focusableCard()
             .task(id: entityID) {
                 await forecast.start(entityID: entityID, type: forecastType, client: connection)
             }

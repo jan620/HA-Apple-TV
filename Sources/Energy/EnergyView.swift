@@ -15,18 +15,21 @@ struct EnergyView: View {
                     ProgressView()
                         .frame(maxWidth: .infinity, minHeight: 300)
                 } else if let summary = energy.summary, summary.hasAnyValue {
-                    tiles(for: summary)
+                    // Every block is focusable: without that the remote has
+                    // nowhere to go below the period buttons and the page
+                    // cannot scroll.
+                    tiles(for: summary).focusableCard()
                     if summary.hasCostData {
-                        costTiles(for: summary)
+                        costTiles(for: summary).focusableCard()
                     }
                     if !summary.flowLinks.isEmpty {
-                        distribution(for: summary)
+                        distribution(for: summary).focusableCard()
                     }
                     if !summary.buckets.isEmpty {
-                        chart(for: summary)
+                        chart(for: summary).focusableCard()
                     }
                     if !summary.devices.isEmpty {
-                        devices(for: summary)
+                        devices(for: summary).focusableCard()
                     }
                 } else {
                     emptyState

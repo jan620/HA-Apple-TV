@@ -39,6 +39,34 @@ struct CardSurface<Content: View>: View {
     }
 }
 
+/// Makes a purely informational card reachable with the remote.
+///
+/// tvOS scroll views only move when focus moves — there is no scrolling
+/// gesture. A card containing nothing focusable is therefore not just
+/// unselectable but unreachable, and so is everything below it. Marking such
+/// cards focusable is what lets the user travel down the page at all.
+struct FocusableCardModifier: ViewModifier {
+    @FocusState private var isFocused: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .focusable()
+            .focused($isFocused)
+            .overlay {
+                RoundedRectangle(cornerRadius: Theme.cardCornerRadius, style: .continuous)
+                    .strokeBorder(Theme.accent, lineWidth: isFocused ? 4 : 0)
+            }
+            .scaleEffect(isFocused ? 1.01 : 1)
+            .animation(.easeOut(duration: 0.15), value: isFocused)
+    }
+}
+
+extension View {
+    func focusableCard() -> some View {
+        modifier(FocusableCardModifier())
+    }
+}
+
 /// Title row shared by most cards.
 struct CardHeader: View {
     let title: String
@@ -86,5 +114,8 @@ struct UnsupportedCardView: View {
                 }
             }
         }
+        // Otherwise the placeholder becomes a dead end that blocks scrolling
+        // past it.
+        .focusableCard()
     }
 }
