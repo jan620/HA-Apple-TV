@@ -26,6 +26,9 @@ final class AppContainer: ObservableObject {
             guard let self else { return }
             await self.store.prime()
             await self.lovelace.loadDashboards()
+            // No-op on the first connect; after a reconnect it picks up
+            // dashboard edits made while the app was offline.
+            await self.lovelace.refreshLoadedConfigs()
         }
     }
 
