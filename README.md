@@ -95,8 +95,11 @@ lokale IP erreichbar sind.
 | `iframe`, `custom:*` | ❌ benötigen eine Web-Engine |
 | `map`, `logbook`, `todo-list`, `statistics-graph`, Energie-Karten | ❌ noch nicht umgesetzt |
 
-Nicht unterstützte Karten erscheinen als beschrifteter Platzhalter statt als
-Leerraum, damit das Dashboard nachvollziehbar bleibt.
+Nennt eine nicht unterstützte Karte eine Entität, zeigt die App deren Zustand
+statt eines Platzhalters — und rendert ein Attribut, das eine Liste
+gleichförmiger Objekte enthält, als Tabelle. Damit bleiben Custom Cards wie
+Abfahrtsmonitore oder Flugtracker brauchbar, obwohl ihr JavaScript nicht läuft.
+Karten ohne Entitätsbezug erscheinen als beschrifteter Platzhalter.
 
 **Ansichtstypen:** `masonry` (Standard), `sections`, `panel` und `sidebar` werden
 in ein TV-taugliches Spaltenraster übersetzt. Unteransichten (`subview: true`)
@@ -124,6 +127,37 @@ eine Ansicht so entstanden ist.
 | **Menü** | schließt die Detailansicht |
 
 ---
+
+### Energie-Dashboard
+
+Das Energie-Dashboard ist **kein Lovelace-Dashboard**: Home Assistant
+registriert es als eingebautes Panel, das der Browser per Strategie aus
+energiespezifischen Karten zusammensetzt. Es taucht deshalb nicht in
+`lovelace/dashboards/list` auf. Die App baut es aus den Langzeit-Statistiken
+nach (`energy/get_prefs`, `energy/info`,
+`recorder/statistics_during_period`) und zeigt Verbrauch, Netzbezug,
+Einspeisung, Solar, Batterie, Gas, Wasser, Autarkie und **Kosten** — umschaltbar
+zwischen Heute, Gestern, 7 Tagen und Monat, dazu ein Verlaufsdiagramm und die
+größten Verbraucher.
+
+Kosten werden aus den konfigurierten Kosten-Statistiken gelesen. Ist im
+Energie-Setup nur ein Preis hinterlegt, erzeugt Home Assistant den Kosten-Sensor
+selbst und schreibt ihn *nicht* in die Einstellungen zurück — die Zuordnung
+kommt dann aus `energy/info`. Beide Wege werden unterstützt.
+
+Nicht umgesetzt: die Sankey-artige Energieverteilung des Originals und die
+Verschachtelung der Gerätewerte über `included_in_stat`.
+
+## Onboarding
+
+Nach dem ersten Login fragt die App, was auf dem Fernseher erscheinen soll:
+**Räume, Dashboards oder beides**. Bei Dashboards lassen sich die vorhandenen
+Lovelace-Dashboards einzeln auswählen (das Energie-Panel erscheint dort als
+eigener Eintrag), bei Räumen die Bereiche. Alles ist vorausgewählt — wer
+durchklickt, bekommt das vollständige Bild.
+
+Die Auswahl liegt in `UserDefaults` und lässt sich über **Ansicht neu
+einrichten** im Dashboards-Tab jederzeit wiederholen.
 
 ## Was die App sonst kann
 
@@ -155,8 +189,9 @@ eine Ansicht so entstanden ist.
 
 ## Bekannte Grenzen
 
-- **Nicht kompiliert getestet.** Der Code entstand ohne Zugriff auf einen Mac
-  bzw. Xcode; der erste Build kann kleinere Korrekturen erfordern.
+- Der Code entstand ohne Zugriff auf einen Mac. Er baut inzwischen fehlerfrei
+  gegen das tvOS-SDK und läuft im Simulator gegen eine echte Instanz, ist aber
+  nicht systematisch getestet.
 - **Nicht-Admin-Accounts** bekommen von Home Assistant keinen Zugriff auf die
   Registries. Die App funktioniert weiter, kann Entitäten dann aber nicht nach
   Bereichen gruppieren (betrifft nur automatisch erzeugte Ansichten).
