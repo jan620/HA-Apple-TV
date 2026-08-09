@@ -56,6 +56,9 @@ final class EnergyService: ObservableObject {
     }
 
     @Published private(set) var preferences: EnergyPreferences?
+    /// Energy statistic ID → cost sensor entity ID, for prices that Home
+    /// Assistant turned into a generated cost sensor.
+    @Published private(set) var costSensors: [String: String] = [:]
     @Published private(set) var summary: EnergySummary?
     @Published private(set) var isLoading = false
     @Published private(set) var errorMessage: String?
@@ -76,6 +79,7 @@ final class EnergyService: ObservableObject {
 
     func reset() {
         preferences = nil
+        costSensors = [:]
         summary = nil
         errorMessage = nil
     }
@@ -89,13 +93,25 @@ final class EnergyService: ObservableObject {
         } catch {
             logger.info("Kein Energie-Dashboard konfiguriert: \(error.localizedDescription, privacy: .public)")
             preferences = nil
+            costSensors = [:]
+            return
+        }
+
+        // Where the user entered a price rather than a cost statistic, Home
+        // Assistant generates the cost sensor and keeps the mapping here
+        // instead of writing it back into the preferences.
+        if let info = try? await client.send(["type": "energy/info"]),
+           let mapping = info["cost_sensors"]?.objectValue {
+            costSensors = mapping.compactMapValues(\.stringValue)
+        } else {
+            costSensors = [:]
         }
     }
 
     func loadSummary() async {
         guard let preferences, !preferences.isEmpty else { return }
 
-        let statisticIDs = preferences.allStatisticIDs
+        let statisticIDs = preferences.allStatisticIDs(costSensors: costSensors)
         guard !statisticIDs.isEmpty else { return }
 
         isLoading = true
@@ -118,7 +134,11 @@ final class EnergyService: ObservableObject {
 
         do {
             let response = try await client.send(payload)
-            summary = Self.summarize(response: response, preferences: preferences)
+            summary = Self.summarize(
+                response: response,
+                preferences: preferences,
+                costSensors: costSensors
+            )
             errorMessage = nil
         } catch {
             logger.error("Energie-Statistiken fehlgeschlagen: \(error.localizedDescription, privacy: .public)")
@@ -130,7 +150,8 @@ final class EnergyService: ObservableObject {
 
     private static func summarize(
         response: JSONValue,
-        preferences: EnergyPreferences
+        preferences: EnergyPreferences,
+        costSensors: [String: String]
     ) -> EnergySummary {
         let byStatistic = response.objectValue ?? [:]
 
@@ -141,14 +162,23 @@ final class EnergyService: ObservableObject {
             }
         }
 
+        func cost(of flows: [EnergyPreferences.Flow]) -> Double {
+            total(of: preferences.costStatisticIDs(for: flows, costSensors: costSensors))
+        }
+
         var summary = EnergySummary()
-        summary.gridImport = total(of: preferences.gridImport)
-        summary.gridExport = total(of: preferences.gridExport)
+        summary.gridImport = total(of: preferences.gridImportStats)
+        summary.gridExport = total(of: preferences.gridExportStats)
         summary.solar = total(of: preferences.solar)
         summary.batteryDischarge = total(of: preferences.batteryDischarge)
         summary.batteryCharge = total(of: preferences.batteryCharge)
-        summary.gas = total(of: preferences.gas)
-        summary.water = total(of: preferences.water)
+        summary.gas = total(of: preferences.gasStats)
+        summary.water = total(of: preferences.waterStats)
+
+        summary.gridCost = cost(of: preferences.gridImport)
+        summary.gridCompensation = cost(of: preferences.gridExport)
+        summary.gasCost = cost(of: preferences.gas)
+        summary.waterCost = cost(of: preferences.water)
 
         summary.devices = preferences.devices
             .map { device in
@@ -185,8 +215,8 @@ final class EnergyService: ObservableObject {
             }
         }
 
-        accumulate(preferences.gridImport, into: &gridImport)
-        accumulate(preferences.gridExport, into: &gridExport)
+        accumulate(preferences.gridImportStats, into: &gridImport)
+        accumulate(preferences.gridExportStats, into: &gridExport)
         accumulate(preferences.solar, into: &solar)
 
         let dates = Set(gridImport.keys).union(gridExport.keys).union(solar.keys)

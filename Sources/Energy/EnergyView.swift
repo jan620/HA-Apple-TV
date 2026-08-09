@@ -4,6 +4,7 @@ import SwiftUI
 /// Native stand-in for Home Assistant's energy panel.
 struct EnergyView: View {
     @EnvironmentObject private var energy: EnergyService
+    @EnvironmentObject private var store: EntityStore
 
     var body: some View {
         ScrollView {
@@ -15,6 +16,9 @@ struct EnergyView: View {
                         .frame(maxWidth: .infinity, minHeight: 300)
                 } else if let summary = energy.summary, summary.hasAnyValue {
                     tiles(for: summary)
+                    if summary.hasCostData {
+                        costTiles(for: summary)
+                    }
                     if !summary.buckets.isEmpty {
                         chart(for: summary)
                     }
@@ -88,6 +92,61 @@ struct EnergyView: View {
                 )
             }
         }
+    }
+
+    private func costTiles(for summary: EnergySummary) -> some View {
+        LazyVGrid(
+            columns: Array(repeating: GridItem(.flexible(), spacing: 20), count: 3),
+            spacing: 20
+        ) {
+            moneyTile(
+                summary.netCost >= 0 ? "Kosten" : "Ertrag",
+                value: abs(summary.netCost),
+                symbol: "eurosign.circle.fill",
+                tint: summary.netCost >= 0 ? Theme.accent : .green
+            )
+            if summary.gridCost != 0 {
+                moneyTile("Strombezug", value: summary.gridCost, symbol: "bolt.horizontal.fill", tint: .orange)
+            }
+            if summary.gridCompensation != 0 {
+                moneyTile("Einspeisung", value: summary.gridCompensation, symbol: "arrow.up.right", tint: .green)
+            }
+            if summary.gasCost != 0 {
+                moneyTile("Gas", value: summary.gasCost, symbol: "flame.fill", tint: .red)
+            }
+            if summary.waterCost != 0 {
+                moneyTile("Wasser", value: summary.waterCost, symbol: "drop.fill", tint: .blue)
+            }
+        }
+    }
+
+    private func moneyTile(
+        _ title: String,
+        value: Double,
+        symbol: String,
+        tint: Color
+    ) -> some View {
+        CardSurface {
+            VStack(alignment: .leading, spacing: 10) {
+                Label(title, systemImage: symbol)
+                    .font(.subheadline)
+                    .foregroundStyle(tint)
+                Text(formattedCurrency(value))
+                    .font(.system(size: 38, weight: .semibold, design: .rounded))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+            }
+        }
+    }
+
+    /// Home Assistant reports the instance currency as an ISO code.
+    private func formattedCurrency(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = store.config?.currency ?? "EUR"
+        formatter.maximumFractionDigits = 2
+        return formatter.string(from: NSNumber(value: value))
+            ?? HANumber.format(value, maximumFractionDigits: 2)
     }
 
     private func tile(

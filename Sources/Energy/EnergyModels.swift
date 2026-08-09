@@ -13,16 +13,30 @@ struct EnergyPreferences: Equatable {
         var id: String { statisticID }
     }
 
-    var gridImport: [String] = []
-    var gridExport: [String] = []
+    /// An energy stream and, where configured, the statistic holding its money
+    /// value. When the user entered a price instead of a cost statistic, Home
+    /// Assistant creates the cost sensor itself and keeps the mapping in
+    /// `energy/info` rather than writing it back here — hence the optional.
+    struct Flow: Equatable {
+        let energyStatisticID: String
+        let costStatisticID: String?
+    }
+
+    var gridImport: [Flow] = []
+    var gridExport: [Flow] = []
     var solar: [String] = []
     /// Battery discharge — energy flowing out of the battery into the house.
     var batteryDischarge: [String] = []
     /// Battery charge — energy flowing into the battery.
     var batteryCharge: [String] = []
-    var gas: [String] = []
-    var water: [String] = []
+    var gas: [Flow] = []
+    var water: [Flow] = []
     var devices: [Device] = []
+
+    var gridImportStats: [String] { gridImport.map(\.energyStatisticID) }
+    var gridExportStats: [String] { gridExport.map(\.energyStatisticID) }
+    var gasStats: [String] { gas.map(\.energyStatisticID) }
+    var waterStats: [String] { water.map(\.energyStatisticID) }
 
     var isEmpty: Bool {
         gridImport.isEmpty && gridExport.isEmpty && solar.isEmpty
@@ -30,12 +44,23 @@ struct EnergyPreferences: Equatable {
             && gas.isEmpty && water.isEmpty && devices.isEmpty
     }
 
+    /// Resolves a flow's money statistic, falling back to the sensor Home
+    /// Assistant generated from a configured price.
+    func costStatisticIDs(for flows: [Flow], costSensors: [String: String]) -> [String] {
+        flows.compactMap { $0.costStatisticID ?? costSensors[$0.energyStatisticID] }
+    }
+
     /// Every statistic the summary needs, deduplicated.
-    var allStatisticIDs: [String] {
+    func allStatisticIDs(costSensors: [String: String]) -> [String] {
         var seen = Set<String>()
-        return (gridImport + gridExport + solar + batteryDischarge + batteryCharge
-            + gas + water + devices.map(\.statisticID))
-            .filter { seen.insert($0).inserted }
+        let energy = gridImportStats + gridExportStats + solar
+            + batteryDischarge + batteryCharge + gasStats + waterStats
+            + devices.map(\.statisticID)
+        let money = costStatisticIDs(for: gridImport, costSensors: costSensors)
+            + costStatisticIDs(for: gridExport, costSensors: costSensors)
+            + costStatisticIDs(for: gas, costSensors: costSensors)
+            + costStatisticIDs(for: water, costSensors: costSensors)
+        return (energy + money).filter { seen.insert($0).inserted }
     }
 
     init() {}
@@ -51,9 +76,9 @@ struct EnergyPreferences: Equatable {
                 append(source["stat_energy_from"], to: &batteryDischarge)
                 append(source["stat_energy_to"], to: &batteryCharge)
             case "gas":
-                append(source["stat_energy_from"], to: &gas)
+                appendFlow(energy: source["stat_energy_from"], cost: source["stat_cost"], to: &gas)
             case "water":
-                append(source["stat_energy_from"], to: &water)
+                appendFlow(energy: source["stat_energy_from"], cost: source["stat_cost"], to: &water)
             default:
                 break
             }
@@ -67,16 +92,24 @@ struct EnergyPreferences: Equatable {
 
     private mutating func appendGrid(_ source: JSONValue) {
         // Newer shape: the statistics sit on the source itself.
-        append(source["stat_energy_from"], to: &gridImport)
-        append(source["stat_energy_to"], to: &gridExport)
+        appendFlow(energy: source["stat_energy_from"], cost: source["stat_cost"], to: &gridImport)
+        appendFlow(energy: source["stat_energy_to"], cost: source["stat_compensation"], to: &gridExport)
 
         // Established shape: one entry per tariff/flow.
         for flow in source["flow_from"]?.arrayValue ?? [] {
-            append(flow["stat_energy_from"], to: &gridImport)
+            appendFlow(energy: flow["stat_energy_from"], cost: flow["stat_cost"], to: &gridImport)
         }
         for flow in source["flow_to"]?.arrayValue ?? [] {
-            append(flow["stat_energy_to"], to: &gridExport)
+            appendFlow(energy: flow["stat_energy_to"], cost: flow["stat_compensation"], to: &gridExport)
         }
+    }
+
+    private func appendFlow(energy: JSONValue?, cost: JSONValue?, to list: inout [Flow]) {
+        guard let id = energy?.stringValue, !id.isEmpty,
+              !list.contains(where: { $0.energyStatisticID == id })
+        else { return }
+        let costID = cost?.stringValue
+        list.append(Flow(energyStatisticID: id, costStatisticID: costID?.isEmpty == false ? costID : nil))
     }
 
     private func append(_ value: JSONValue?, to list: inout [String]) {
@@ -110,6 +143,21 @@ struct EnergySummary: Equatable {
     var water: Double = 0
     var devices: [DeviceUsage] = []
     var buckets: [Bucket] = []
+
+    /// Money values, in the instance's configured currency.
+    var gridCost: Double = 0
+    /// Earnings from feeding back into the grid.
+    var gridCompensation: Double = 0
+    var gasCost: Double = 0
+    var waterCost: Double = 0
+
+    var netCost: Double {
+        gridCost + gasCost + waterCost - gridCompensation
+    }
+
+    var hasCostData: Bool {
+        gridCost != 0 || gridCompensation != 0 || gasCost != 0 || waterCost != 0
+    }
 
     /// Home Assistant's own definition: everything that arrived minus what went
     /// back out.
