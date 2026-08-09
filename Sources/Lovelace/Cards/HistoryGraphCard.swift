@@ -41,6 +41,7 @@ struct HistoryGraphCardView: View {
                 }
             }
         }
+        .focusableCard()
         .task(id: "\(entityIDs.joined(separator: ","))|\(hours)") {
             await loader.load(entityIDs: entityIDs, hours: hours, client: connection)
         }

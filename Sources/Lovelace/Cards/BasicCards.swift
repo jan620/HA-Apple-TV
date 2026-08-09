@@ -301,6 +301,7 @@ struct MarkdownCardView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
+        .focusableCard()
         .task(id: template) {
             await renderer.start(template: template, client: connection)
         }

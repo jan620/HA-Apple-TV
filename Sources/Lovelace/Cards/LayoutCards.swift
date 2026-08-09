@@ -157,6 +157,9 @@ struct AreaCardView: View {
                 }
             }
         }
+        // Area cards are read-only, so they need the same treatment as the
+        // other informational cards to stay reachable with the remote.
+        .focusableCard()
     }
 
     private var sensorSummary: [HAEntity] {
