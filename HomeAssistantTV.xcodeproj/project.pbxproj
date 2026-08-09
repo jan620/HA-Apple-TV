@@ -34,6 +34,7 @@
 				201CDC530B28AA50A2763E24,
 				3529E6E0658A111F5E7380C8,
 				4D0445BDC2D46EC35A7031A2,
+				546167ADC8B31A4E0B3BF4FC,
 				75A4AFE6A8989FDE36C16566,
 				7DC229774906964889BD9CE3,
 				A7C90B52BF652AA2C6989902,
@@ -48,6 +49,12 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
 			path = ServiceDiscovery.swift;
+			sourceTree = "<group>";
+		};
+		108A636204E5962800E7B6ED = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = EnergyService.swift;
 			sourceTree = "<group>";
 		};
 		11F7FB03F7109CCB77A0BB3B = {
@@ -143,6 +150,10 @@
 			);
 			isa = PBXGroup;
 			sourceTree = "<group>";
+		};
+		31777B2D20400620228835BB = {
+			fileRef = FA32A0D0A613D59CABA37A4C;
+			isa = PBXBuildFile;
 		};
 		3222982BEDEDD80324F2407A = {
 			isa = PBXFileReference;
@@ -300,6 +311,16 @@
 			path = Theme.swift;
 			sourceTree = "<group>";
 		};
+		546167ADC8B31A4E0B3BF4FC = {
+			children = (
+				108A636204E5962800E7B6ED,
+				79F8B68EFAFA1263E933896E,
+				FA32A0D0A613D59CABA37A4C,
+			);
+			isa = PBXGroup;
+			path = Energy;
+			sourceTree = "<group>";
+		};
 		57DC7F059235B8B5CEBBD861 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
@@ -356,6 +377,12 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
+		79F8B68EFAFA1263E933896E = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = EnergyView.swift;
+			sourceTree = "<group>";
+		};
 		7A0EBEF57270EFE5AA2F737D = {
 			fileRef = C5404B670B4EAFEF91184858;
 			isa = PBXBuildFile;
@@ -367,6 +394,10 @@
 			isa = PBXGroup;
 			path = MoreInfo;
 			sourceTree = "<group>";
+		};
+		83B7134C6603533891DFE012 = {
+			fileRef = 79F8B68EFAFA1263E933896E;
+			isa = PBXBuildFile;
 		};
 		85C6B9A5C1C8C36B6CC50CBB = {
 			isa = PBXFileReference;
@@ -392,6 +423,10 @@
 		};
 		993C08F7507E457070DA5123 = {
 			fileRef = F5FE57B3356F12562F19653C;
+			isa = PBXBuildFile;
+		};
+		99BCB788C78767015506177D = {
+			fileRef = 108A636204E5962800E7B6ED;
 			isa = PBXBuildFile;
 		};
 		9A3431BB366B16356F3DDDD2 = {
@@ -613,6 +648,7 @@
 				124964F4AE63DCDC648B5187,
 				14321ACA7BFA46EC92C2791C,
 				1D78830883146F29043656DF,
+				31777B2D20400620228835BB,
 				3788075B432A790015AC4DE3,
 				394C594008F79D7EF57DF5D6,
 				3996B39B24481F9DB3B24ADB,
@@ -622,8 +658,10 @@
 				59496F55724813BCFE777B3D,
 				684C5D21FBE76F1996774393,
 				7A0EBEF57270EFE5AA2F737D,
+				83B7134C6603533891DFE012,
 				8652C56C2830C31B9972AED5,
 				993C08F7507E457070DA5123,
+				99BCB788C78767015506177D,
 				9A3431BB366B16356F3DDDD2,
 				9BE397FD90D16DDE58AB0410,
 				AA67315C7359EB7E57CB78D4,
@@ -669,6 +707,12 @@
 		F97228200F30326A1E14C65F = {
 			fileRef = B7F53A808D12D0205E3E29AF;
 			isa = PBXBuildFile;
+		};
+		FA32A0D0A613D59CABA37A4C = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = EnergyModels.swift;
+			sourceTree = "<group>";
 		};
 		FCFEEA090F0417AAD3A31A55 = {
 			fileRef = 29A324F0646D8E741FAB9611;

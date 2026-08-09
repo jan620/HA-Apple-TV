@@ -29,7 +29,19 @@ struct LovelaceDashboard: Identifiable, Hashable {
         requiresAdmin: false
     )
 
+    /// Also not a Lovelace dashboard: Home Assistant's energy panel is built in
+    /// the frontend from energy-specific cards, so the app renders it natively
+    /// from the statistics API instead.
+    static let energy = LovelaceDashboard(
+        id: "__energy__",
+        urlPath: nil,
+        title: "Energie",
+        icon: "mdi:lightning-bolt",
+        requiresAdmin: false
+    )
+
     var isRooms: Bool { id == Self.rooms.id }
+    var isEnergy: Bool { id == Self.energy.id }
 
     init(id: String, urlPath: String?, title: String, icon: String?, requiresAdmin: Bool) {
         self.id = id
