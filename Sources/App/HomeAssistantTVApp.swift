@@ -51,6 +51,7 @@ struct RootView: View {
 struct ConnectingView: View {
     @EnvironmentObject private var connection: HAWebSocketClient
     @EnvironmentObject private var auth: AuthManager
+    @EnvironmentObject private var store: EntityStore
 
     var body: some View {
         VStack(spacing: 28) {
@@ -85,7 +86,11 @@ struct ConnectingView: View {
         case .idle, .connecting:
             return "Verbinde mit Home Assistant …"
         case .connected:
-            return "Lade Entitäten und Dashboards …"
+            // Priming runs in two visible stages; on a large instance the
+            // registry step takes long enough to be worth naming.
+            return store.hasLoadedStates
+                ? "Lade Bereiche und Dashboards …"
+                : "Lade Entitäten …"
         case .disconnected(let message):
             return message ?? "Verbindung unterbrochen – neuer Versuch läuft."
         }

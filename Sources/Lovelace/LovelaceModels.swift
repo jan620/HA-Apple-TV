@@ -185,10 +185,9 @@ struct LovelaceCardConfig: Identifiable, Hashable {
             return
         }
         var raw = json.objectValue ?? [:]
-        if raw["type"] == nil {
-            raw["type"] = .string("entity")
-        }
-        self.init(id: id, type: raw["type"]?.stringValue ?? "entity", raw: raw)
+        let type = raw["type"]?.stringValue ?? "entity"
+        raw["type"] = .string(type)
+        self.init(id: id, type: type, raw: raw)
     }
 
     subscript(key: String) -> JSONValue? { raw[key] }
@@ -217,15 +216,6 @@ struct LovelaceCardConfig: Identifiable, Hashable {
             .map { LovelaceEntityRow(json: $1, id: "\(id).row.\($0)") }
     }
 
-    /// Entity IDs referenced anywhere obvious in this card, used to decide
-    /// whether a generated card is worth showing.
-    var referencedEntityIDs: [String] {
-        var result: [String] = []
-        if let entityID { result.append(entityID) }
-        if let camera = raw["camera_image"]?.stringValue { result.append(camera) }
-        result.append(contentsOf: entityRows.compactMap(\.entityID))
-        return result
-    }
 }
 
 /// A row inside an `entities`-style card.

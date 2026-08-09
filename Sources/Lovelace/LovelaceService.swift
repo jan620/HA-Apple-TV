@@ -40,7 +40,29 @@ final class LovelaceService: ObservableObject {
     @discardableResult
     func loadConfig(for dashboard: LovelaceDashboard) async -> LovelaceConfig {
         if let cached = configs[dashboard.id] { return cached }
+        let config = await fetchConfig(for: dashboard)
+        configs[dashboard.id] = config
+        return config
+    }
 
+    func reloadConfig(for dashboard: LovelaceDashboard) async {
+        configs[dashboard.id] = await fetchConfig(for: dashboard)
+    }
+
+    /// Re-fetches the dashboards already on screen. Called after a reconnect so
+    /// edits made while the app was disconnected actually show up — the cache
+    /// alone would keep serving the pre-outage config indefinitely.
+    ///
+    /// Entries are replaced in place rather than cleared first, so the UI never
+    /// sees an empty config mid-refresh.
+    func refreshLoadedConfigs() async {
+        for id in Array(configs.keys) {
+            guard let dashboard = dashboards.first(where: { $0.id == id }) else { continue }
+            configs[id] = await fetchConfig(for: dashboard)
+        }
+    }
+
+    private func fetchConfig(for dashboard: LovelaceDashboard) async -> LovelaceConfig {
         loadingDashboardID = dashboard.id
         defer { loadingDashboardID = nil }
 
@@ -67,13 +89,7 @@ final class LovelaceService: ObservableObject {
             config = generatedConfig(title: dashboard.title)
         }
 
-        configs[dashboard.id] = config
         return config
-    }
-
-    func reloadConfig(for dashboard: LovelaceDashboard) async {
-        configs.removeValue(forKey: dashboard.id)
-        await loadConfig(for: dashboard)
     }
 
     // MARK: Local dashboard generation
