@@ -176,16 +176,7 @@ struct ClimateControls: View {
     }
 
     static func modeLabel(_ mode: String) -> String {
-        switch mode {
-        case "off": return "Aus"
-        case "heat": return "Heizen"
-        case "cool": return "Kühlen"
-        case "heat_cool": return "Auto"
-        case "auto": return "Automatik"
-        case "dry": return "Entfeuchten"
-        case "fan_only": return "Lüften"
-        default: return mode.capitalized
-        }
+        GermanLabels.climateMode(mode)
     }
 }
 
@@ -455,42 +446,11 @@ struct WeatherCardView: View {
     }
 
     static func symbol(for condition: String) -> String {
-        switch condition {
-        case "clear-night": return "moon.stars.fill"
-        case "cloudy": return "cloud.fill"
-        case "fog": return "cloud.fog.fill"
-        case "hail": return "cloud.hail.fill"
-        case "lightning": return "cloud.bolt.fill"
-        case "lightning-rainy": return "cloud.bolt.rain.fill"
-        case "partlycloudy": return "cloud.sun.fill"
-        case "pouring": return "cloud.heavyrain.fill"
-        case "rainy": return "cloud.rain.fill"
-        case "snowy": return "cloud.snow.fill"
-        case "snowy-rainy": return "cloud.sleet.fill"
-        case "sunny": return "sun.max.fill"
-        case "windy", "windy-variant": return "wind"
-        case "exceptional": return "exclamationmark.triangle.fill"
-        default: return "cloud.fill"
-        }
+        GermanLabels.weatherSymbol(condition)
     }
 
     static func conditionLabel(_ condition: String) -> String {
-        switch condition {
-        case "clear-night": return "Klare Nacht"
-        case "cloudy": return "Bewölkt"
-        case "fog": return "Nebel"
-        case "hail": return "Hagel"
-        case "lightning", "lightning-rainy": return "Gewitter"
-        case "partlycloudy": return "Teilweise bewölkt"
-        case "pouring": return "Starkregen"
-        case "rainy": return "Regen"
-        case "snowy": return "Schnee"
-        case "snowy-rainy": return "Schneeregen"
-        case "sunny": return "Sonnig"
-        case "windy", "windy-variant": return "Windig"
-        case "exceptional": return "Unwetter"
-        default: return condition.capitalized
-        }
+        GermanLabels.weatherCondition(condition)
     }
 
     private static func dayLabel(_ date: Date?, type: String) -> String {
@@ -561,12 +521,6 @@ struct AlarmPanelCardView: View {
     }
 
     private static func label(for state: String) -> String {
-        switch state {
-        case "arm_home": return "Zuhause"
-        case "arm_away": return "Abwesend"
-        case "arm_night": return "Nacht"
-        case "arm_vacation": return "Urlaub"
-        default: return state.replacingOccurrences(of: "_", with: " ").capitalized
-        }
+        GermanLabels.alarmAction(state)
     }
 }

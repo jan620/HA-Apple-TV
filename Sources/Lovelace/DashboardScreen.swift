@@ -42,7 +42,10 @@ struct DashboardScreen: View {
     /// Everything the server offers, plus the energy panel when one is set up.
     /// Kept in sync with the same list in onboarding.
     private var offeredDashboards: [LovelaceDashboard] {
-        lovelace.dashboards + (energy.isConfigured ? [.energy] : [])
+        // Admin-only dashboards would fail on load for a non-admin account;
+        // better not to offer them at all.
+        let visible = lovelace.dashboards.filter { !$0.requiresAdmin || store.isAdmin }
+        return visible + (energy.isConfigured ? [.energy] : [])
     }
 
     private var config: LovelaceConfig? {

@@ -231,26 +231,6 @@ final class LovelaceService: ObservableObject {
     ]
 
     private static func domainTitle(_ domain: String) -> String {
-        switch domain {
-        case "light": return "Licht"
-        case "switch": return "Schalter"
-        case "fan": return "Lüfter"
-        case "cover": return "Rollläden"
-        case "climate": return "Klima"
-        case "water_heater": return "Warmwasser"
-        case "humidifier": return "Luftfeuchte"
-        case "media_player": return "Medien"
-        case "lock": return "Schlösser"
-        case "alarm_control_panel": return "Alarm"
-        case "vacuum": return "Staubsauger"
-        case "lawn_mower": return "Rasenmäher"
-        case "scene": return "Szenen"
-        case "script": return "Skripte"
-        case "input_boolean": return "Schalter (Helfer)"
-        case "button", "input_button": return "Taster"
-        case "valve": return "Ventile"
-        case "siren": return "Sirenen"
-        default: return domain.capitalized
-        }
+        GermanLabels.domainTitle(domain)
     }
 }

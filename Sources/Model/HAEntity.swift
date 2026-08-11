@@ -131,47 +131,8 @@ extension HAEntity {
         if let unit = unitOfMeasurement, let value = Double(state) {
             return "\(HANumber.format(value)) \(unit)"
         }
-        return Self.germanState[state] ?? state.replacingOccurrences(of: "_", with: " ").capitalized
+        return GermanLabels.entityState(state)
     }
-
-    private static let germanState: [String: String] = [
-        "on": "An",
-        "off": "Aus",
-        "open": "Offen",
-        "opening": "Öffnet",
-        "closed": "Geschlossen",
-        "closing": "Schließt",
-        "home": "Zuhause",
-        "not_home": "Abwesend",
-        "unavailable": "Nicht verfügbar",
-        "unknown": "Unbekannt",
-        "locked": "Verriegelt",
-        "unlocked": "Entriegelt",
-        "locking": "Verriegelt …",
-        "unlocking": "Entriegelt …",
-        "jammed": "Blockiert",
-        "playing": "Wiedergabe",
-        "paused": "Pausiert",
-        "buffering": "Puffert",
-        "idle": "Bereit",
-        "standby": "Standby",
-        "heat": "Heizen",
-        "cool": "Kühlen",
-        "heat_cool": "Heizen/Kühlen",
-        "auto": "Automatik",
-        "dry": "Entfeuchten",
-        "fan_only": "Nur Lüfter",
-        "docked": "In Station",
-        "cleaning": "Reinigt",
-        "returning": "Kehrt zurück",
-        "armed_home": "Aktiv (zuhause)",
-        "armed_away": "Aktiv (abwesend)",
-        "armed_night": "Aktiv (Nacht)",
-        "disarmed": "Deaktiviert",
-        "triggered": "Ausgelöst",
-        "pending": "Verzögert",
-        "arming": "Aktiviert …",
-    ]
 }
 
 // MARK: - Domain feature bitmasks

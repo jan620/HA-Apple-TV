@@ -12,6 +12,9 @@ final class EntityStore: ObservableObject {
     @Published private(set) var devices: [String: HADevice] = [:]
     @Published private(set) var registry: [String: HARegistryEntry] = [:]
     @Published private(set) var config: HAConfig?
+    /// Registry access and admin-only dashboards depend on this.
+    @Published private(set) var isAdmin = false
+    @Published private(set) var currentUserName: String?
     @Published private(set) var hasLoadedStates = false
     /// True once states *and* registries are in place — dashboard generation
     /// depends on the area registry, so it must not run before this flips.
@@ -35,6 +38,11 @@ final class EntityStore: ObservableObject {
 
         if let response = try? await client.send(["type": "get_config"]) {
             config = HAConfig(json: response)
+        }
+
+        if let response = try? await client.send(["type": "auth/current_user"]) {
+            isAdmin = response["is_admin"]?.boolValue ?? false
+            currentUserName = response["name"]?.stringValue
         }
 
         do {
@@ -74,6 +82,8 @@ final class EntityStore: ObservableObject {
         devices.removeAll()
         registry.removeAll()
         config = nil
+        isAdmin = false
+        currentUserName = nil
         lastServiceError = nil
         hasLoadedStates = false
         isPrimed = false

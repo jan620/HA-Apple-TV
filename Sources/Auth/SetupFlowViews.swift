@@ -64,9 +64,18 @@ struct ServerSetupView: View {
             Label("Im Netzwerk gefunden", systemImage: "antenna.radiowaves.left.and.right")
                 .font(.headline)
 
+            // Bonjour announcements are unauthenticated: any device on the
+            // network can claim to be a Home Assistant. Selecting one fills the
+            // address field instead of connecting straight away, so the address
+            // credentials will be sent to is one the user has actually seen.
+            Text("Gefundene Adressen werden übernommen — prüfe sie, bevor du dich anmeldest.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
             ForEach(discovery.instances) { instance in
                 Button {
-                    connect(to: instance.url, name: instance.name)
+                    urlText = instance.url.absoluteString
+                    errorMessage = nil
                 } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
@@ -198,6 +207,14 @@ struct LoginFlowView: View {
                 Text(server.baseURL.absoluteString)
                     .font(.title3)
                     .foregroundStyle(.secondary)
+            }
+            if let warning = auth.signOutWarning {
+                Label(warning, systemImage: "exclamationmark.shield.fill")
+                    .font(.callout)
+                    .foregroundStyle(Theme.unavailable)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 10)
+                    .focusableCard()
             }
         }
     }
