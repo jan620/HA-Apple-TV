@@ -12,6 +12,7 @@ final class AppContainer: ObservableObject {
     let coordinator: DashboardCoordinator
     let preferences: AppPreferences
     let energy: EnergyService
+    let screensaver: ScreensaverController
 
     init() {
         let auth = AuthManager()
@@ -25,6 +26,7 @@ final class AppContainer: ObservableObject {
         self.coordinator = DashboardCoordinator()
         self.preferences = AppPreferences()
         self.energy = EnergyService(client: connection)
+        self.screensaver = ScreensaverController()
 
         connection.onConnected = { [weak self] in
             guard let self else { return }
@@ -48,6 +50,7 @@ final class AppContainer: ObservableObject {
             store.clear()
             lovelace.reset()
             energy.reset()
+            screensaver.stop()
         case .unconfigured:
             // A different server means different dashboards and areas, so the
             // onboarding choices no longer apply. A plain sign-out keeps them.
@@ -55,6 +58,7 @@ final class AppContainer: ObservableObject {
             store.clear()
             lovelace.reset()
             energy.reset()
+            screensaver.stop()
             preferences.reset()
         }
     }

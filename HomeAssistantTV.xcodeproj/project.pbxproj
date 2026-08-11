@@ -56,6 +56,7 @@
 			children = (
 				09EB779E23AA3E01CFDE942A,
 				201CDC530B28AA50A2763E24,
+				230951B9F4D94D2E87B148D6,
 				3529E6E0658A111F5E7380C8,
 				4D0445BDC2D46EC35A7031A2,
 				546167ADC8B31A4E0B3BF4FC,
@@ -187,6 +188,16 @@
 			path = Support;
 			sourceTree = "<group>";
 		};
+		230951B9F4D94D2E87B148D6 = {
+			children = (
+				313E1B7BF2759E07D135CB81,
+				8B3FB62DBAB7B816BE6CDA82,
+				A47554D86F27966B5666AAC3,
+			);
+			isa = PBXGroup;
+			path = Screensaver;
+			sourceTree = "<group>";
+		};
 		2339442EE139528B75084EA4 = {
 			fileRef = ED2B73088895013E0E6D1631;
 			isa = PBXBuildFile;
@@ -196,6 +207,10 @@
 			lastKnownFileType = sourcecode.swift;
 			path = LovelaceService.swift;
 			sourceTree = "<group>";
+		};
+		25FA4A4E40035BC01D23E8B8 = {
+			fileRef = 8B3FB62DBAB7B816BE6CDA82;
+			isa = PBXBuildFile;
 		};
 		29A324F0646D8E741FAB9611 = {
 			isa = PBXFileReference;
@@ -211,6 +226,12 @@
 				C863DA5204F95EC573510473,
 			);
 			isa = PBXGroup;
+			sourceTree = "<group>";
+		};
+		313E1B7BF2759E07D135CB81 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = ScreensaverView.swift;
 			sourceTree = "<group>";
 		};
 		31777B2D20400620228835BB = {
@@ -430,6 +451,10 @@
 			path = Energy;
 			sourceTree = "<group>";
 		};
+		56052BD1A193959BE071B9CA = {
+			fileRef = A47554D86F27966B5666AAC3;
+			isa = PBXBuildFile;
+		};
 		57DC7F059235B8B5CEBBD861 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
@@ -448,6 +473,10 @@
 			isa = PBXGroup;
 			path = Resources;
 			sourceTree = "<group>";
+		};
+		5F872B78B77D69E538EB0030 = {
+			fileRef = 313E1B7BF2759E07D135CB81;
+			isa = PBXBuildFile;
 		};
 		684C5D21FBE76F1996774393 = {
 			fileRef = 02B2D33A9F306A5345D2E131;
@@ -490,6 +519,7 @@
 				1B0878ED6FD5BA829886B798,
 				52852BDEB54F8C356A97D03D,
 				B50679232B542C06AB519BC1,
+				F6E83D50ADB59AF6E539F658,
 			);
 			isa = PBXGroup;
 			path = UI;
@@ -533,6 +563,10 @@
 			path = DomainCards.swift;
 			sourceTree = "<group>";
 		};
+		892F253D797E8C77B0726462 = {
+			fileRef = F6E83D50ADB59AF6E539F658;
+			isa = PBXBuildFile;
+		};
 		8AEC345AF92FEBA935540FBF = {
 			children = (
 				194256FE1E4055E0E9A26F8B,
@@ -543,6 +577,12 @@
 			);
 			isa = PBXGroup;
 			path = Tests;
+			sourceTree = "<group>";
+		};
+		8B3FB62DBAB7B816BE6CDA82 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = ScreensaverController.swift;
 			sourceTree = "<group>";
 		};
 		8D71A10FE275545ADD324C6B = {
@@ -607,6 +647,12 @@
 			};
 			isa = XCBuildConfiguration;
 			name = Debug;
+		};
+		A47554D86F27966B5666AAC3 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = ScreensaverSettingsView.swift;
+			sourceTree = "<group>";
 		};
 		A7C90B52BF652AA2C6989902 = {
 			children = (
@@ -821,6 +867,7 @@
 				14321ACA7BFA46EC92C2791C,
 				1D78830883146F29043656DF,
 				2339442EE139528B75084EA4,
+				25FA4A4E40035BC01D23E8B8,
 				31777B2D20400620228835BB,
 				3788075B432A790015AC4DE3,
 				394C594008F79D7EF57DF5D6,
@@ -829,11 +876,14 @@
 				41ABB613C75D2512839CB027,
 				472900110E283DD0F3EE961C,
 				4ECF62775419DA45B2263259,
+				56052BD1A193959BE071B9CA,
 				59496F55724813BCFE777B3D,
+				5F872B78B77D69E538EB0030,
 				684C5D21FBE76F1996774393,
 				7A0EBEF57270EFE5AA2F737D,
 				83B7134C6603533891DFE012,
 				8652C56C2830C31B9972AED5,
+				892F253D797E8C77B0726462,
 				993C08F7507E457070DA5123,
 				99BCB788C78767015506177D,
 				9A3431BB366B16356F3DDDD2,
@@ -876,6 +926,12 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
 			path = AppContainer.swift;
+			sourceTree = "<group>";
+		};
+		F6E83D50ADB59AF6E539F658 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = GermanLabels.swift;
 			sourceTree = "<group>";
 		};
 		F97228200F30326A1E14C65F = {
