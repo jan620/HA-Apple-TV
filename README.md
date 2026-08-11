@@ -44,10 +44,23 @@ den Apple TV Simulator oder dein Gerät bauen.
 > erneut ausführen — die IDs sind deterministisch, der Diff bleibt minimal.
 > `--check` prüft die Struktur, ohne etwas zu schreiben.
 
-**App-Icon:** Das Projekt setzt bewusst kein `ASSETCATALOG_COMPILER_APPICON_NAME`,
-damit es ohne die vielschichtigen tvOS-Icon-Assets sofort baut. Für eine
-Veröffentlichung musst du in `Resources/Assets.xcassets` ein
-*App Icon & Top Shelf Image*-Set anlegen und die Build-Einstellung ergänzen.
+**App-Icon:** tvOS-Icons sind *geschichtet* — drei Bilder, die das System beim
+Fokussieren gegeneinander verschiebt. Die komplette Struktur samt PNGs erzeugt
+
+```bash
+python3 Tools/generate_app_icon.py
+```
+
+Die Grafik ist bewusst eigenständig: **Das Home-Assistant-Logo ist eine Marke
+der Open Home Foundation.** Als Icon einer fremden App verstößt es gegen Apples
+Richtlinie 5.2.5 und die Markenrichtlinien der Foundation. Ein Haus-Symbol im
+gleichen Blau transportiert dieselbe Bedeutung, ohne die Marke zu übernehmen —
+Farben sind nicht geschützt, dieses konkrete Logo schon. Aus demselben Grund
+sollte vor einer Veröffentlichung auch der Anzeigename in `Resources/Info.plist`
+geändert werden; „Home Assistant" ist der Markenname.
+
+Farben und Formen stehen oben in `Tools/generate_app_icon.py` und lassen sich
+dort anpassen.
 
 ---
 
