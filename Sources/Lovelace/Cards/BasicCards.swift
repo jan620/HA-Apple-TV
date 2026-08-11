@@ -45,6 +45,8 @@ struct EntitiesCardView: View {
                 }
             }
         }
+        // The rows carry the focus; only a card without any needs its own.
+        .focusableCard(card.entityRows.isEmpty)
     }
 }
 
@@ -161,6 +163,7 @@ struct GlanceCardView: View {
                 }
             }
         }
+        .focusableCard(card.entityRows.isEmpty)
     }
 }
 

@@ -46,11 +46,13 @@ struct CardSurface<Content: View>: View {
 /// unselectable but unreachable, and so is everything below it. Marking such
 /// cards focusable is what lets the user travel down the page at all.
 struct FocusableCardModifier: ViewModifier {
+    var isEnabled = true
+
     @FocusState private var isFocused: Bool
 
     func body(content: Content) -> some View {
         content
-            .focusable()
+            .focusable(isEnabled)
             .focused($isFocused)
             .overlay {
                 RoundedRectangle(cornerRadius: Theme.cardCornerRadius, style: .continuous)
@@ -62,8 +64,11 @@ struct FocusableCardModifier: ViewModifier {
 }
 
 extension View {
-    func focusableCard() -> some View {
-        modifier(FocusableCardModifier())
+    /// - Parameter isEnabled: pass `false` for cards that already contain a
+    ///   button or slider — nesting a focusable container around focusable
+    ///   children just adds a stop the user has to click through.
+    func focusableCard(_ isEnabled: Bool = true) -> some View {
+        modifier(FocusableCardModifier(isEnabled: isEnabled))
     }
 }
 

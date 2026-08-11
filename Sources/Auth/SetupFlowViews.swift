@@ -29,6 +29,9 @@ struct ServerSetupView: View {
                         // get truncated to exactly the part that does not help.
                         .fixedSize(horizontal: false, vertical: true)
                         .multilineTextAlignment(.leading)
+                        // This is the last element on the screen, so nothing
+                        // below it could pull the scroll view down to it.
+                        .focusableCard()
                 }
             }
             .padding(.horizontal, Theme.screenInset)
