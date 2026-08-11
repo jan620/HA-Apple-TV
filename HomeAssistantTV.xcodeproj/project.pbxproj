@@ -5,11 +5,35 @@
 	};
 	objectVersion = 56;
 	objects = {
+		01E150132E130BC0C2427E78 = {
+			explicitFileType = wrapper.cfbundle;
+			includeInIndex = 0;
+			isa = PBXFileReference;
+			path = HomeAssistantTVTests.xctest;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		02B2D33A9F306A5345D2E131 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
 			path = JSONValue.swift;
 			sourceTree = "<group>";
+		};
+		04602C067DF949BE93B46613 = {
+			buildConfigurationList = 74A94729FD1A82B73271204E;
+			buildPhases = (
+				497C8016E9C79330D8D86E68,
+				929B4F3ADEE074A2048A5C9B,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3A5CA643AFB1DF496F3EA2EF,
+			);
+			isa = PBXNativeTarget;
+			name = HomeAssistantTVTests;
+			productName = HomeAssistantTVTests;
+			productReference = 01E150132E130BC0C2427E78;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		09EB779E23AA3E01CFDE942A = {
 			children = (
@@ -57,6 +81,10 @@
 			path = EnergyService.swift;
 			sourceTree = "<group>";
 		};
+		1147ACFD6CE24C5E7EB08794 = {
+			fileRef = 194256FE1E4055E0E9A26F8B;
+			isa = PBXBuildFile;
+		};
 		11F7FB03F7109CCB77A0BB3B = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
@@ -98,6 +126,18 @@
 			fileRef = 870C69360AE57B45953A5A3B;
 			isa = PBXBuildFile;
 		};
+		194256FE1E4055E0E9A26F8B = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = JSONValueTests.swift;
+			sourceTree = "<group>";
+		};
+		195149F758407881646DB072 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = HAServerTests.swift;
+			sourceTree = "<group>";
+		};
 		1A3EED037DB25779EF8EA6E0 = {
 			children = (
 				4D2FB253E968E263B9EB203D,
@@ -121,6 +161,22 @@
 		1D78830883146F29043656DF = {
 			fileRef = 85C6B9A5C1C8C36B6CC50CBB;
 			isa = PBXBuildFile;
+		};
+		1E47D493450BEB6463767797 = {
+			fileRef = 195149F758407881646DB072;
+			isa = PBXBuildFile;
+		};
+		1F97C39796F77FB5BF7A22FF = {
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = io.homeassistant.tvos.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HomeAssistantTV.app/HomeAssistantTV";
+			};
+			isa = XCBuildConfiguration;
+			name = Release;
 		};
 		201CDC530B28AA50A2763E24 = {
 			children = (
@@ -151,6 +207,7 @@
 			children = (
 				0E2C2D148CD03FDE80E5926A,
 				5CB925814CB9D325B98F666D,
+				8AEC345AF92FEBA935540FBF,
 				C863DA5204F95EC573510473,
 			);
 			isa = PBXGroup;
@@ -165,6 +222,10 @@
 			lastKnownFileType = sourcecode.swift;
 			path = LovelaceModels.swift;
 			sourceTree = "<group>";
+		};
+		3358B046659F8692A84A72D8 = {
+			fileRef = 976EA1C17260ED8D3FA431AF;
+			isa = PBXBuildFile;
 		};
 		349B578E88FC623128D2018B = {
 			buildActionMask = 2147483647;
@@ -200,9 +261,26 @@
 			fileRef = 13806616878DEA403F55DC57;
 			isa = PBXBuildFile;
 		};
+		3A5CA643AFB1DF496F3EA2EF = {
+			isa = PBXTargetDependency;
+			target = 1400DACF059297A8F8887A9B;
+			targetProxy = FC024AC3B3BFEAF7CEE12817;
+		};
 		3AEE4FA9BB26CD44E4419F9D = {
 			fileRef = DBD47CD8D1A65F17993FDC1D;
 			isa = PBXBuildFile;
+		};
+		3CF0ABAEC11D74F7C143CA50 = {
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = io.homeassistant.tvos.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HomeAssistantTV.app/HomeAssistantTV";
+			};
+			isa = XCBuildConfiguration;
+			name = Debug;
 		};
 		3CF4E9D5F428595D9FF08E91 = {
 			buildConfigurations = (
@@ -255,6 +333,10 @@
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
+					04602C067DF949BE93B46613 = {
+						CreatedOnToolsVersion = 15.0;
+						TestTargetID = 1400DACF059297A8F8887A9B;
+					};
 					1400DACF059297A8F8887A9B = {
 						CreatedOnToolsVersion = 15.0;
 					};
@@ -276,11 +358,24 @@
 			projectRoot = "";
 			targets = (
 				1400DACF059297A8F8887A9B,
+				04602C067DF949BE93B46613,
 			);
 		};
 		472900110E283DD0F3EE961C = {
 			fileRef = 0FB3D8D2D369CFB4925AFD18;
 			isa = PBXBuildFile;
+		};
+		497C8016E9C79330D8D86E68 = {
+			buildActionMask = 2147483647;
+			files = (
+				1147ACFD6CE24C5E7EB08794,
+				1E47D493450BEB6463767797,
+				3358B046659F8692A84A72D8,
+				4F83869E082B2E8805511110,
+				8EBB2F898B143CA309DE2E3D,
+			);
+			isa = PBXSourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		4D0445BDC2D46EC35A7031A2 = {
 			children = (
@@ -312,6 +407,10 @@
 		};
 		4ECF62775419DA45B2263259 = {
 			fileRef = CFAC9E7EE678B9AFDF3B6D0C;
+			isa = PBXBuildFile;
+		};
+		4F83869E082B2E8805511110 = {
+			fileRef = BEDF92B2B8F9B83B675C4A61;
 			isa = PBXBuildFile;
 		};
 		52852BDEB54F8C356A97D03D = {
@@ -377,6 +476,15 @@
 			isa = XCBuildConfiguration;
 			name = Release;
 		};
+		74A94729FD1A82B73271204E = {
+			buildConfigurations = (
+				3CF0ABAEC11D74F7C143CA50,
+				1F97C39796F77FB5BF7A22FF,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+			isa = XCConfigurationList;
+		};
 		75A4AFE6A8989FDE36C16566 = {
 			children = (
 				1B0878ED6FD5BA829886B798,
@@ -425,10 +533,39 @@
 			path = DomainCards.swift;
 			sourceTree = "<group>";
 		};
+		8AEC345AF92FEBA935540FBF = {
+			children = (
+				194256FE1E4055E0E9A26F8B,
+				195149F758407881646DB072,
+				976EA1C17260ED8D3FA431AF,
+				BEDF92B2B8F9B83B675C4A61,
+				DCD03C06BB03DA1E8AB15E3D,
+			);
+			isa = PBXGroup;
+			path = Tests;
+			sourceTree = "<group>";
+		};
 		8D71A10FE275545ADD324C6B = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
 			path = PictureCards.swift;
+			sourceTree = "<group>";
+		};
+		8EBB2F898B143CA309DE2E3D = {
+			fileRef = DCD03C06BB03DA1E8AB15E3D;
+			isa = PBXBuildFile;
+		};
+		929B4F3ADEE074A2048A5C9B = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXFrameworksBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		976EA1C17260ED8D3FA431AF = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = CardActionTests.swift;
 			sourceTree = "<group>";
 		};
 		993C08F7507E457070DA5123 = {
@@ -533,6 +670,12 @@
 			path = Auth;
 			sourceTree = "<group>";
 		};
+		BEDF92B2B8F9B83B675C4A61 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = HAEntityTests.swift;
+			sourceTree = "<group>";
+		};
 		BFE2B1E4A427680597294B89 = {
 			fileRef = 422C8A8632679BBEFDF84341;
 			isa = PBXBuildFile;
@@ -561,6 +704,7 @@
 		};
 		C863DA5204F95EC573510473 = {
 			children = (
+				01E150132E130BC0C2427E78,
 				F5BF48AA40CAD7891EB709FC,
 			);
 			isa = PBXGroup;
@@ -623,6 +767,12 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
 			path = EnergyDistributionView.swift;
+			sourceTree = "<group>";
+		};
+		DCD03C06BB03DA1E8AB15E3D = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = EnergyTests.swift;
 			sourceTree = "<group>";
 		};
 		E15E14E009AE2E766F61265F = {
@@ -737,6 +887,13 @@
 			lastKnownFileType = sourcecode.swift;
 			path = EnergyModels.swift;
 			sourceTree = "<group>";
+		};
+		FC024AC3B3BFEAF7CEE12817 = {
+			containerPortal = 46F86FAA6BBF9AC94A7E4595;
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = 1400DACF059297A8F8887A9B;
+			remoteInfo = HomeAssistantTV;
 		};
 		FCFEEA090F0417AAD3A31A55 = {
 			fileRef = 29A324F0646D8E741FAB9611;
