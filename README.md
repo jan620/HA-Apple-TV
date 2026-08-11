@@ -167,6 +167,26 @@ durchklickt, bekommt das vollständige Bild.
 Die Auswahl liegt in `UserDefaults` und lässt sich über **Ansicht neu
 einrichten** im Dashboards-Tab jederzeit wiederholen.
 
+## Bildschirmschoner
+
+Zeigt Uhrzeit, Datum und ausgewählte Entitäten, wenn die App eine Weile
+unbenutzt bleibt. Einzurichten über **Bildschirmschoner** im Dashboards-Tab:
+an/aus, Verzögerung (1–10 Minuten) und die Entitäten, nach Bereichen gruppiert.
+
+**Es ist kein Zusatz zum Bildschirmschoner des Apple TV.** tvOS hat keine
+Schnittstelle für fremde Bildschirmschoner und keine Möglichkeit, über den
+System-Bildschirmschoner zu zeichnen — das lässt sich nicht umgehen. Was die App
+tut: Solange sie im Vordergrund ist und der Bildschirmschoner aktiviert wurde,
+unterdrückt sie den System-Bildschirmschoner (`isIdleTimerDisabled`) und zeigt
+stattdessen ihren eigenen. Er greift also nur, solange die App läuft; der
+Ruhezustand des Geräts bleibt unberührt.
+
+Inhalt und Uhr driften langsam über den Bildschirm und laufen abgedunkelt — eine
+statische, helle Anzeige über Stunden ist genau das, was Einbrennen verursacht.
+
+Jeder Tastendruck und jede Wischgeste beendet ihn. Erkannt wird das über einen
+Gestenerkenner am Fenster, der Ereignisse nur beobachtet und nie verbraucht.
+
 ## Was die App sonst kann
 
 - **Kameras**: Live-Stream über `camera/stream` (HLS via `AVPlayer`), mit

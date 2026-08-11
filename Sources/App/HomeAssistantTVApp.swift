@@ -15,6 +15,7 @@ struct HomeAssistantTVApp: App {
                 .environmentObject(container.coordinator)
                 .environmentObject(container.preferences)
                 .environmentObject(container.energy)
+                .environmentObject(container.screensaver)
                 .preferredColorScheme(.dark)
         }
     }

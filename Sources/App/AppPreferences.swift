@@ -45,6 +45,23 @@ final class AppPreferences: ObservableObject {
         var includesDashboards: Bool { self != .areas }
     }
 
+    /// How long the app waits before showing its ambient screen.
+    enum ScreensaverDelay: Int, CaseIterable, Identifiable {
+        case oneMinute = 60
+        case twoMinutes = 120
+        case fiveMinutes = 300
+        case tenMinutes = 600
+
+        var id: Int { rawValue }
+        var seconds: TimeInterval { TimeInterval(rawValue) }
+        var title: String { "\(rawValue / 60) Min" }
+    }
+
+    @Published private(set) var screensaverEnabled: Bool
+    @Published private(set) var screensaverDelay: ScreensaverDelay
+    /// Ordered, because the ambient screen shows them in this sequence.
+    @Published private(set) var screensaverEntityIDs: [String]
+
     @Published private(set) var hasCompletedOnboarding: Bool
     @Published private(set) var contentMode: ContentMode
     /// Empty means "everything the server offers".
@@ -58,6 +75,9 @@ final class AppPreferences: ObservableObject {
         static let mode = "onboarding.contentMode"
         static let dashboards = "onboarding.dashboards"
         static let areas = "onboarding.areas"
+        static let screensaverEnabled = "screensaver.enabled"
+        static let screensaverDelay = "screensaver.delay"
+        static let screensaverEntities = "screensaver.entities"
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -67,6 +87,32 @@ final class AppPreferences: ObservableObject {
             .flatMap(ContentMode.init(rawValue:)) ?? .both
         selectedDashboardIDs = Set(defaults.stringArray(forKey: Key.dashboards) ?? [])
         selectedAreaIDs = Set(defaults.stringArray(forKey: Key.areas) ?? [])
+
+        screensaverEnabled = defaults.bool(forKey: Key.screensaverEnabled)
+        screensaverDelay = ScreensaverDelay(rawValue: defaults.integer(forKey: Key.screensaverDelay))
+            ?? .fiveMinutes
+        screensaverEntityIDs = defaults.stringArray(forKey: Key.screensaverEntities) ?? []
+    }
+
+    // MARK: Screensaver
+
+    func setScreensaverEnabled(_ enabled: Bool) {
+        screensaverEnabled = enabled
+        defaults.set(enabled, forKey: Key.screensaverEnabled)
+    }
+
+    func setScreensaverDelay(_ delay: ScreensaverDelay) {
+        screensaverDelay = delay
+        defaults.set(delay.rawValue, forKey: Key.screensaverDelay)
+    }
+
+    func toggleScreensaverEntity(_ entityID: String) {
+        if let index = screensaverEntityIDs.firstIndex(of: entityID) {
+            screensaverEntityIDs.remove(at: index)
+        } else {
+            screensaverEntityIDs.append(entityID)
+        }
+        defaults.set(screensaverEntityIDs, forKey: Key.screensaverEntities)
     }
 
     func complete(mode: ContentMode, dashboardIDs: Set<String>, areaIDs: Set<String>) {
@@ -94,7 +140,13 @@ final class AppPreferences: ObservableObject {
         contentMode = .both
         selectedDashboardIDs = []
         selectedAreaIDs = []
-        for key in [Key.completed, Key.mode, Key.dashboards, Key.areas] {
+        screensaverEnabled = false
+        screensaverDelay = .fiveMinutes
+        screensaverEntityIDs = []
+        for key in [
+            Key.completed, Key.mode, Key.dashboards, Key.areas,
+            Key.screensaverEnabled, Key.screensaverDelay, Key.screensaverEntities,
+        ] {
             defaults.removeObject(forKey: key)
         }
     }

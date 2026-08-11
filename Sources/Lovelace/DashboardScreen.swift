@@ -14,6 +14,7 @@ struct DashboardScreen: View {
     @EnvironmentObject private var coordinator: DashboardCoordinator
     @EnvironmentObject private var preferences: AppPreferences
     @EnvironmentObject private var energy: EnergyService
+    @EnvironmentObject private var screensaver: ScreensaverController
 
     @State private var dashboard: LovelaceDashboard = .overview
     @State private var selectedTab = Self.settingsTag
@@ -59,6 +60,31 @@ struct DashboardScreen: View {
     }
 
     var body: some View {
+        ZStack {
+            dashboardContent
+
+            if screensaver.isActive {
+                ScreensaverView { screensaver.noteActivity() }
+                    .transition(.opacity)
+                    .zIndex(1)
+            }
+        }
+        .background(IdleActivityDetector { screensaver.noteActivity() })
+        .task(id: screensaverSettings) {
+            screensaver.configure(
+                enabled: preferences.screensaverEnabled,
+                delay: preferences.screensaverDelay.seconds
+            )
+        }
+        .onDisappear { screensaver.stop() }
+    }
+
+    /// Changing either setting has to restart the countdown.
+    private var screensaverSettings: String {
+        "\(preferences.screensaverEnabled)|\(preferences.screensaverDelay.rawValue)"
+    }
+
+    private var dashboardContent: some View {
         TabView(selection: $selectedTab) {
             // Deliberately the leading tab: a dashboard with a dozen areas
             // produces a dozen view tabs, and anything after them is a long
@@ -187,6 +213,8 @@ struct SettingsScreen: View {
     @EnvironmentObject private var lovelace: LovelaceService
     @EnvironmentObject private var preferences: AppPreferences
 
+    @State private var isEditingScreensaver = false
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 40) {
@@ -197,6 +225,7 @@ struct SettingsScreen: View {
                 statusSection
 
                 HStack(spacing: 20) {
+                    Button("Bildschirmschoner") { isEditingScreensaver = true }
                     Button("Ansicht neu einrichten") {
                         preferences.restartOnboarding()
                     }
@@ -216,6 +245,9 @@ struct SettingsScreen: View {
             }
             .padding(.horizontal, Theme.screenInset)
             .padding(.vertical, 50)
+        }
+        .sheet(isPresented: $isEditingScreensaver) {
+            ScreensaverSettingsView()
         }
     }
 
