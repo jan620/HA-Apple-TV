@@ -14,6 +14,8 @@ final class AuthManager: ObservableObject {
 
     @Published private(set) var state: State = .unconfigured
     @Published private(set) var server: HAServer?
+    /// Set when signing out could not revoke the token server-side.
+    @Published private(set) var signOutWarning: String?
 
     private var tokens: HATokens?
     private var refreshTask: Task<HATokens, Error>?
@@ -75,6 +77,7 @@ final class AuthManager: ObservableObject {
 
     func completeLogin(with tokens: HATokens) {
         guard let server else { return }
+        signOutWarning = nil
         self.tokens = tokens
         persistTokens(tokens, for: server)
         state = .authenticated
@@ -83,8 +86,22 @@ final class AuthManager: ObservableObject {
     /// Revokes the refresh token and returns to the login screen, keeping the
     /// server configured so the user does not retype the URL.
     func signOut() async {
+        signOutWarning = nil
+
         if let server, let tokens {
-            await HAAuthClient(server: server, session: session).revoke(refreshToken: tokens.refreshToken)
+            let revoked = await HAAuthClient(server: server, session: session)
+                .revoke(refreshToken: tokens.refreshToken)
+            if !revoked {
+                // The local token is gone either way, but the server still
+                // accepts it — the user should know their "sign out" was only
+                // half of one.
+                logger.error("Token-Widerruf am Server fehlgeschlagen")
+                signOutWarning = """
+                Abgemeldet, aber der Zugang konnte am Server nicht widerrufen werden. \
+                Falls dieses Gerät nicht mehr vertrauenswürdig ist, entziehe den Zugang \
+                in Home Assistant unter Profil → Sicherheit.
+                """
+            }
             KeychainStore.delete(account: server.origin.absoluteString)
         }
         tokens = nil

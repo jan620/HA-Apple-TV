@@ -28,7 +28,8 @@ struct OnboardingView: View {
     /// Dashboards the user can pick from: the built-in overview, whatever the
     /// server reports, and the energy panel when one is configured.
     private var offeredDashboards: [LovelaceDashboard] {
-        lovelace.dashboards + (energy.isConfigured ? [.energy] : [])
+        let visible = lovelace.dashboards.filter { !$0.requiresAdmin || store.isAdmin }
+        return visible + (energy.isConfigured ? [.energy] : [])
     }
 
     var body: some View {

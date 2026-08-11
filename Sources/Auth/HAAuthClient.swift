@@ -205,12 +205,19 @@ struct HAAuthClient {
         )
     }
 
-    func revoke(refreshToken: String) async {
+    /// - Returns: whether the server confirmed the revocation. A silent failure
+    ///   would leave the token valid while the user believes they signed out.
+    @discardableResult
+    func revoke(refreshToken: String) async -> Bool {
         var request = URLRequest(url: server.url(path: "/auth/revoke"))
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.httpBody = Self.formEncode(["token": refreshToken, "action": "revoke"])
-        _ = try? await session.data(for: request)
+
+        guard let (_, response) = try? await session.data(for: request),
+              let http = response as? HTTPURLResponse
+        else { return false }
+        return (200..<300).contains(http.statusCode)
     }
 
     // MARK: Plumbing
