@@ -214,6 +214,7 @@ struct SettingsScreen: View {
     @EnvironmentObject private var preferences: AppPreferences
 
     @State private var isEditingScreensaver = false
+    @State private var isShowingTipJar = false
 
     var body: some View {
         ScrollView {
@@ -226,6 +227,7 @@ struct SettingsScreen: View {
 
                 HStack(spacing: 20) {
                     Button("Bildschirmschoner") { isEditingScreensaver = true }
+                    Button("Kaffee spendieren") { isShowingTipJar = true }
                     Button("Ansicht neu einrichten") {
                         preferences.restartOnboarding()
                     }
@@ -248,6 +250,9 @@ struct SettingsScreen: View {
         }
         .sheet(isPresented: $isEditingScreensaver) {
             ScreensaverSettingsView()
+        }
+        .sheet(isPresented: $isShowingTipJar) {
+            TipJarView()
         }
     }
 

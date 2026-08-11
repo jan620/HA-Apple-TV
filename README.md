@@ -230,6 +230,26 @@ Gestenerkenner am Fenster, der Ereignisse nur beobachtet und nie verbraucht.
 
 ---
 
+## Unterstützen
+
+Wenn dir die App etwas wert ist: **GitHub Sponsors** (Button oben im Repository)
+oder **Ko-fi**. Die Handles stehen in `.github/FUNDING.yml` und wollen noch
+ausgefüllt werden.
+
+In der App gibt es unter **Kaffee spendieren** im Dashboards-Tab eine
+Trinkgeld-Kasse per In-App-Kauf. Der Umweg ist Absicht: Apple untersagt es,
+aus einer App heraus auf externe Zahlungswege zu verweisen — ein QR-Code zu
+Ko-fi zählt dazu und ist ein verbreiteter Ablehnungsgrund. Trinkgelder an
+Entwickler müssen über In-App-Käufe laufen.
+
+Die Produkte sind Verbrauchsartikel: Sie schalten nichts frei, lassen sich
+beliebig oft kaufen und brauchen deshalb kein Wiederherstellen. Für einen Test
+ohne App Store Connect liegt `Resources/Products.storekit` bereit und ist im
+Schema hinterlegt — die Preise dort sind reine Testwerte.
+
+Vor einer Veröffentlichung müssen die drei Produkt-IDs aus
+`Sources/Support/TipJar.swift` in App Store Connect angelegt werden.
+
 ## Projektstruktur
 
 ```
