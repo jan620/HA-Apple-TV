@@ -286,6 +286,7 @@ def build_objects(sources: list[str], test_sources: list[str]) -> tuple[dict, st
     }
 
     shared_target_settings = {
+        "ASSETCATALOG_COMPILER_APPICON_NAME": "App Icon & Top Shelf Image",
         "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME": "AccentColor",
         "CODE_SIGN_STYLE": "Automatic",
         "CURRENT_PROJECT_VERSION": "1",
