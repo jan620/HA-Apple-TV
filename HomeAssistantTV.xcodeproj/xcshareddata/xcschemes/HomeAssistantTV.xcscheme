@@ -18,6 +18,8 @@
       <BuildableProductRunnable runnableDebuggingMode="0">
          <BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="1400DACF059297A8F8887A9B" BuildableName="HomeAssistantTV.app" BlueprintName="HomeAssistantTV" ReferencedContainer="container:HomeAssistantTV.xcodeproj"/>
       </BuildableProductRunnable>
+      <StoreKitConfigurationFileReference identifier = "../../../Resources/Products.storekit">
+      </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction buildConfiguration="Release" shouldUseLaunchSchemeArgsEnv="YES" savedToolIdentifier="" useCustomWorkingDirectory="NO" debugDocumentVersioning="YES">
       <BuildableProductRunnable runnableDebuggingMode="0">
