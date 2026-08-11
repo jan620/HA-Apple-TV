@@ -21,11 +21,13 @@ import shutil
 import sys
 
 PROJECT_NAME = "HomeAssistantTV"
+TEST_TARGET_NAME = "HomeAssistantTVTests"
 BUNDLE_ID = "io.homeassistant.tvos"
 DEPLOYMENT_TARGET = "17.0"
 SWIFT_VERSION = "5.0"
 
 SOURCE_DIR = "Sources"
+TEST_DIR = "Tests"
 RESOURCE_DIR = "Resources"
 INFO_PLIST = "Resources/Info.plist"
 ASSET_CATALOG = "Resources/Assets.xcassets"
@@ -84,9 +86,9 @@ class PlistWriter:
         return quoted(str(value))
 
 
-def collect_sources() -> list[str]:
+def collect_sources(directory: str) -> list[str]:
     result = []
-    for dirpath, dirnames, filenames in os.walk(os.path.join(ROOT, SOURCE_DIR)):
+    for dirpath, dirnames, filenames in os.walk(os.path.join(ROOT, directory)):
         dirnames.sort()
         for name in sorted(filenames):
             if name.endswith(".swift"):
@@ -95,14 +97,15 @@ def collect_sources() -> list[str]:
     return result
 
 
-def build_objects(sources: list[str]) -> tuple[dict, str]:
+def build_objects(sources: list[str], test_sources: list[str]) -> tuple[dict, str]:
     objects: dict[str, dict] = {}
 
     # --- File references and build files -------------------------------------
     source_build_files: list[str] = []
+    test_build_files: list[str] = []
     file_refs: dict[str, str] = {}
 
-    for path in sources:
+    for path in sources + test_sources:
         ref = object_id("fileRef", path)
         build = object_id("buildFile", path)
         file_refs[path] = ref
@@ -116,7 +119,10 @@ def build_objects(sources: list[str]) -> tuple[dict, str]:
             "isa": "PBXBuildFile",
             "fileRef": ref,
         }
-        source_build_files.append(build)
+        if path in test_sources:
+            test_build_files.append(build)
+        else:
+            source_build_files.append(build)
 
     plist_ref = object_id("fileRef", INFO_PLIST)
     objects[plist_ref] = {
@@ -145,6 +151,16 @@ def build_objects(sources: list[str]) -> tuple[dict, str]:
         "sourceTree": "BUILT_PRODUCTS_DIR",
     }
 
+    test_product_ref = object_id("product", "tests")
+    if test_sources:
+        objects[test_product_ref] = {
+            "isa": "PBXFileReference",
+            "explicitFileType": "wrapper.cfbundle",
+            "includeInIndex": "0",
+            "path": f"{TEST_TARGET_NAME}.xctest",
+            "sourceTree": "BUILT_PRODUCTS_DIR",
+        }
+
     # --- Group tree mirroring the directory layout ---------------------------
     # children[directory] = list of child object ids
     directories: dict[str, list[str]] = {}
@@ -166,7 +182,7 @@ def build_objects(sources: list[str]) -> tuple[dict, str]:
             objects[parent_id]["children"].append(group_id)
         return group_id
 
-    for path in sources:
+    for path in sources + test_sources:
         group_id = ensure_group(os.path.dirname(path))
         objects[group_id]["children"].append(file_refs[path])
 
@@ -176,19 +192,19 @@ def build_objects(sources: list[str]) -> tuple[dict, str]:
     products_group = object_id("group", "Products")
     objects[products_group] = {
         "isa": "PBXGroup",
-        "children": [product_ref],
+        "children": [product_ref] + ([test_product_ref] if test_sources else []),
         "name": "Products",
         "sourceTree": "<group>",
     }
 
+    main_children = [object_id("group", SOURCE_DIR), resources_group, products_group]
+    if test_sources:
+        main_children.append(object_id("group", TEST_DIR))
+
     main_group = object_id("group", "__main__")
     objects[main_group] = {
         "isa": "PBXGroup",
-        "children": [
-            object_id("group", SOURCE_DIR),
-            resources_group,
-            products_group,
-        ],
+        "children": main_children,
         "sourceTree": "<group>",
     }
 
@@ -312,6 +328,85 @@ def build_objects(sources: list[str]) -> tuple[dict, str]:
         "defaultConfigurationName": "Release",
     }
 
+    # --- Test target ---------------------------------------------------------
+    test_target_id = object_id("target", TEST_TARGET_NAME)
+    if test_sources:
+        test_sources_phase = object_id("phase", "test-sources")
+        objects[test_sources_phase] = {
+            "isa": "PBXSourcesBuildPhase",
+            "buildActionMask": "2147483647",
+            "files": sorted(test_build_files),
+            "runOnlyForDeploymentPostprocessing": "0",
+        }
+
+        test_frameworks_phase = object_id("phase", "test-frameworks")
+        objects[test_frameworks_phase] = {
+            "isa": "PBXFrameworksBuildPhase",
+            "buildActionMask": "2147483647",
+            "files": [],
+            "runOnlyForDeploymentPostprocessing": "0",
+        }
+
+        # Host-based unit tests: the bundle is loaded into the app so
+        # `@testable import` can reach internal types.
+        test_settings = {
+            "BUNDLE_LOADER": "$(TEST_HOST)",
+            "TEST_HOST": f"$(BUILT_PRODUCTS_DIR)/{PROJECT_NAME}.app/{PROJECT_NAME}",
+            "CODE_SIGN_STYLE": "Automatic",
+            "GENERATE_INFOPLIST_FILE": "YES",
+            "PRODUCT_BUNDLE_IDENTIFIER": f"{BUNDLE_ID}.tests",
+            "PRODUCT_NAME": "$(TARGET_NAME)",
+        }
+
+        test_debug = object_id("config", "test", "Debug")
+        objects[test_debug] = {
+            "isa": "XCBuildConfiguration",
+            "buildSettings": dict(test_settings),
+            "name": "Debug",
+        }
+        test_release = object_id("config", "test", "Release")
+        objects[test_release] = {
+            "isa": "XCBuildConfiguration",
+            "buildSettings": dict(test_settings),
+            "name": "Release",
+        }
+
+        test_config_list = object_id("configList", "test")
+        objects[test_config_list] = {
+            "isa": "XCConfigurationList",
+            "buildConfigurations": [test_debug, test_release],
+            "defaultConfigurationIsVisible": "0",
+            "defaultConfigurationName": "Release",
+        }
+
+        proxy_id = object_id("proxy", "app")
+        objects[proxy_id] = {
+            "isa": "PBXContainerItemProxy",
+            "containerPortal": object_id("project"),
+            "proxyType": "1",
+            "remoteGlobalIDString": object_id("target", PROJECT_NAME),
+            "remoteInfo": PROJECT_NAME,
+        }
+
+        dependency_id = object_id("dependency", "app")
+        objects[dependency_id] = {
+            "isa": "PBXTargetDependency",
+            "target": object_id("target", PROJECT_NAME),
+            "targetProxy": proxy_id,
+        }
+
+        objects[test_target_id] = {
+            "isa": "PBXNativeTarget",
+            "buildConfigurationList": test_config_list,
+            "buildPhases": [test_sources_phase, test_frameworks_phase],
+            "buildRules": [],
+            "dependencies": [dependency_id],
+            "name": TEST_TARGET_NAME,
+            "productName": TEST_TARGET_NAME,
+            "productReference": test_product_ref,
+            "productType": "com.apple.product-type.bundle.unit-test",
+        }
+
     # --- Target and project --------------------------------------------------
     target_id = object_id("target", PROJECT_NAME)
     objects[target_id] = {
@@ -333,9 +428,19 @@ def build_objects(sources: list[str]) -> tuple[dict, str]:
             "BuildIndependentTargetsInParallel": "1",
             "LastSwiftUpdateCheck": "1500",
             "LastUpgradeCheck": "1500",
-            "TargetAttributes": {
-                target_id: {"CreatedOnToolsVersion": "15.0"},
-            },
+            "TargetAttributes": dict(
+                {target_id: {"CreatedOnToolsVersion": "15.0"}},
+                **(
+                    {
+                        test_target_id: {
+                            "CreatedOnToolsVersion": "15.0",
+                            "TestTargetID": target_id,
+                        }
+                    }
+                    if test_sources
+                    else {}
+                ),
+            ),
         },
         "buildConfigurationList": project_config_list,
         "compatibilityVersion": "Xcode 14.0",
@@ -346,10 +451,85 @@ def build_objects(sources: list[str]) -> tuple[dict, str]:
         "productRefGroup": products_group,
         "projectDirPath": "",
         "projectRoot": "",
-        "targets": [target_id],
+        "targets": [target_id] + ([test_target_id] if test_sources else []),
     }
 
     return objects, project_id
+
+
+SCHEME_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
+<Scheme LastUpgradeVersion="1500" version="1.7">
+   <BuildAction parallelizeBuildables="YES" buildImplicitDependencies="YES">
+      <BuildActionEntries>
+         <BuildActionEntry buildForTesting="YES" buildForRunning="YES" \
+buildForProfiling="YES" buildForArchiving="YES" buildForAnalyzing="YES">
+            {app_reference}
+         </BuildActionEntry>
+      </BuildActionEntries>
+   </BuildAction>
+   <TestAction buildConfiguration="Debug" \
+selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" \
+selectedLauncherIdentifier="Xcode.DebuggerFoundation.Launcher.LLDB" \
+shouldUseLaunchSchemeArgsEnv="YES">
+      <Testables>
+{testables}
+      </Testables>
+   </TestAction>
+   <LaunchAction buildConfiguration="Debug" \
+selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" \
+selectedLauncherIdentifier="Xcode.DebuggerFoundation.Launcher.LLDB" \
+launchStyle="0" useCustomWorkingDirectory="NO" ignoresPersistentStateOnLaunch="NO" \
+debugDocumentVersioning="YES" debugServiceExtension="internal" allowLocationSimulation="YES">
+      <BuildableProductRunnable runnableDebuggingMode="0">
+         {app_reference}
+      </BuildableProductRunnable>
+   </LaunchAction>
+   <ProfileAction buildConfiguration="Release" shouldUseLaunchSchemeArgsEnv="YES" \
+savedToolIdentifier="" useCustomWorkingDirectory="NO" debugDocumentVersioning="YES">
+      <BuildableProductRunnable runnableDebuggingMode="0">
+         {app_reference}
+      </BuildableProductRunnable>
+   </ProfileAction>
+   <AnalyzeAction buildConfiguration="Debug"/>
+   <ArchiveAction buildConfiguration="Release" revealArchiveInOrganizer="YES"/>
+</Scheme>
+"""
+
+
+def buildable_reference(blueprint_id: str, name: str, product: str) -> str:
+    return (
+        '<BuildableReference BuildableIdentifier="primary" '
+        f'BlueprintIdentifier="{blueprint_id}" '
+        f'BuildableName="{product}" '
+        f'BlueprintName="{name}" '
+        f'ReferencedContainer="container:{PROJECT_NAME}.xcodeproj"/>'
+    )
+
+
+def render_scheme(has_tests: bool) -> str:
+    """A shared scheme so `xcodebuild -scheme` and Cmd-U work on a fresh clone.
+
+    Without one, Xcode invents a scheme per target on first open and the test
+    bundle is not wired into the app scheme's test action.
+    """
+    app_reference = buildable_reference(
+        object_id("target", PROJECT_NAME), PROJECT_NAME, f"{PROJECT_NAME}.app"
+    )
+
+    testables = ""
+    if has_tests:
+        test_reference = buildable_reference(
+            object_id("target", TEST_TARGET_NAME),
+            TEST_TARGET_NAME,
+            f"{TEST_TARGET_NAME}.xctest",
+        )
+        testables = (
+            '         <TestableReference skipped="NO">\n'
+            f"            {test_reference}\n"
+            "         </TestableReference>"
+        )
+
+    return SCHEME_TEMPLATE.format(app_reference=app_reference, testables=testables)
 
 
 def render(objects: dict, root_object: str) -> str:
@@ -402,12 +582,14 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    sources = collect_sources()
+    sources = collect_sources(SOURCE_DIR)
     if not sources:
         print(f"Keine Swift-Dateien unter {SOURCE_DIR}/ gefunden.", file=sys.stderr)
         return 1
 
-    objects, root_object = build_objects(sources)
+    test_sources = collect_sources(TEST_DIR)
+
+    objects, root_object = build_objects(sources, test_sources)
 
     problems = validate(objects, root_object)
     if problems:
@@ -417,7 +599,10 @@ def main() -> int:
 
     content = render(objects, root_object)
 
-    print(f"{len(sources)} Swift-Dateien, {len(objects)} Projektobjekte.")
+    print(
+        f"{len(sources)} Swift-Dateien, {len(test_sources)} Testdateien, "
+        f"{len(objects)} Projektobjekte."
+    )
 
     if args.check:
         print("Projektstruktur ist konsistent (nichts geschrieben).")
@@ -430,6 +615,11 @@ def main() -> int:
 
     with open(os.path.join(project_dir, "project.pbxproj"), "w", encoding="utf-8") as handle:
         handle.write(content)
+
+    schemes_dir = os.path.join(project_dir, "xcshareddata", "xcschemes")
+    os.makedirs(schemes_dir)
+    with open(os.path.join(schemes_dir, f"{PROJECT_NAME}.xcscheme"), "w", encoding="utf-8") as handle:
+        handle.write(render_scheme(bool(test_sources)))
 
     workspace_dir = os.path.join(project_dir, "project.xcworkspace")
     os.makedirs(workspace_dir)
