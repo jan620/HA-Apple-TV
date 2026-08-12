@@ -257,6 +257,18 @@ daran hängt (Händlerstatus nach DSA samt veröffentlichter Anschrift,
 Gewerbeanmeldung, Steuererklärung). Für eine Trinkgeldkasse steht das in keinem
 Verhältnis. Die App bleibt deshalb frei von Kaufangeboten.
 
+## Datenschutz
+
+Die App sendet nichts an den Anbieter — es gibt keinen. Alle Daten bleiben
+zwischen dem Apple TV und der eigenen Home-Assistant-Instanz. Ausführlich in
+[`PRIVACY.md`](PRIVACY.md); veröffentlicht unter
+<https://jan620.github.io/HA-Apple-TV/>, gebaut von
+`.github/workflows/pages.yml` aus derselben Datei.
+
+Die Antworten für Apples Privacy Nutrition Labels stehen in
+[`docs/app-store-privacy.md`](docs/app-store-privacy.md), das Privacy Manifest
+in `Resources/PrivacyInfo.xcprivacy`.
+
 ## Projektstruktur
 
 ```
