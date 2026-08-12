@@ -19,10 +19,10 @@
 
 Angaben nach § 5 DDG:
 
-[Vor- und Nachname]<br>
-[Straße und Hausnummer]<br>
-[PLZ und Ort]<br>
-E-Mail: [E-Mail-Adresse]
+Jan Ananthapavan<br>
+Sandäckerweg 9<br>
+76646 Bruchsal<br>
+E-Mail: jan_anan@yahoo.de
 
 ## Wer ist Verantwortlicher im Sinne der DSGVO?
 
