@@ -1,6 +1,6 @@
 # Datenschutzerklärung für HomeDash
 
-**Stand:** 9. August 2026
+**Stand:** 12. August 2026
 
 > **Vor der Veröffentlichung auszufüllen:** die Anbieterangaben unten. Sie
 > folgen der Anbieterkennzeichnung nach § 5 DDG, nicht Art. 13 DSGVO — beim
@@ -11,8 +11,11 @@
 
 ## Anbieter
 
-Angaben nach § 5 DDG. Die Anschrift muss ladungsfähig sein — ein Postfach
-genügt dafür nicht.
+Angaben nach § 5 DDG. Die Pflicht trifft geschäftsmäßig angebotene digitale
+Dienste; HomeDash ist kostenlos und ohne Kaufangebote, sodass sich darüber
+streiten lässt — die Angabe ist deshalb bewusst freiwillig und im Zweifel die
+sichere Seite. Wird sie gemacht, muss die Anschrift ladungsfähig sein; ein
+Postfach genügt dafür nicht.
 
 ```
 [Vor- und Nachname]
@@ -82,12 +85,11 @@ sind die übertragenen Daten im selben Netzsegment mitlesbar. Die optionale
 Einstellung, einem selbstsignierten Zertifikat zu vertrauen, gilt ausschließlich
 für den von dir eingetragenen Rechnernamen.
 
-## In-App-Käufe
+## Keine Käufe, keine Konten
 
-Die App bietet freiwillige Trinkgelder an. Die Zahlung wickelt Apple ab; die
-App erhält lediglich die Information, ob ein Kauf erfolgreich war. Zahlungs-
-und Kontodaten sind zu keinem Zeitpunkt für den Anbieter einsehbar. Es gilt
-insoweit die [Datenschutzrichtlinie von Apple](https://www.apple.com/legal/privacy/).
+Die App enthält keine In-App-Käufe, keine Abonnements und kein Konto beim
+Anbieter. Es gibt nichts zu bezahlen und nichts zu registrieren; entsprechend
+fallen keine Zahlungs-, Vertrags- oder Kontodaten an.
 
 ## Rechtsgrundlage
 

@@ -30,17 +30,15 @@ nach Verknüpfung mit der Identität oder Tracking. Zwei Angaben bleiben:
 | Tracking über Apps und Websites hinweg | **Nein** |
 | Datenschutzerklärung (URL) | Pflichtfeld — siehe unten |
 
-## Der eine Punkt, den du prüfen solltest
+## Keine In-App-Käufe
 
-**In-App-Käufe.** Die App bietet Trinkgelder an. Die Zahlung wickelt Apple ab;
-die App bekommt nur zurück, ob der Kauf erfolgreich war, und speichert nichts
-davon. Daten, die Apple im Rahmen des App-Store-Kaufvorgangs selbst verarbeitet,
-musst du nicht als eigene Erfassung angeben.
+Die App enthält bewusst keine Kaufangebote — Trinkgelder laufen ausschließlich
+über GitHub Sponsors und Ko-fi im Repository, außerhalb der App. Damit entfallen
+die Kategorien „Purchases" und „Identifiers" von vornherein.
 
-Trotzdem der Hinweis: Das ist die einzige Stelle, an der die Einordnung
-„Data Not Collected" begründungsbedürftig ist. Falls du später eine
-Serverkomponente ergänzt, die Käufe validiert oder Spender vermerkt, ändert sich
-die Antwort — dann wären mindestens „Purchases" und „Identifiers" anzugeben.
+Falls du das später änderst, ändert sich auch diese Antwort: Der Kaufvorgang
+selbst bliebe zwar bei Apple und wäre nicht als eigene Erfassung anzugeben, eine
+Serverkomponente zur Kaufvalidierung oder Spenderliste dagegen schon.
 
 ## Privacy Manifest
 
@@ -85,8 +83,11 @@ verfügbar. Beide Antworten sind aber zulässig:
   gegenüber dir nicht gelten.
 
 Ob du Händler bist, hängt daran, ob du die App zu gewerblichen Zwecken
-anbietest — In-App-Käufe sind dafür das deutlichste Indiz. Diese Einordnung
-hängt nicht an der Datenschutzerklärung, sondern an der Monetarisierung.
+anbietest — In-App-Käufe wären dafür das deutlichste Indiz. HomeDash hat keine;
+die App wird kostenlos und ohne Kaufangebote verbreitet, Trinkgelder laufen
+allein über das Repository. Das spricht für „kein Händler", ist aber eine
+Erklärung, die du selbst abgibst und verantwortest. Diese Einordnung hängt nicht
+an der Datenschutzerklärung, sondern an der Monetarisierung.
 
 ## Berechtigungstexte
 

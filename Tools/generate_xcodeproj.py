@@ -31,7 +31,6 @@ TEST_DIR = "Tests"
 RESOURCE_DIR = "Resources"
 INFO_PLIST = "Resources/Info.plist"
 ASSET_CATALOG = "Resources/Assets.xcassets"
-STOREKIT_CONFIG = "Resources/Products.storekit"
 PRIVACY_MANIFEST = "Resources/PrivacyInfo.xcprivacy"
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -495,7 +494,7 @@ launchStyle="0" useCustomWorkingDirectory="NO" ignoresPersistentStateOnLaunch="N
 debugDocumentVersioning="YES" debugServiceExtension="internal" allowLocationSimulation="YES">
       <BuildableProductRunnable runnableDebuggingMode="0">
          {app_reference}
-      </BuildableProductRunnable>{storekit}
+      </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction buildConfiguration="Release" shouldUseLaunchSchemeArgsEnv="YES" \
 savedToolIdentifier="" useCustomWorkingDirectory="NO" debugDocumentVersioning="YES">
@@ -542,20 +541,9 @@ def render_scheme(has_tests: bool) -> str:
             "         </TestableReference>"
         )
 
-    # Lets the tip jar show real products in a local build, without anything
-    # existing in App Store Connect yet. The path is relative to the scheme.
-    storekit = ""
-    if os.path.exists(os.path.join(ROOT, STOREKIT_CONFIG)):
-        storekit = (
-            "\n      <StoreKitConfigurationFileReference "
-            f'identifier = "../../../{STOREKIT_CONFIG}">\n'
-            "      </StoreKitConfigurationFileReference>"
-        )
-
     return SCHEME_TEMPLATE.format(
         app_reference=app_reference,
         testables=testables,
-        storekit=storekit,
     )
 
 
