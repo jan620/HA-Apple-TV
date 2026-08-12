@@ -21,12 +21,12 @@ final class TipJar: ObservableObject {
     @Published var errorMessage: String?
 
     static let productIDs = [
-        "io.homeassistant.tvos.tip.small",
-        "io.homeassistant.tvos.tip.medium",
-        "io.homeassistant.tvos.tip.large",
+        "io.github.jan620.homedash.tip.small",
+        "io.github.jan620.homedash.tip.medium",
+        "io.github.jan620.homedash.tip.large",
     ]
 
-    private let logger = Logger(subsystem: "io.homeassistant.tvos", category: "tipjar")
+    private let logger = Logger(subsystem: "io.github.jan620.homedash", category: "tipjar")
     private var updatesTask: Task<Void, Never>?
 
     init() {

@@ -15,7 +15,7 @@
           "locale" : "de_DE"
         }
       ],
-      "productID" : "io.homeassistant.tvos.tip.small",
+      "productID" : "io.github.jan620.homedash.tip.small",
       "referenceName" : "Kleiner Kaffee",
       "type" : "Consumable"
     },
@@ -30,7 +30,7 @@
           "locale" : "de_DE"
         }
       ],
-      "productID" : "io.homeassistant.tvos.tip.medium",
+      "productID" : "io.github.jan620.homedash.tip.medium",
       "referenceName" : "Großer Kaffee",
       "type" : "Consumable"
     },
@@ -45,7 +45,7 @@
           "locale" : "de_DE"
         }
       ],
-      "productID" : "io.homeassistant.tvos.tip.large",
+      "productID" : "io.github.jan620.homedash.tip.large",
       "referenceName" : "Kaffee und Kuchen",
       "type" : "Consumable"
     }

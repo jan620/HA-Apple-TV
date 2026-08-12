@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Generate HomeAssistantTV.xcodeproj from the sources on disk.
+"""Generate HomeDash.xcodeproj from the sources on disk.
 
 Xcode project files are tedious to keep in version control by hand and merge
 badly, so the project is generated instead. This script uses only the Python
 standard library — no XcodeGen, no CocoaPods, nothing to install.
 
     python3 Tools/generate_xcodeproj.py
-    open HomeAssistantTV.xcodeproj
+    open HomeDash.xcodeproj
 
 Re-run it whenever Swift files are added or removed.
 """
@@ -20,9 +20,9 @@ import re
 import shutil
 import sys
 
-PROJECT_NAME = "HomeAssistantTV"
-TEST_TARGET_NAME = "HomeAssistantTVTests"
-BUNDLE_ID = "io.homeassistant.tvos"
+PROJECT_NAME = "HomeDash"
+TEST_TARGET_NAME = "HomeDashTests"
+BUNDLE_ID = "io.github.jan620.homedash"
 DEPLOYMENT_TARGET = "17.0"
 SWIFT_VERSION = "5.0"
 

@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct HomeAssistantTVApp: App {
+struct HomeDashApp: App {
     @StateObject private var container = AppContainer()
 
     var body: some Scene {
