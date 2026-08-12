@@ -55,12 +55,21 @@ freier Speicherplatz, aktive Tastatur) nutzt die App nicht.
 
 ## Datenschutzerklärung hosten
 
-App Store Connect verlangt eine öffentlich erreichbare URL. `PRIVACY.md` liegt
-im Repository; für eine zitierfähige Adresse bieten sich an:
+App Store Connect verlangt eine öffentlich erreichbare URL. Dafür ist GitHub
+Pages eingerichtet:
 
-- **GitHub Pages** aus diesem Repository — stabile Adresse, versioniert.
-- Die Rohansicht auf GitHub — funktioniert, wirkt aber unfertig.
-- Eine eigene Domain, falls vorhanden.
+**URL:** `https://jan620.github.io/HA-Apple-TV/`
+
+Der Workflow `.github/workflows/pages.yml` rendert `PRIVACY.md` bei jedem Push
+auf `main` über `Tools/build_privacy_page.py` zu einer eigenständigen
+HTML-Seite und veröffentlicht sie. Veröffentlicht wird ausschließlich dieses
+Dokument — dieser Ordner hier bleibt draußen. Der interne Hinweisblock am Anfang
+von `PRIVACY.md` wird beim Rendern entfernt.
+
+Einmalig in den Repository-Einstellungen nötig: **Settings → Pages → Build and
+deployment → Source: GitHub Actions**. Ohne diese Umstellung schlägt der
+Deploy-Schritt fehl. Lokal prüfen lässt sich das Ergebnis mit
+`python3 Tools/build_privacy_page.py` (schreibt nach `_site/`).
 
 **Vor dem Einreichen auszufüllen:** Die Anbieterangaben in `PRIVACY.md` sind
 Platzhalter. Sie folgen der Anbieterkennzeichnung nach § 5 DDG, nicht Art. 13

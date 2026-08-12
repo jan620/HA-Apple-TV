@@ -5,24 +5,24 @@
 > **Vor der Veröffentlichung auszufüllen:** die Anbieterangaben unten. Sie
 > folgen der Anbieterkennzeichnung nach § 5 DDG, nicht Art. 13 DSGVO — beim
 > Anbieter findet keine Verarbeitung personenbezogener Daten statt, siehe unten.
+> Die Pflicht trifft geschäftsmäßig angebotene digitale Dienste; HomeDash ist
+> kostenlos und ohne Kaufangebote, sodass sich darüber streiten lässt — die
+> Angabe ist im Zweifel die sichere Seite. Wird sie gemacht, muss die Anschrift
+> ladungsfähig sein; ein Postfach genügt dafür nicht.
+>
 > Dieses Dokument ersetzt keine Rechtsberatung; bei einer Veröffentlichung mit
 > Einnahmen ist eine anwaltliche Prüfung das Geld wert, weil eine fehlerhafte
-> Anbieterkennzeichnung abmahnfähig ist.
+> Anbieterkennzeichnung abmahnfähig ist. Dieser Hinweisblock erscheint auf der
+> veröffentlichten Seite nicht — `Tools/build_privacy_page.py` entfernt ihn.
 
 ## Anbieter
 
-Angaben nach § 5 DDG. Die Pflicht trifft geschäftsmäßig angebotene digitale
-Dienste; HomeDash ist kostenlos und ohne Kaufangebote, sodass sich darüber
-streiten lässt — die Angabe ist deshalb bewusst freiwillig und im Zweifel die
-sichere Seite. Wird sie gemacht, muss die Anschrift ladungsfähig sein; ein
-Postfach genügt dafür nicht.
+Angaben nach § 5 DDG:
 
-```
-[Vor- und Nachname]
-[Straße und Hausnummer]
-[PLZ und Ort]
+[Vor- und Nachname]<br>
+[Straße und Hausnummer]<br>
+[PLZ und Ort]<br>
 E-Mail: [E-Mail-Adresse]
-```
 
 ## Wer ist Verantwortlicher im Sinne der DSGVO?
 
