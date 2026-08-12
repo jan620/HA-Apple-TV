@@ -64,10 +64,17 @@ im Repository; für eine zitierfähige Adresse bieten sich an:
 - Die Rohansicht auf GitHub — funktioniert, wirkt aber unfertig.
 - Eine eigene Domain, falls vorhanden.
 
-**Vor dem Einreichen auszufüllen:** Der Verantwortliche in `PRIVACY.md` ist ein
-Platzhalter. Ohne Name und Kontaktdaten ist die Erklärung nach Art. 13 DSGVO
-unvollständig, und Apple prüft, ob unter der angegebenen URL überhaupt etwas
-Passendes steht.
+**Vor dem Einreichen auszufüllen:** Die Anbieterangaben in `PRIVACY.md` sind
+Platzhalter. Sie folgen der Anbieterkennzeichnung nach § 5 DDG, nicht Art. 13
+DSGVO — Verantwortlicher im Sinne der DSGVO ist der Betreiber der jeweiligen
+Home-Assistant-Instanz, nicht du. Apple prüft außerdem, ob unter der angegebenen
+URL überhaupt etwas Passendes steht.
+
+**Händlerstatus (DSA).** Für die Verbreitung im EU-Store verlangt Apple eine
+Erklärung, ob du Händler bist. Mit In-App-Käufen wirst du das voraussichtlich
+sein — dann veröffentlicht Apple Name, Anschrift, Telefonnummer und E-Mail auf
+der App-Store-Seite. Diese Angabe hängt nicht an der Datenschutzerklärung,
+sondern an der Monetarisierung.
 
 ## Berechtigungstexte
 
