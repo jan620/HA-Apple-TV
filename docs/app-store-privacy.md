@@ -70,11 +70,23 @@ DSGVO — Verantwortlicher im Sinne der DSGVO ist der Betreiber der jeweiligen
 Home-Assistant-Instanz, nicht du. Apple prüft außerdem, ob unter der angegebenen
 URL überhaupt etwas Passendes steht.
 
-**Händlerstatus (DSA).** Für die Verbreitung im EU-Store verlangt Apple eine
-Erklärung, ob du Händler bist. Mit In-App-Käufen wirst du das voraussichtlich
-sein — dann veröffentlicht Apple Name, Anschrift, Telefonnummer und E-Mail auf
-der App-Store-Seite. Diese Angabe hängt nicht an der Datenschutzerklärung,
-sondern an der Monetarisierung.
+**Händlerstatus (DSA).** Für die Verbreitung im EU-Store musst du in App Store
+Connect erklären, ob du Händler bist. Die Erklärung selbst ist Pflicht: Apps
+*ohne* Angabe sind seit dem 17. Februar 2025 in den EU-Storefronts nicht mehr
+verfügbar. Beide Antworten sind aber zulässig:
+
+- **Händler.** Apple veröffentlicht Anschrift, Telefonnummer und E-Mail auf der
+  App-Store-Seite in den 27 EU-Ländern. Für Einzelpersonen akzeptiert Apple an
+  dieser Stelle ausdrücklich auch ein **Postfach** — das ist ein anderer
+  Maßstab als die ladungsfähige Anschrift, die § 5 DDG für die
+  Anbieterkennzeichnung verlangt.
+- **Kein Händler.** Die App bleibt im EU-Store verfügbar, Apple blendet dann
+  aber den Hinweis ein, dass die verbraucherschutzrechtlichen Ansprüche
+  gegenüber dir nicht gelten.
+
+Ob du Händler bist, hängt daran, ob du die App zu gewerblichen Zwecken
+anbietest — In-App-Käufe sind dafür das deutlichste Indiz. Diese Einordnung
+hängt nicht an der Datenschutzerklärung, sondern an der Monetarisierung.
 
 ## Berechtigungstexte
 
