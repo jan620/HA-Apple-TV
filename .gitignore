@@ -22,3 +22,6 @@ build/
 __pycache__/
 *.pyc
 _site/
+
+## Claude Code
+.claude/
