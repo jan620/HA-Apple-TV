@@ -170,6 +170,10 @@
 			fileRef = ED2B73088895013E0E6D1631;
 			isa = PBXBuildFile;
 		};
+		24EEB2D8B84BDF342C51A73C = {
+			fileRef = C6C5C84B27456F734A7EDBCA;
+			isa = PBXBuildFile;
+		};
 		25E61F7B96A5D23C00ABBAB1 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
@@ -305,6 +309,7 @@
 		41B260B1D2A5E0B273280C8E = {
 			buildActionMask = 2147483647;
 			files = (
+				24EEB2D8B84BDF342C51A73C,
 				EA5489C18E0BC08C6E4ACABA,
 			);
 			isa = PBXResourcesBuildPhase;
@@ -443,6 +448,7 @@
 			children = (
 				0A844C254EC87B80AE0AB093,
 				425B7611FCEF36508F9813C5,
+				C6C5C84B27456F734A7EDBCA,
 			);
 			isa = PBXGroup;
 			path = Resources;
@@ -765,6 +771,12 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
 			path = HARegistry.swift;
+			sourceTree = "<group>";
+		};
+		C6C5C84B27456F734A7EDBCA = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.xml;
+			path = PrivacyInfo.xcprivacy;
 			sourceTree = "<group>";
 		};
 		C863DA5204F95EC573510473 = {
