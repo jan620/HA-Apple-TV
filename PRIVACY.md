@@ -2,13 +2,17 @@
 
 **Stand:** 9. August 2026
 
-> **Vor der Veröffentlichung auszufüllen:** Die DSGVO verlangt in Art. 13 die
-> Angabe des Verantwortlichen mit Name und Kontaktdaten. Ersetze die
-> Platzhalter unten, sonst ist diese Erklärung unvollständig. Sie ersetzt keine
-> Rechtsberatung — bei einer Veröffentlichung mit Einnahmen ist eine anwaltliche
-> Prüfung das Geld wert.
+> **Vor der Veröffentlichung auszufüllen:** die Anbieterangaben unten. Sie
+> folgen der Anbieterkennzeichnung nach § 5 DDG, nicht Art. 13 DSGVO — beim
+> Anbieter findet keine Verarbeitung personenbezogener Daten statt, siehe unten.
+> Dieses Dokument ersetzt keine Rechtsberatung; bei einer Veröffentlichung mit
+> Einnahmen ist eine anwaltliche Prüfung das Geld wert, weil eine fehlerhafte
+> Anbieterkennzeichnung abmahnfähig ist.
 
-## Verantwortlicher
+## Anbieter
+
+Angaben nach § 5 DDG. Die Anschrift muss ladungsfähig sein — ein Postfach
+genügt dafür nicht.
 
 ```
 [Vor- und Nachname]
@@ -16,6 +20,17 @@
 [PLZ und Ort]
 E-Mail: [E-Mail-Adresse]
 ```
+
+## Wer ist Verantwortlicher im Sinne der DSGVO?
+
+**Nicht der Anbieter dieser App.** HomeDash überträgt keine Daten an den
+Anbieter; es existiert keine Serverkomponente, die Daten entgegennehmen könnte.
+Verantwortlicher für die Daten, die in der App sichtbar werden, ist der Betreiber
+der jeweiligen Home-Assistant-Instanz — also in aller Regel du selbst.
+
+Die folgenden Abschnitte beschreiben deshalb, **was die App auf deinem Gerät
+tut**, und nicht, was ein Anbieter mit deinen Daten macht. Er macht nichts damit,
+weil er sie nie erhält.
 
 ## Das Wichtigste in einem Absatz
 
@@ -76,16 +91,15 @@ insoweit die [Datenschutzrichtlinie von Apple](https://www.apple.com/legal/priva
 
 ## Rechtsgrundlage
 
-Die Verarbeitung erfolgt zur Erfüllung des Nutzungsverhältnisses und damit auf
-Grundlage von Art. 6 Abs. 1 lit. b DSGVO. Da keine Daten an den Anbieter
-übermittelt werden, findet beim Anbieter keine Verarbeitung statt.
+Beim Anbieter entfällt die Frage, weil dort keine Verarbeitung stattfindet.
 
-Nutzt du die App rein privat im eigenen Haushalt, greift für dich als Betreiber
-deiner Home-Assistant-Instanz in der Regel die Haushaltsausnahme nach Art. 2
-Abs. 2 lit. c DSGVO. Sobald du Daten anderer Personen verarbeitest — etwa
-Anwesenheit von Mitbewohnern oder Kameraaufnahmen, die über dein Grundstück
-hinausreichen — kann das anders zu bewerten sein. Das betrifft deine
-Home-Assistant-Konfiguration, nicht diese App.
+Für dich als Betreiber deiner Home-Assistant-Instanz gilt: Nutzt du sie rein
+privat im eigenen Haushalt, greift in der Regel die Haushaltsausnahme nach
+Art. 2 Abs. 2 lit. c DSGVO — die DSGVO ist dann auf dich gar nicht anwendbar.
+Sobald du Daten anderer Personen verarbeitest — Anwesenheit von Mitbewohnern,
+Kameraaufnahmen, die über dein Grundstück hinausreichen — kann das anders zu
+bewerten sein. Das hängt an deiner Home-Assistant-Konfiguration, nicht an dieser
+App.
 
 ## Speicherdauer und Löschung
 
@@ -95,14 +109,18 @@ Zugangsdaten. **Löschen der App** entfernt alle von ihr gespeicherten Daten vom
 Gerät. Daten in deiner Home-Assistant-Instanz bleiben davon unberührt und sind
 dort zu verwalten.
 
-## Deine Rechte
+## Betroffenenrechte
 
-Dir stehen die Rechte aus Art. 15 bis 21 DSGVO zu — Auskunft, Berichtigung,
-Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch. Da beim Anbieter
-keine personenbezogenen Daten vorliegen, laufen Auskunfts- und Löschansprüche
-gegenüber dem Anbieter ins Leere; die Kontrolle über deine Daten liegt
-vollständig bei dir und deiner eigenen Installation. Für Beschwerden ist die
-Datenschutz-Aufsichtsbehörde deines Bundeslandes zuständig.
+Die Rechte aus Art. 15 bis 21 DSGVO — Auskunft, Berichtigung, Löschung,
+Einschränkung, Datenübertragbarkeit und Widerspruch — richten sich gegen den
+Verantwortlichen. Das ist hier nicht der Anbieter der App, sondern der Betreiber
+der Home-Assistant-Instanz. Ein Auskunftsersuchen an den Anbieter ginge ins
+Leere, weil dort schlicht nichts vorliegt.
+
+Möchte eine Person wissen, welche Daten über sie in einer Home-Assistant-Instanz
+liegen, oder deren Löschung verlangen, ist das an deren Betreiber zu richten und
+dort umzusetzen. Für Beschwerden ist die Datenschutz-Aufsichtsbehörde des
+jeweiligen Bundeslandes zuständig.
 
 ## Weitergabe an Dritte, Drittlandtransfer
 
