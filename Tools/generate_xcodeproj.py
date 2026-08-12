@@ -32,6 +32,7 @@ RESOURCE_DIR = "Resources"
 INFO_PLIST = "Resources/Info.plist"
 ASSET_CATALOG = "Resources/Assets.xcassets"
 STOREKIT_CONFIG = "Resources/Products.storekit"
+PRIVACY_MANIFEST = "Resources/PrivacyInfo.xcprivacy"
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -143,6 +144,16 @@ def build_objects(sources: list[str], test_sources: list[str]) -> tuple[dict, st
     }
     objects[assets_build] = {"isa": "PBXBuildFile", "fileRef": assets_ref}
 
+    privacy_ref = object_id("fileRef", PRIVACY_MANIFEST)
+    privacy_build = object_id("buildFile", PRIVACY_MANIFEST)
+    objects[privacy_ref] = {
+        "isa": "PBXFileReference",
+        "lastKnownFileType": "text.xml",
+        "path": os.path.basename(PRIVACY_MANIFEST),
+        "sourceTree": "<group>",
+    }
+    objects[privacy_build] = {"isa": "PBXBuildFile", "fileRef": privacy_ref}
+
     product_ref = object_id("product")
     objects[product_ref] = {
         "isa": "PBXFileReference",
@@ -188,7 +199,7 @@ def build_objects(sources: list[str], test_sources: list[str]) -> tuple[dict, st
         objects[group_id]["children"].append(file_refs[path])
 
     resources_group = ensure_group(RESOURCE_DIR)
-    objects[resources_group]["children"].extend([plist_ref, assets_ref])
+    objects[resources_group]["children"].extend([plist_ref, assets_ref, privacy_ref])
 
     products_group = object_id("group", "Products")
     objects[products_group] = {
@@ -227,7 +238,7 @@ def build_objects(sources: list[str], test_sources: list[str]) -> tuple[dict, st
     objects[resources_phase] = {
         "isa": "PBXResourcesBuildPhase",
         "buildActionMask": "2147483647",
-        "files": [assets_build],
+        "files": sorted([assets_build, privacy_build]),
         "runOnlyForDeploymentPostprocessing": "0",
     }
 
