@@ -18,8 +18,6 @@
       <BuildableProductRunnable runnableDebuggingMode="0">
          <BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="A2776D189FC2A5AF6F4F876C" BuildableName="HomeDash.app" BlueprintName="HomeDash" ReferencedContainer="container:HomeDash.xcodeproj"/>
       </BuildableProductRunnable>
-      <StoreKitConfigurationFileReference identifier = "../../../Resources/Products.storekit">
-      </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction buildConfiguration="Release" shouldUseLaunchSchemeArgsEnv="YES" savedToolIdentifier="" useCustomWorkingDirectory="NO" debugDocumentVersioning="YES">
       <BuildableProductRunnable runnableDebuggingMode="0">
