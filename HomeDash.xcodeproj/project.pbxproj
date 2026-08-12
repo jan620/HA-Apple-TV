@@ -9,7 +9,7 @@
 			explicitFileType = wrapper.cfbundle;
 			includeInIndex = 0;
 			isa = PBXFileReference;
-			path = HomeAssistantTVTests.xctest;
+			path = HomeDashTests.xctest;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		02B2D33A9F306A5345D2E131 = {
@@ -18,28 +18,11 @@
 			path = JSONValue.swift;
 			sourceTree = "<group>";
 		};
-		04602C067DF949BE93B46613 = {
-			buildConfigurationList = 74A94729FD1A82B73271204E;
-			buildPhases = (
-				497C8016E9C79330D8D86E68,
-				929B4F3ADEE074A2048A5C9B,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				3A5CA643AFB1DF496F3EA2EF,
-			);
-			isa = PBXNativeTarget;
-			name = HomeAssistantTVTests;
-			productName = HomeAssistantTVTests;
-			productReference = 01E150132E130BC0C2427E78;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		09EB779E23AA3E01CFDE942A = {
 			children = (
+				AE34CDEE87872039EBF66345,
 				B7F53A808D12D0205E3E29AF,
 				D30387114C6207285FE13D29,
-				E92BB0EE6A0E3AECBD2B7E60,
 				F5FE57B3356F12562F19653C,
 			);
 			isa = PBXGroup;
@@ -106,23 +89,6 @@
 			path = SetupFlowViews.swift;
 			sourceTree = "<group>";
 		};
-		1400DACF059297A8F8887A9B = {
-			buildConfigurationList = 3CF4E9D5F428595D9FF08E91;
-			buildPhases = (
-				F3F3D267CF0FD5307403D537,
-				349B578E88FC623128D2018B,
-				41B260B1D2A5E0B273280C8E,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			isa = PBXNativeTarget;
-			name = HomeAssistantTV;
-			productName = HomeAssistantTV;
-			productReference = F5BF48AA40CAD7891EB709FC;
-			productType = "com.apple.product-type.application";
-		};
 		14321ACA7BFA46EC92C2791C = {
 			fileRef = 870C69360AE57B45953A5A3B;
 			isa = PBXBuildFile;
@@ -172,9 +138,9 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				GENERATE_INFOPLIST_FILE = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = io.homeassistant.tvos.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.jan620.homedash.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HomeAssistantTV.app/HomeAssistantTV";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HomeDash.app/HomeDash";
 			};
 			isa = XCBuildConfiguration;
 			name = Release;
@@ -292,7 +258,7 @@
 		};
 		3A5CA643AFB1DF496F3EA2EF = {
 			isa = PBXTargetDependency;
-			target = 1400DACF059297A8F8887A9B;
+			target = A2776D189FC2A5AF6F4F876C;
 			targetProxy = FC024AC3B3BFEAF7CEE12817;
 		};
 		3AEE4FA9BB26CD44E4419F9D = {
@@ -304,9 +270,9 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				GENERATE_INFOPLIST_FILE = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = io.homeassistant.tvos.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.jan620.homedash.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HomeAssistantTV.app/HomeAssistantTV";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HomeDash.app/HomeDash";
 			};
 			isa = XCBuildConfiguration;
 			name = Debug;
@@ -362,11 +328,11 @@
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					04602C067DF949BE93B46613 = {
+					8A0632D5898ACAD01108058D = {
 						CreatedOnToolsVersion = 15.0;
-						TestTargetID = 1400DACF059297A8F8887A9B;
+						TestTargetID = A2776D189FC2A5AF6F4F876C;
 					};
-					1400DACF059297A8F8887A9B = {
+					A2776D189FC2A5AF6F4F876C = {
 						CreatedOnToolsVersion = 15.0;
 					};
 				};
@@ -386,8 +352,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1400DACF059297A8F8887A9B,
-				04602C067DF949BE93B46613,
+				A2776D189FC2A5AF6F4F876C,
+				8A0632D5898ACAD01108058D,
 			);
 		};
 		472900110E283DD0F3EE961C = {
@@ -507,7 +473,7 @@
 				INFOPLIST_FILE = Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.homeassistant.tvos;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.jan620.homedash;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
@@ -575,6 +541,23 @@
 		892F253D797E8C77B0726462 = {
 			fileRef = F6E83D50ADB59AF6E539F658;
 			isa = PBXBuildFile;
+		};
+		8A0632D5898ACAD01108058D = {
+			buildConfigurationList = 74A94729FD1A82B73271204E;
+			buildPhases = (
+				497C8016E9C79330D8D86E68,
+				929B4F3ADEE074A2048A5C9B,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3A5CA643AFB1DF496F3EA2EF,
+			);
+			isa = PBXNativeTarget;
+			name = HomeDashTests;
+			productName = HomeDashTests;
+			productReference = 01E150132E130BC0C2427E78;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		8AEC345AF92FEBA935540FBF = {
 			children = (
@@ -661,6 +644,23 @@
 			isa = XCBuildConfiguration;
 			name = Debug;
 		};
+		A2776D189FC2A5AF6F4F876C = {
+			buildConfigurationList = 3CF4E9D5F428595D9FF08E91;
+			buildPhases = (
+				F3F3D267CF0FD5307403D537,
+				349B578E88FC623128D2018B,
+				41B260B1D2A5E0B273280C8E,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			isa = PBXNativeTarget;
+			name = HomeDash;
+			productName = HomeDash;
+			productReference = F5BF48AA40CAD7891EB709FC;
+			productType = "com.apple.product-type.application";
+		};
 		A47554D86F27966B5666AAC3 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
@@ -677,13 +677,15 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		AA67315C7359EB7E57CB78D4 = {
-			fileRef = E92BB0EE6A0E3AECBD2B7E60;
-			isa = PBXBuildFile;
-		};
 		AAA1CBF5AC1CC9F90AEABB98 = {
 			fileRef = 34BE7CBAE68FA696E32385F3;
 			isa = PBXBuildFile;
+		};
+		AE34CDEE87872039EBF66345 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = HomeDashApp.swift;
+			sourceTree = "<group>";
 		};
 		B0CCED2884D5584ED1EF4548 = {
 			isa = PBXFileReference;
@@ -794,6 +796,10 @@
 			fileRef = 57DC7F059235B8B5CEBBD861;
 			isa = PBXBuildFile;
 		};
+		D2D8487FC51D6BF518226D4E = {
+			fileRef = AE34CDEE87872039EBF66345;
+			isa = PBXBuildFile;
+		};
 		D30387114C6207285FE13D29 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
@@ -854,12 +860,6 @@
 			fileRef = C41DDA692BD8A439D7890429;
 			isa = PBXBuildFile;
 		};
-		E92BB0EE6A0E3AECBD2B7E60 = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.swift;
-			path = HomeAssistantTVApp.swift;
-			sourceTree = "<group>";
-		};
 		EA5489C18E0BC08C6E4ACABA = {
 			fileRef = 0A844C254EC87B80AE0AB093;
 			isa = PBXBuildFile;
@@ -912,7 +912,6 @@
 				9A3431BB366B16356F3DDDD2,
 				9BE397FD90D16DDE58AB0410,
 				9D32636ACD93A69025E1D549,
-				AA67315C7359EB7E57CB78D4,
 				AAA1CBF5AC1CC9F90AEABB98,
 				B5117A32C5E4411746F1D7D4,
 				B8F0FB9A47C4DCB1EE12FF02,
@@ -921,6 +920,7 @@
 				C0E84A3DB4207E478AC18F5F,
 				CBC7092F5245D85154734AA7,
 				D2379F8C2DD7C3F48B664681,
+				D2D8487FC51D6BF518226D4E,
 				D5194218A2F9FDD9CBEA5023,
 				E6CDF168C00100B854453784,
 				F0C53425F7C187113AF2A19E,
@@ -944,7 +944,7 @@
 			explicitFileType = wrapper.application;
 			includeInIndex = 0;
 			isa = PBXFileReference;
-			path = HomeAssistantTV.app;
+			path = HomeDash.app;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		F5FE57B3356F12562F19653C = {
@@ -973,8 +973,8 @@
 			containerPortal = 46F86FAA6BBF9AC94A7E4595;
 			isa = PBXContainerItemProxy;
 			proxyType = 1;
-			remoteGlobalIDString = 1400DACF059297A8F8887A9B;
-			remoteInfo = HomeAssistantTV;
+			remoteGlobalIDString = A2776D189FC2A5AF6F4F876C;
+			remoteInfo = HomeDash;
 		};
 		FCFEEA090F0417AAD3A31A55 = {
 			fileRef = 29A324F0646D8E741FAB9611;
@@ -991,7 +991,7 @@
 				INFOPLIST_FILE = Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.homeassistant.tvos;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.jan620.homedash;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 			};

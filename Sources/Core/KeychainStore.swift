@@ -21,7 +21,7 @@ enum KeychainStore {
         }
     }
 
-    private static let service = "io.homeassistant.tvos.tokens"
+    private static let service = "io.github.jan620.homedash.tokens"
 
     static func save(_ data: Data, account: String) throws {
         let query: [String: Any] = [

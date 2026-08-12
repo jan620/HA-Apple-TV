@@ -33,7 +33,7 @@ Voraussetzung: ein Mac mit Xcode 15 oder neuer.
 git clone <dieses-repo>
 cd HA-Apple-TV
 python3 Tools/generate_xcodeproj.py
-open HomeAssistantTV.xcodeproj
+open HomeDash.xcodeproj
 ```
 
 Dann in Xcode das Signing-Team setzen (Target → *Signing & Capabilities*) und auf

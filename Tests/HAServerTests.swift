@@ -1,5 +1,5 @@
 import XCTest
-@testable import HomeAssistantTV
+@testable import HomeDash
 
 /// URL normalisation is the very first thing a user touches, typed with a
 /// remote, and its scheme guess decides whether credentials travel in the clear.
