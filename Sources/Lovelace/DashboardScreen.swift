@@ -79,6 +79,17 @@ struct DashboardScreen: View {
         .onDisappear { screensaver.stop() }
     }
 
+    /// What the Menu button does.
+    ///
+    /// tvOS treats an unhandled exit command as "leave the app", so every level
+    /// that has somewhere to go back to has to say so explicitly. The Dashboards
+    /// tab is the root of the app: from there, and only from there, quitting to
+    /// the home screen is the right answer, which `nil` restores.
+    private var exitAction: (() -> Void)? {
+        guard selectedTab != Self.settingsTag else { return nil }
+        return { selectedTab = Self.settingsTag }
+    }
+
     /// Changing either setting has to restart the countdown.
     private var screensaverSettings: String {
         "\(preferences.screensaverEnabled)|\(preferences.screensaverDelay.rawValue)"
@@ -115,6 +126,7 @@ struct DashboardScreen: View {
         // Bottom, not top: an overlay at the top draws over the tab bar and
         // would hide navigation exactly when the connection is troubled.
         .overlay(alignment: .bottom) { connectionBanner }
+        .onExitCommand(perform: exitAction)
         .sheet(item: moreInfoBinding) { target in
             MoreInfoView(entityID: target.id)
         }
@@ -212,6 +224,7 @@ struct SettingsScreen: View {
     @EnvironmentObject private var store: EntityStore
     @EnvironmentObject private var lovelace: LovelaceService
     @EnvironmentObject private var preferences: AppPreferences
+    @EnvironmentObject private var screensaver: ScreensaverController
 
     @State private var isEditingScreensaver = false
 
@@ -226,6 +239,7 @@ struct SettingsScreen: View {
 
                 HStack(spacing: 20) {
                     Button("Bildschirmschoner") { isEditingScreensaver = true }
+                    Button("Jetzt anzeigen") { screensaver.startNow() }
                     Button("Ansicht neu einrichten") {
                         preferences.restartOnboarding()
                     }

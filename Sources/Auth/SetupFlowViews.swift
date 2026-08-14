@@ -197,6 +197,21 @@ struct LoginFlowView: View {
         }
         .disabled(isBusy)
         .task { await loadProviders() }
+        .onExitCommand(perform: exitAction)
+    }
+
+    /// Back out of a login form to the provider choice rather than quitting the
+    /// app. With a single provider there is no choice to return to, so the
+    /// button keeps its default meaning.
+    private var exitAction: (() -> Void)? {
+        guard step != nil, providers.count > 1 else { return nil }
+        return {
+            step = nil
+            provider = nil
+            textValues = [:]
+            boolValues = [:]
+            errorMessage = nil
+        }
     }
 
     private var header: some View {

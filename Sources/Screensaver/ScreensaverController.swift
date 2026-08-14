@@ -11,10 +11,16 @@ import UIKit
 @MainActor
 final class ScreensaverController: ObservableObject {
     @Published private(set) var isActive = false
+    /// When the ambient screen is due to appear, so the settings screen can show
+    /// the remaining time. `nil` means no countdown is running.
+    @Published private(set) var countdownEndsAt: Date?
 
     private var idleTask: Task<Void, Never>?
     private var delay: TimeInterval = 300
     private var isEnabled = false
+    /// A manual start would otherwise be undone by the very button press that
+    /// triggered it: the activity detector sees that press too.
+    private var ignoreActivityUntil: Date?
 
     /// Applies the user's settings and (re)starts the idle countdown.
     func configure(enabled: Bool, delay: TimeInterval) {
@@ -28,37 +34,67 @@ final class ScreensaverController: ObservableObject {
         if enabled {
             restartCountdown()
         } else {
-            idleTask?.cancel()
-            idleTask = nil
+            cancelCountdown()
             isActive = false
+        }
+    }
+
+    /// Shows the ambient screen right now, regardless of the countdown — the
+    /// only way to check what it looks like without waiting out the delay.
+    func startNow() {
+        cancelCountdown()
+        // The press that invoked this reaches the activity detector as well;
+        // without a short grace period it would close the screen immediately.
+        ignoreActivityUntil = Date().addingTimeInterval(1.5)
+        // A preview with the screen saver switched off still has to outlast the
+        // Apple TV's own.
+        UIApplication.shared.isIdleTimerDisabled = true
+        withAnimation(.easeIn(duration: 0.5)) {
+            isActive = true
         }
     }
 
     /// Any remote input at all: wakes the ambient screen, or pushes the
     /// countdown back if it has not started yet.
     func noteActivity() {
+        if let until = ignoreActivityUntil {
+            guard Date() >= until else { return }
+            ignoreActivityUntil = nil
+        }
+
         if isActive {
             withAnimation(.easeOut(duration: 0.35)) {
                 isActive = false
             }
         }
-        guard isEnabled else { return }
+        guard isEnabled else {
+            // Nothing left to suppress once a manual preview is over.
+            UIApplication.shared.isIdleTimerDisabled = false
+            return
+        }
         restartCountdown()
     }
 
     func stop() {
-        idleTask?.cancel()
-        idleTask = nil
+        cancelCountdown()
         isActive = false
         UIApplication.shared.isIdleTimerDisabled = false
     }
 
+    private func cancelCountdown() {
+        idleTask?.cancel()
+        idleTask = nil
+        countdownEndsAt = nil
+    }
+
     private func restartCountdown() {
         idleTask?.cancel()
+        countdownEndsAt = Date().addingTimeInterval(delay)
         idleTask = Task { [weak self] in
             guard let self else { return }
             try? await Task.sleep(nanoseconds: UInt64(self.delay * Double(NSEC_PER_SEC)))
             guard !Task.isCancelled, self.isEnabled else { return }
+            self.countdownEndsAt = nil
             withAnimation(.easeIn(duration: 0.8)) {
                 self.isActive = true
             }

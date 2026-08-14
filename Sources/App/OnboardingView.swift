@@ -42,6 +42,15 @@ struct OnboardingView: View {
             .frame(maxWidth: 1400, alignment: .leading)
         }
         .onAppear(perform: preselectEverything)
+        .onExitCommand(perform: exitAction)
+    }
+
+    /// The Menu button walks back through the steps instead of quitting the app.
+    /// On the first screen there is nowhere left to go, so `nil` hands the
+    /// button back to tvOS.
+    private var exitAction: (() -> Void)? {
+        guard step != .welcome else { return nil }
+        return goBack
     }
 
     @ViewBuilder
@@ -105,6 +114,9 @@ struct OnboardingView: View {
                 }
                 .buttonStyle(.card)
             }
+
+            Button("Zurück", action: goBack)
+                .padding(.top, 10)
         }
     }
 
@@ -133,7 +145,6 @@ struct OnboardingView: View {
 
             navigation(
                 canContinue: !selectedDashboardIDs.isEmpty,
-                back: { step = .mode },
                 next: { step = mode.includesAreas ? .areas : .summary }
             )
         }
@@ -169,7 +180,6 @@ struct OnboardingView: View {
 
             navigation(
                 canContinue: !selectedAreaIDs.isEmpty || store.areas.isEmpty,
-                back: { step = mode.includesDashboards ? .dashboards : .mode },
                 next: { step = .summary }
             )
         }
@@ -197,9 +207,7 @@ struct OnboardingView: View {
             }
 
             HStack(spacing: 20) {
-                Button("Zurück") {
-                    step = mode.includesAreas ? .areas : (mode.includesDashboards ? .dashboards : .mode)
-                }
+                Button("Zurück", action: goBack)
                 Button("Loslegen", action: finish)
             }
         }
@@ -268,11 +276,10 @@ struct OnboardingView: View {
 
     private func navigation(
         canContinue: Bool,
-        back: @escaping () -> Void,
         next: @escaping () -> Void
     ) -> some View {
         HStack(spacing: 20) {
-            Button("Zurück", action: back)
+            Button("Zurück", action: goBack)
             Button("Weiter", action: next)
                 .disabled(!canContinue)
         }
@@ -303,6 +310,25 @@ struct OnboardingView: View {
         }
         if selectedAreaIDs.isEmpty {
             selectedAreaIDs = Set(store.areas.map(\.areaID))
+        }
+    }
+
+    /// One place that knows the way back, so the Menu button and every
+    /// "Zurück" button can never disagree.
+    private func goBack() {
+        switch step {
+        case .welcome:
+            break
+        case .mode:
+            step = .welcome
+        case .dashboards:
+            step = .mode
+        case .areas:
+            step = mode.includesDashboards ? .dashboards : .mode
+        case .summary:
+            step = mode.includesAreas
+                ? .areas
+                : (mode.includesDashboards ? .dashboards : .mode)
         }
     }
 
