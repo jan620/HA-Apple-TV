@@ -6,6 +6,7 @@ struct MoreInfoView: View {
     let entityID: String
 
     @EnvironmentObject private var store: EntityStore
+    @EnvironmentObject private var screensaver: ScreensaverController
     @Environment(\.dismiss) private var dismiss
 
     private var entity: HAEntity? { store.entity(entityID) }
@@ -34,6 +35,11 @@ struct MoreInfoView: View {
         // behind this one handles the Menu button itself, and only one of the
         // two may win.
         .onExitCommand { dismiss() }
+        // The ambient screen is a layer inside the dashboard, so a sheet above
+        // it would hide it completely.
+        .onChange(of: screensaver.isActive) { _, isActive in
+            if isActive { dismiss() }
+        }
     }
 
     private var header: some View {

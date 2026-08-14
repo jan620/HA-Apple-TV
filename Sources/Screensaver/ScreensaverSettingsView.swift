@@ -43,6 +43,12 @@ struct ScreensaverSettingsView: View {
         }
         .onAppear { groups = makeGroups() }
         .onChange(of: inventorySignature) { _, _ in groups = makeGroups() }
+        // The ambient screen is a layer inside the dashboard, and a sheet is
+        // presented above it — so a screen saver that starts while this is open
+        // would be invisible behind it. Get out of its way.
+        .onChange(of: screensaver.isActive) { _, isActive in
+            if isActive { dismiss() }
+        }
         // The Menu button collapses an open room first, and only closes the
         // screen once nothing is expanded.
         .onExitCommand {
@@ -104,6 +110,9 @@ struct ScreensaverSettingsView: View {
     }
 
     private func countdownDescription(at now: Date) -> String {
+        if screensaver.isActive {
+            return "Läuft gerade."
+        }
         guard preferences.screensaverEnabled else {
             return "Startet nicht von selbst — der Bildschirmschoner ist ausgeschaltet."
         }
