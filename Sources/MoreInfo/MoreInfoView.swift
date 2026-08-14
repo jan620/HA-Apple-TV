@@ -30,6 +30,10 @@ struct MoreInfoView: View {
             .padding(.vertical, 50)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+        // Explicit rather than relying on the sheet's default: the dashboard
+        // behind this one handles the Menu button itself, and only one of the
+        // two may win.
+        .onExitCommand { dismiss() }
     }
 
     private var header: some View {
