@@ -38,35 +38,47 @@ struct ScreensaverView: View {
         let vertical = cos(seconds / 61) * 45
 
         return ZStack {
+            // Opaque, and dimmed on its own rather than through the whole
+            // stack: a translucent screen saver shows the dashboard behind it.
             Color.black
             RadialGradient(
-                colors: [Theme.accent.opacity(0.10), .black],
+                colors: [accent.opacity(0.10), .black],
                 center: .center,
                 startRadius: 40,
                 endRadius: 900
             )
 
             VStack(spacing: 50) {
-                clock(at: date)
+                if preferences.screensaverShowsClock {
+                    clock(at: date)
+                }
                 if !entities.isEmpty {
                     entityRow
                 }
             }
+            .opacity(0.85)
             .offset(x: horizontal, y: vertical)
             .animation(.linear(duration: 1), value: horizontal)
             .animation(.linear(duration: 1), value: vertical)
         }
-        .opacity(0.85)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var accent: Color {
+        preferences.screensaverPalette.accent
+    }
+
+    private var typeface: Font.Design {
+        preferences.screensaverTypeface.design
     }
 
     private func clock(at date: Date) -> some View {
         VStack(spacing: 6) {
             Text(date, format: .dateTime.hour().minute())
-                .font(.system(size: 150, weight: .thin, design: .rounded))
+                .font(.system(size: 150, weight: .thin, design: typeface))
                 .monospacedDigit()
             Text(date, format: .dateTime.weekday(.wide).day().month(.wide))
-                .font(.title2)
+                .font(.system(.title2, design: typeface))
                 .foregroundStyle(.secondary)
         }
     }
@@ -81,12 +93,12 @@ struct ScreensaverView: View {
                     Image(systemName: entity.symbolName)
                         .font(.system(size: 40))
                         .symbolRenderingMode(.hierarchical)
-                        .foregroundStyle(Theme.stateColor(for: entity))
+                        .foregroundStyle(entity.isActive ? accent : Theme.inactive)
                     Text(entity.displayState)
-                        .font(.title3.weight(.medium))
+                        .font(.system(.title3, design: typeface).weight(.medium))
                         .lineLimit(1)
                     Text(store.displayName(for: entity.entityID))
-                        .font(.caption)
+                        .font(.system(.caption, design: typeface))
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                 }

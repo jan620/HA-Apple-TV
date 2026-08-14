@@ -31,6 +31,7 @@ struct ScreensaverSettingsView: View {
 
                 if preferences.screensaverEnabled {
                     delaySection
+                    appearanceSection
                     entitySection
                 }
 
@@ -136,6 +137,41 @@ struct ScreensaverSettingsView: View {
                   let delay = AppPreferences.ScreensaverDelay(rawValue: value)
             else { return }
             preferences.setScreensaverDelay(delay)
+        }
+    }
+
+    private var appearanceSection: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            Text("Darstellung")
+                .font(.headline)
+
+            Toggle(
+                "Uhrzeit und Datum anzeigen",
+                isOn: Binding(
+                    get: { preferences.screensaverShowsClock },
+                    set: { preferences.setScreensaverShowsClock($0) }
+                )
+            )
+
+            RemoteOptionPicker(
+                title: "Farbe",
+                options: AppPreferences.ScreensaverPalette.allCases.map(\.rawValue),
+                selection: preferences.screensaverPalette.rawValue,
+                label: { AppPreferences.ScreensaverPalette(rawValue: $0)?.title ?? $0 }
+            ) { raw in
+                guard let palette = AppPreferences.ScreensaverPalette(rawValue: raw) else { return }
+                preferences.setScreensaverPalette(palette)
+            }
+
+            RemoteOptionPicker(
+                title: "Schrift",
+                options: AppPreferences.ScreensaverTypeface.allCases.map(\.rawValue),
+                selection: preferences.screensaverTypeface.rawValue,
+                label: { AppPreferences.ScreensaverTypeface(rawValue: $0)?.title ?? $0 }
+            ) { raw in
+                guard let face = AppPreferences.ScreensaverTypeface(rawValue: raw) else { return }
+                preferences.setScreensaverTypeface(face)
+            }
         }
     }
 

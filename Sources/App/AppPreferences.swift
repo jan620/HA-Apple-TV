@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import SwiftUI
 
 /// What the user picked during onboarding: whether the app shows their own
 /// Lovelace dashboards, one view per area, or both — and which of each.
@@ -57,10 +58,73 @@ final class AppPreferences: ObservableObject {
         var title: String { "\(rawValue / 60) Min" }
     }
 
+    /// The accent the ambient screen draws its icons and glow in. Kept muted
+    /// throughout: this screen runs for hours on a panel that can burn in.
+    enum ScreensaverPalette: String, CaseIterable, Identifiable {
+        case blue
+        case amber
+        case green
+        case violet
+        case monochrome
+
+        var id: String { rawValue }
+
+        var title: String {
+            switch self {
+            case .blue: return "Blau"
+            case .amber: return "Bernstein"
+            case .green: return "Grün"
+            case .violet: return "Violett"
+            case .monochrome: return "Neutral"
+            }
+        }
+
+        var accent: Color {
+            switch self {
+            case .blue: return Color(red: 0.011, green: 0.662, blue: 0.956)
+            case .amber: return Color(red: 1.0, green: 0.72, blue: 0.30)
+            case .green: return Color(red: 0.30, green: 0.83, blue: 0.55)
+            case .violet: return Color(red: 0.70, green: 0.52, blue: 0.98)
+            case .monochrome: return Color(white: 0.80)
+            }
+        }
+    }
+
+    /// Typeface of the clock and the readings.
+    enum ScreensaverTypeface: String, CaseIterable, Identifiable {
+        case rounded
+        case standard
+        case serif
+        case monospaced
+
+        var id: String { rawValue }
+
+        var title: String {
+            switch self {
+            case .rounded: return "Rund"
+            case .standard: return "Standard"
+            case .serif: return "Serif"
+            case .monospaced: return "Technisch"
+            }
+        }
+
+        var design: Font.Design {
+            switch self {
+            case .rounded: return .rounded
+            case .standard: return .default
+            case .serif: return .serif
+            case .monospaced: return .monospaced
+            }
+        }
+    }
+
     @Published private(set) var screensaverEnabled: Bool
     @Published private(set) var screensaverDelay: ScreensaverDelay
     /// Ordered, because the ambient screen shows them in this sequence.
     @Published private(set) var screensaverEntityIDs: [String]
+    @Published private(set) var screensaverShowsClock: Bool
+    @Published private(set) var screensaverPalette: ScreensaverPalette
+    @Published private(set) var screensaverTypeface: ScreensaverTypeface
 
     @Published private(set) var hasCompletedOnboarding: Bool
     @Published private(set) var contentMode: ContentMode
@@ -78,6 +142,9 @@ final class AppPreferences: ObservableObject {
         static let screensaverEnabled = "screensaver.enabled"
         static let screensaverDelay = "screensaver.delay"
         static let screensaverEntities = "screensaver.entities"
+        static let screensaverClock = "screensaver.showsClock"
+        static let screensaverPalette = "screensaver.palette"
+        static let screensaverTypeface = "screensaver.typeface"
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -92,6 +159,14 @@ final class AppPreferences: ObservableObject {
         screensaverDelay = ScreensaverDelay(rawValue: defaults.integer(forKey: Key.screensaverDelay))
             ?? .fiveMinutes
         screensaverEntityIDs = defaults.stringArray(forKey: Key.screensaverEntities) ?? []
+        // A clock is what makes an ambient screen useful at a glance, so it is
+        // on unless the user says otherwise — which `bool(forKey:)` cannot
+        // express on its own, hence the explicit "was it ever set" check.
+        screensaverShowsClock = defaults.object(forKey: Key.screensaverClock) as? Bool ?? true
+        screensaverPalette = defaults.string(forKey: Key.screensaverPalette)
+            .flatMap(ScreensaverPalette.init(rawValue:)) ?? .blue
+        screensaverTypeface = defaults.string(forKey: Key.screensaverTypeface)
+            .flatMap(ScreensaverTypeface.init(rawValue:)) ?? .rounded
     }
 
     // MARK: Screensaver
@@ -113,6 +188,21 @@ final class AppPreferences: ObservableObject {
             screensaverEntityIDs.append(entityID)
         }
         defaults.set(screensaverEntityIDs, forKey: Key.screensaverEntities)
+    }
+
+    func setScreensaverShowsClock(_ shows: Bool) {
+        screensaverShowsClock = shows
+        defaults.set(shows, forKey: Key.screensaverClock)
+    }
+
+    func setScreensaverPalette(_ palette: ScreensaverPalette) {
+        screensaverPalette = palette
+        defaults.set(palette.rawValue, forKey: Key.screensaverPalette)
+    }
+
+    func setScreensaverTypeface(_ typeface: ScreensaverTypeface) {
+        screensaverTypeface = typeface
+        defaults.set(typeface.rawValue, forKey: Key.screensaverTypeface)
     }
 
     func complete(mode: ContentMode, dashboardIDs: Set<String>, areaIDs: Set<String>) {
@@ -143,9 +233,13 @@ final class AppPreferences: ObservableObject {
         screensaverEnabled = false
         screensaverDelay = .fiveMinutes
         screensaverEntityIDs = []
+        screensaverShowsClock = true
+        screensaverPalette = .blue
+        screensaverTypeface = .rounded
         for key in [
             Key.completed, Key.mode, Key.dashboards, Key.areas,
             Key.screensaverEnabled, Key.screensaverDelay, Key.screensaverEntities,
+            Key.screensaverClock, Key.screensaverPalette, Key.screensaverTypeface,
         ] {
             defaults.removeObject(forKey: key)
         }
