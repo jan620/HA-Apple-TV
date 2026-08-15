@@ -36,13 +36,29 @@ python3 Tools/generate_xcodeproj.py
 open HomeDash.xcodeproj
 ```
 
-Dann in Xcode das Signing-Team setzen (Target → *Signing & Capabilities*) und auf
-den Apple TV Simulator oder dein Gerät bauen.
+Dann auf den Apple TV Simulator oder dein Gerät bauen.
+
+**Signing-Team.** Für den Simulator braucht es keines, fürs Gerät schon. Setzt
+man es in Xcode (Target → *Signing & Capabilities*), schreibt Xcode es in die
+generierte Projektdatei — und der nächste `git pull` kollidiert damit. Deshalb
+lieber einmal lokal hinterlegen:
+
+```bash
+echo DEINE-TEAM-ID > Tools/development-team.txt
+python3 Tools/generate_xcodeproj.py
+```
+
+Die Datei ist in `.gitignore` und übersteht jedes Neuerzeugen. Alternativ als
+Umgebungsvariable `HOMEDASH_DEVELOPMENT_TEAM`. Die Team-ID steht in Xcode unter
+*Settings → Accounts → dein Account → Team*, oder im Developer-Portal unter
+*Membership*.
 
 > Die `.xcodeproj` wird generiert und ist mit eingecheckt. Nach dem Hinzufügen
 > oder Löschen von Swift-Dateien einfach `python3 Tools/generate_xcodeproj.py`
 > erneut ausführen — die IDs sind deterministisch, der Diff bleibt minimal.
-> `--check` prüft die Struktur, ohne etwas zu schreiben.
+> `--check` prüft die Struktur, ohne etwas zu schreiben. Meldet ein `git pull`
+> einen Konflikt in `project.pbxproj`, ist die lokale Fassung wegwerfbar:
+> `git checkout -- HomeDash.xcodeproj/project.pbxproj`.
 
 **App-Icon:** tvOS-Icons sind *geschichtet* — drei Bilder, die das System beim
 Fokussieren gegeneinander verschiebt. Die komplette Struktur samt PNGs erzeugt
