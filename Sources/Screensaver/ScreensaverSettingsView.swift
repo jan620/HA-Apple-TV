@@ -7,6 +7,7 @@ struct ScreensaverSettingsView: View {
     @EnvironmentObject private var preferences: AppPreferences
     @EnvironmentObject private var store: EntityStore
     @EnvironmentObject private var screensaver: ScreensaverController
+    @EnvironmentObject private var connection: HAWebSocketClient
     @Environment(\.dismiss) private var dismiss
 
     /// A room and what it holds. Only the identifiers are kept: entity states
@@ -22,25 +23,20 @@ struct ScreensaverSettingsView: View {
     @State private var groups: [AreaGroup] = []
     @State private var expandedGroupID: String?
 
+    /// The media browser takes over the whole screen instead of opening a sheet
+    /// on top of a sheet, which tvOS handles poorly.
+    @State private var isBrowsing = false
+    @State private var browsePath: [MediaEntry] = []
+    @State private var browseEntries: [MediaEntry] = []
+    @State private var browseError: String?
+
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 34) {
-                header
-                enableSection
-                previewSection
-
-                if preferences.screensaverEnabled {
-                    delaySection
-                    appearanceSection
-                    entitySection
-                }
-
-                Button("Fertig") { dismiss() }
-                    .padding(.top, 10)
+        Group {
+            if isBrowsing {
+                folderBrowser
+            } else {
+                settingsList
             }
-            .padding(.horizontal, Theme.screenInset)
-            .padding(.vertical, 50)
-            .frame(maxWidth: 1400, alignment: .leading)
         }
         .onAppear { groups = makeGroups() }
         .onChange(of: inventorySignature) { _, _ in groups = makeGroups() }
@@ -50,14 +46,43 @@ struct ScreensaverSettingsView: View {
         .onChange(of: screensaver.isActive) { _, isActive in
             if isActive { dismiss() }
         }
-        // The Menu button collapses an open room first, and only closes the
-        // screen once nothing is expanded.
+        // The Menu button unwinds whatever is deepest: the media browser one
+        // folder at a time, then an expanded room, and only then the screen.
         .onExitCommand {
-            if expandedGroupID != nil {
+            if isBrowsing {
+                if browsePath.isEmpty {
+                    isBrowsing = false
+                } else {
+                    browsePath.removeLast()
+                }
+            } else if expandedGroupID != nil {
                 withAnimation(.easeOut(duration: 0.2)) { expandedGroupID = nil }
             } else {
                 dismiss()
             }
+        }
+    }
+
+    private var settingsList: some View {
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 34) {
+                header
+                enableSection
+                previewSection
+
+                if preferences.screensaverEnabled {
+                    delaySection
+                    appearanceSection
+                    backgroundSection
+                    entitySection
+                }
+
+                Button("Fertig") { dismiss() }
+                    .padding(.top, 10)
+            }
+            .padding(.horizontal, Theme.screenInset)
+            .padding(.vertical, 50)
+            .frame(maxWidth: 1400, alignment: .leading)
         }
     }
 
@@ -172,6 +197,159 @@ struct ScreensaverSettingsView: View {
                 guard let face = AppPreferences.ScreensaverTypeface(rawValue: raw) else { return }
                 preferences.setScreensaverTypeface(face)
             }
+        }
+    }
+
+    private var backgroundSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Hintergrundbilder")
+                .font(.headline)
+            Text("""
+            Bilder aus dem Medien-Bereich deiner Home-Assistant-Instanz — also \
+            dem Ordner `media`. Sie laufen abgedunkelt hinter Uhr und Werten.
+            """)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
+
+            HStack(spacing: 20) {
+                Button(preferences.screensaverImageFolderID == nil
+                       ? "Ordner wählen"
+                       : "Anderen Ordner wählen") {
+                    browsePath = []
+                    browseError = nil
+                    isBrowsing = true
+                }
+
+                if preferences.screensaverImageFolderID != nil {
+                    Button("Entfernen", role: .destructive) {
+                        preferences.setScreensaverImageFolder(id: nil, title: nil)
+                    }
+                }
+            }
+
+            if let title = preferences.screensaverImageFolderTitle {
+                Label(title, systemImage: "photo.on.rectangle.angled")
+                    .font(.callout)
+                    .foregroundStyle(Theme.accent)
+                    .focusableCard()
+
+                RemoteOptionPicker(
+                    title: "Bildwechsel",
+                    options: AppPreferences.ScreensaverImageInterval.allCases
+                        .map { String($0.rawValue) },
+                    selection: String(preferences.screensaverImageInterval.rawValue),
+                    label: { raw in
+                        AppPreferences.ScreensaverImageInterval(rawValue: Int(raw) ?? 60)?
+                            .title ?? raw
+                    }
+                ) { raw in
+                    guard let value = Int(raw),
+                          let interval = AppPreferences.ScreensaverImageInterval(rawValue: value)
+                    else { return }
+                    preferences.setScreensaverImageInterval(interval)
+                }
+            }
+        }
+    }
+
+    // MARK: Media browser
+
+    private var currentFolderID: String? { browsePath.last?.id }
+
+    private var browseImageCount: Int {
+        browseEntries.filter(\.isImage).count
+    }
+
+    private var folderBrowser: some View {
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Ordner wählen")
+                        .font(.largeTitle.bold())
+                    Text(browsePath.isEmpty
+                         ? "Medien deiner Home-Assistant-Instanz"
+                         : browsePath.map(\.title).joined(separator: " › "))
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+
+                if let browseError {
+                    Label(browseError, systemImage: "exclamationmark.triangle.fill")
+                        .font(.callout)
+                        .foregroundStyle(Theme.unavailable)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .focusableCard()
+                }
+
+                if let folder = browsePath.last, browseImageCount > 0 {
+                    Button("Diesen Ordner verwenden — \(browseImageCount) Bilder") {
+                        preferences.setScreensaverImageFolder(id: folder.id, title: folder.title)
+                        isBrowsing = false
+                    }
+                } else if !browsePath.isEmpty, !browseEntries.isEmpty {
+                    Text("Hier liegen keine Bilder, nur Unterordner.")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .focusableCard()
+                }
+
+                ForEach(browseEntries.filter(\.isFolder)) { entry in
+                    Button {
+                        browsePath.append(entry)
+                    } label: {
+                        HStack(spacing: 18) {
+                            Image(systemName: "folder.fill")
+                                .foregroundStyle(.secondary)
+                                .frame(width: 40)
+                            Text(entry.title)
+                                .font(.headline)
+                                .lineLimit(1)
+                            Spacer(minLength: 20)
+                            Image(systemName: "chevron.right")
+                                .font(.callout)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.vertical, 10)
+                    }
+                    .buttonStyle(.card)
+                }
+
+                if browseEntries.isEmpty && browseError == nil {
+                    ProgressView()
+                        .padding(.top, 20)
+                }
+
+                Button(browsePath.isEmpty ? "Abbrechen" : "Eine Ebene zurück") {
+                    if browsePath.isEmpty {
+                        isBrowsing = false
+                    } else {
+                        browsePath.removeLast()
+                    }
+                }
+                .padding(.top, 20)
+            }
+            .padding(.horizontal, Theme.screenInset)
+            .padding(.vertical, 50)
+            .frame(maxWidth: 1400, alignment: .leading)
+        }
+        .task(id: browsePath.map(\.id).joined(separator: "|")) { await loadFolder() }
+    }
+
+    private func loadFolder() async {
+        browseEntries = []
+        browseError = nil
+        do {
+            browseEntries = try await MediaSource(client: connection).browse(currentFolderID)
+            if browseEntries.isEmpty {
+                browseError = "Dieser Ordner ist leer."
+            }
+        } catch {
+            browseError = """
+            Der Medien-Bereich konnte nicht gelesen werden: \
+            \(error.localizedDescription)
+            """
         }
     }
 

@@ -89,6 +89,10 @@
 			path = SetupFlowViews.swift;
 			sourceTree = "<group>";
 		};
+		13F56AB5F5C72A2D017D55AE = {
+			fileRef = 1D98E5DA00FBD17DE2A71900;
+			isa = PBXBuildFile;
+		};
 		14321ACA7BFA46EC92C2791C = {
 			fileRef = 870C69360AE57B45953A5A3B;
 			isa = PBXBuildFile;
@@ -129,6 +133,12 @@
 			fileRef = 85C6B9A5C1C8C36B6CC50CBB;
 			isa = PBXBuildFile;
 		};
+		1D98E5DA00FBD17DE2A71900 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = MediaSource.swift;
+			sourceTree = "<group>";
+		};
 		1E47D493450BEB6463767797 = {
 			fileRef = 195149F758407881646DB072;
 			isa = PBXBuildFile;
@@ -154,8 +164,16 @@
 			path = Support;
 			sourceTree = "<group>";
 		};
+		2256B390824C56AAA190913A = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = ScreensaverBackground.swift;
+			sourceTree = "<group>";
+		};
 		230951B9F4D94D2E87B148D6 = {
 			children = (
+				1D98E5DA00FBD17DE2A71900,
+				2256B390824C56AAA190913A,
 				313E1B7BF2759E07D135CB81,
 				8B3FB62DBAB7B816BE6CDA82,
 				A47554D86F27966B5666AAC3,
@@ -363,11 +381,16 @@
 				1147ACFD6CE24C5E7EB08794,
 				1E47D493450BEB6463767797,
 				3358B046659F8692A84A72D8,
+				4C21DC7309FCB92B673BAD22,
 				4F83869E082B2E8805511110,
 				8EBB2F898B143CA309DE2E3D,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4C21DC7309FCB92B673BAD22 = {
+			fileRef = E5A1DDEAB171CF6A962870EE;
+			isa = PBXBuildFile;
 		};
 		4D0445BDC2D46EC35A7031A2 = {
 			children = (
@@ -498,6 +521,10 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
+		7703B60BA3F6431312E82099 = {
+			fileRef = 2256B390824C56AAA190913A;
+			isa = PBXBuildFile;
+		};
 		79F8B68EFAFA1263E933896E = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
@@ -564,6 +591,7 @@
 				976EA1C17260ED8D3FA431AF,
 				BEDF92B2B8F9B83B675C4A61,
 				DCD03C06BB03DA1E8AB15E3D,
+				E5A1DDEAB171CF6A962870EE,
 			);
 			isa = PBXGroup;
 			path = Tests;
@@ -846,6 +874,12 @@
 			path = AuthModels.swift;
 			sourceTree = "<group>";
 		};
+		E5A1DDEAB171CF6A962870EE = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = MediaSourceTests.swift;
+			sourceTree = "<group>";
+		};
 		E6CDF168C00100B854453784 = {
 			fileRef = C41DDA692BD8A439D7890429;
 			isa = PBXBuildFile;
@@ -877,6 +911,7 @@
 			files = (
 				1223D1E6F155411F9AD32236,
 				124964F4AE63DCDC648B5187,
+				13F56AB5F5C72A2D017D55AE,
 				14321ACA7BFA46EC92C2791C,
 				1D78830883146F29043656DF,
 				2339442EE139528B75084EA4,
@@ -893,6 +928,7 @@
 				59496F55724813BCFE777B3D,
 				5F872B78B77D69E538EB0030,
 				684C5D21FBE76F1996774393,
+				7703B60BA3F6431312E82099,
 				7A0EBEF57270EFE5AA2F737D,
 				83B7134C6603533891DFE012,
 				8652C56C2830C31B9972AED5,
