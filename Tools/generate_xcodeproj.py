@@ -36,6 +36,33 @@ PRIVACY_MANIFEST = "Resources/PrivacyInfo.xcprivacy"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+TEAM_FILE = "Tools/development-team.txt"
+
+
+def development_team() -> str:
+    """The signing team to bake in, if the machine has one configured.
+
+    Xcode writes `DEVELOPMENT_TEAM` into the project the moment a team is
+    picked in the signing editor — which then collides with the next `git pull`
+    of the generated project file. Keeping the team in an untracked file
+    survives regeneration and never reaches the repository.
+
+    Set it either through the environment or the file:
+
+        echo ABCDE12345 > Tools/development-team.txt
+        HOMEDASH_DEVELOPMENT_TEAM=ABCDE12345 python3 Tools/generate_xcodeproj.py
+    """
+    from_env = os.environ.get("HOMEDASH_DEVELOPMENT_TEAM", "").strip()
+    if from_env:
+        return from_env
+
+    path = os.path.join(ROOT, TEAM_FILE)
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as handle:
+            return handle.read().strip()
+    return ""
+
+
 def object_id(*parts: str) -> str:
     """Stable 24-character hex identifier, so regenerating produces no diff."""
     digest = hashlib.md5("::".join(parts).encode("utf-8")).hexdigest()
@@ -295,6 +322,8 @@ def build_objects(sources: list[str], test_sources: list[str]) -> tuple[dict, st
         "name": "Release",
     }
 
+    team = development_team()
+
     shared_target_settings = {
         "ASSETCATALOG_COMPILER_APPICON_NAME": "App Icon & Top Shelf Image",
         "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME": "AccentColor",
@@ -309,6 +338,8 @@ def build_objects(sources: list[str], test_sources: list[str]) -> tuple[dict, st
         "PRODUCT_NAME": "$(TARGET_NAME)",
         "SWIFT_EMIT_LOC_STRINGS": "YES",
     }
+    if team:
+        shared_target_settings["DEVELOPMENT_TEAM"] = team
 
     target_debug = object_id("config", "target", "Debug")
     objects[target_debug] = {
@@ -369,6 +400,8 @@ def build_objects(sources: list[str], test_sources: list[str]) -> tuple[dict, st
             "PRODUCT_BUNDLE_IDENTIFIER": f"{BUNDLE_ID}.tests",
             "PRODUCT_NAME": "$(TARGET_NAME)",
         }
+        if team:
+            test_settings["DEVELOPMENT_TEAM"] = team
 
         test_debug = object_id("config", "test", "Debug")
         objects[test_debug] = {
