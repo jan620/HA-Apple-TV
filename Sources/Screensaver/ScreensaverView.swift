@@ -41,12 +41,24 @@ struct ScreensaverView: View {
             // Opaque, and dimmed on its own rather than through the whole
             // stack: a translucent screen saver shows the dashboard behind it.
             Color.black
-            RadialGradient(
-                colors: [accent.opacity(0.10), .black],
-                center: .center,
-                startRadius: 40,
-                endRadius: 900
-            )
+
+            if let folderID = preferences.screensaverImageFolderID {
+                ScreensaverBackground(
+                    folderID: folderID,
+                    interval: preferences.screensaverImageInterval.seconds
+                )
+                // Photographs are far brighter than the plain background, and
+                // white text on an arbitrary picture is unreadable. This is
+                // also what keeps a static bright frame off the panel.
+                .overlay(Color.black.opacity(0.45))
+            } else {
+                RadialGradient(
+                    colors: [accent.opacity(0.10), .black],
+                    center: .center,
+                    startRadius: 40,
+                    endRadius: 900
+                )
+            }
 
             VStack(spacing: 50) {
                 if preferences.screensaverShowsClock {

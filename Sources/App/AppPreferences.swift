@@ -118,6 +118,21 @@ final class AppPreferences: ObservableObject {
         }
     }
 
+    /// How long one background picture stays before the next one fades in.
+    enum ScreensaverImageInterval: Int, CaseIterable, Identifiable {
+        case fifteenSeconds = 15
+        case thirtySeconds = 30
+        case oneMinute = 60
+        case fiveMinutes = 300
+
+        var id: Int { rawValue }
+        var seconds: TimeInterval { TimeInterval(rawValue) }
+
+        var title: String {
+            rawValue < 60 ? "\(rawValue) Sek" : "\(rawValue / 60) Min"
+        }
+    }
+
     @Published private(set) var screensaverEnabled: Bool
     @Published private(set) var screensaverDelay: ScreensaverDelay
     /// Ordered, because the ambient screen shows them in this sequence.
@@ -125,6 +140,11 @@ final class AppPreferences: ObservableObject {
     @Published private(set) var screensaverShowsClock: Bool
     @Published private(set) var screensaverPalette: ScreensaverPalette
     @Published private(set) var screensaverTypeface: ScreensaverTypeface
+    /// A `media-source://…` folder whose pictures play behind the ambient
+    /// screen. `nil` keeps the plain dark background.
+    @Published private(set) var screensaverImageFolderID: String?
+    @Published private(set) var screensaverImageFolderTitle: String?
+    @Published private(set) var screensaverImageInterval: ScreensaverImageInterval
 
     @Published private(set) var hasCompletedOnboarding: Bool
     @Published private(set) var contentMode: ContentMode
@@ -145,6 +165,9 @@ final class AppPreferences: ObservableObject {
         static let screensaverClock = "screensaver.showsClock"
         static let screensaverPalette = "screensaver.palette"
         static let screensaverTypeface = "screensaver.typeface"
+        static let screensaverImageFolder = "screensaver.imageFolder"
+        static let screensaverImageFolderTitle = "screensaver.imageFolderTitle"
+        static let screensaverImageInterval = "screensaver.imageInterval"
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -167,6 +190,11 @@ final class AppPreferences: ObservableObject {
             .flatMap(ScreensaverPalette.init(rawValue:)) ?? .blue
         screensaverTypeface = defaults.string(forKey: Key.screensaverTypeface)
             .flatMap(ScreensaverTypeface.init(rawValue:)) ?? .rounded
+        screensaverImageFolderID = defaults.string(forKey: Key.screensaverImageFolder)
+        screensaverImageFolderTitle = defaults.string(forKey: Key.screensaverImageFolderTitle)
+        screensaverImageInterval = ScreensaverImageInterval(
+            rawValue: defaults.integer(forKey: Key.screensaverImageInterval)
+        ) ?? .oneMinute
     }
 
     // MARK: Screensaver
@@ -205,6 +233,19 @@ final class AppPreferences: ObservableObject {
         defaults.set(typeface.rawValue, forKey: Key.screensaverTypeface)
     }
 
+    /// Passing `nil` returns the ambient screen to its plain dark background.
+    func setScreensaverImageFolder(id: String?, title: String?) {
+        screensaverImageFolderID = id
+        screensaverImageFolderTitle = title
+        defaults.set(id, forKey: Key.screensaverImageFolder)
+        defaults.set(title, forKey: Key.screensaverImageFolderTitle)
+    }
+
+    func setScreensaverImageInterval(_ interval: ScreensaverImageInterval) {
+        screensaverImageInterval = interval
+        defaults.set(interval.rawValue, forKey: Key.screensaverImageInterval)
+    }
+
     func complete(mode: ContentMode, dashboardIDs: Set<String>, areaIDs: Set<String>) {
         contentMode = mode
         selectedDashboardIDs = dashboardIDs
@@ -236,10 +277,15 @@ final class AppPreferences: ObservableObject {
         screensaverShowsClock = true
         screensaverPalette = .blue
         screensaverTypeface = .rounded
+        screensaverImageFolderID = nil
+        screensaverImageFolderTitle = nil
+        screensaverImageInterval = .oneMinute
         for key in [
             Key.completed, Key.mode, Key.dashboards, Key.areas,
             Key.screensaverEnabled, Key.screensaverDelay, Key.screensaverEntities,
             Key.screensaverClock, Key.screensaverPalette, Key.screensaverTypeface,
+            Key.screensaverImageFolder, Key.screensaverImageFolderTitle,
+            Key.screensaverImageInterval,
         ] {
             defaults.removeObject(forKey: key)
         }
