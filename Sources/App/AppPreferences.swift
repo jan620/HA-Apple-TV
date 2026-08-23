@@ -118,6 +118,23 @@ final class AppPreferences: ObservableObject {
         }
     }
 
+    /// Where the ambient screen gets its background pictures.
+    enum ScreensaverBackgroundSource: String, CaseIterable, Identifiable {
+        case off
+        case mediaFolder
+        case camera
+
+        var id: String { rawValue }
+
+        var title: String {
+            switch self {
+            case .off: return "Kein Bild"
+            case .mediaFolder: return "Medien-Ordner"
+            case .camera: return "Diaschau"
+            }
+        }
+    }
+
     /// How long one background picture stays before the next one fades in.
     enum ScreensaverImageInterval: Int, CaseIterable, Identifiable {
         case fifteenSeconds = 15
@@ -140,10 +157,11 @@ final class AppPreferences: ObservableObject {
     @Published private(set) var screensaverShowsClock: Bool
     @Published private(set) var screensaverPalette: ScreensaverPalette
     @Published private(set) var screensaverTypeface: ScreensaverTypeface
-    /// A `media-source://…` folder whose pictures play behind the ambient
-    /// screen. `nil` keeps the plain dark background.
-    @Published private(set) var screensaverImageFolderID: String?
-    @Published private(set) var screensaverImageFolderTitle: String?
+    @Published private(set) var screensaverBackgroundSource: ScreensaverBackgroundSource
+    /// Either a `media-source://…` folder or a camera entity, depending on the
+    /// source above.
+    @Published private(set) var screensaverBackgroundID: String?
+    @Published private(set) var screensaverBackgroundTitle: String?
     @Published private(set) var screensaverImageInterval: ScreensaverImageInterval
 
     @Published private(set) var hasCompletedOnboarding: Bool
@@ -165,8 +183,11 @@ final class AppPreferences: ObservableObject {
         static let screensaverClock = "screensaver.showsClock"
         static let screensaverPalette = "screensaver.palette"
         static let screensaverTypeface = "screensaver.typeface"
-        static let screensaverImageFolder = "screensaver.imageFolder"
-        static let screensaverImageFolderTitle = "screensaver.imageFolderTitle"
+        // Named after the media folder they originally held, so a selection
+        // made before camera slideshows existed still works.
+        static let screensaverBackgroundID = "screensaver.imageFolder"
+        static let screensaverBackgroundTitle = "screensaver.imageFolderTitle"
+        static let screensaverBackgroundSource = "screensaver.backgroundSource"
         static let screensaverImageInterval = "screensaver.imageInterval"
     }
 
@@ -190,8 +211,13 @@ final class AppPreferences: ObservableObject {
             .flatMap(ScreensaverPalette.init(rawValue:)) ?? .blue
         screensaverTypeface = defaults.string(forKey: Key.screensaverTypeface)
             .flatMap(ScreensaverTypeface.init(rawValue:)) ?? .rounded
-        screensaverImageFolderID = defaults.string(forKey: Key.screensaverImageFolder)
-        screensaverImageFolderTitle = defaults.string(forKey: Key.screensaverImageFolderTitle)
+        screensaverBackgroundID = defaults.string(forKey: Key.screensaverBackgroundID)
+        screensaverBackgroundTitle = defaults.string(forKey: Key.screensaverBackgroundTitle)
+        // A folder picked before camera slideshows were an option has no stored
+        // source; it can only have been a media folder.
+        screensaverBackgroundSource = defaults.string(forKey: Key.screensaverBackgroundSource)
+            .flatMap(ScreensaverBackgroundSource.init(rawValue:))
+            ?? (screensaverBackgroundID == nil ? .off : .mediaFolder)
         screensaverImageInterval = ScreensaverImageInterval(
             rawValue: defaults.integer(forKey: Key.screensaverImageInterval)
         ) ?? .oneMinute
@@ -233,12 +259,21 @@ final class AppPreferences: ObservableObject {
         defaults.set(typeface.rawValue, forKey: Key.screensaverTypeface)
     }
 
-    /// Passing `nil` returns the ambient screen to its plain dark background.
-    func setScreensaverImageFolder(id: String?, title: String?) {
-        screensaverImageFolderID = id
-        screensaverImageFolderTitle = title
-        defaults.set(id, forKey: Key.screensaverImageFolder)
-        defaults.set(title, forKey: Key.screensaverImageFolderTitle)
+    /// Source and target always move together — a camera identifier left over
+    /// from a folder selection would send the background nowhere.
+    func setScreensaverBackground(
+        source: ScreensaverBackgroundSource,
+        id: String? = nil,
+        title: String? = nil
+    ) {
+        let isPicked = source != .off
+        screensaverBackgroundSource = source
+        screensaverBackgroundID = isPicked ? id : nil
+        screensaverBackgroundTitle = isPicked ? title : nil
+
+        defaults.set(source.rawValue, forKey: Key.screensaverBackgroundSource)
+        defaults.set(screensaverBackgroundID, forKey: Key.screensaverBackgroundID)
+        defaults.set(screensaverBackgroundTitle, forKey: Key.screensaverBackgroundTitle)
     }
 
     func setScreensaverImageInterval(_ interval: ScreensaverImageInterval) {
@@ -277,15 +312,16 @@ final class AppPreferences: ObservableObject {
         screensaverShowsClock = true
         screensaverPalette = .blue
         screensaverTypeface = .rounded
-        screensaverImageFolderID = nil
-        screensaverImageFolderTitle = nil
+        screensaverBackgroundSource = .off
+        screensaverBackgroundID = nil
+        screensaverBackgroundTitle = nil
         screensaverImageInterval = .oneMinute
         for key in [
             Key.completed, Key.mode, Key.dashboards, Key.areas,
             Key.screensaverEnabled, Key.screensaverDelay, Key.screensaverEntities,
             Key.screensaverClock, Key.screensaverPalette, Key.screensaverTypeface,
-            Key.screensaverImageFolder, Key.screensaverImageFolderTitle,
-            Key.screensaverImageInterval,
+            Key.screensaverBackgroundID, Key.screensaverBackgroundTitle,
+            Key.screensaverBackgroundSource, Key.screensaverImageInterval,
         ] {
             defaults.removeObject(forKey: key)
         }

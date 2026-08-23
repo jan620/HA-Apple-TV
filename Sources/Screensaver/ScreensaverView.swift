@@ -42,9 +42,9 @@ struct ScreensaverView: View {
             // stack: a translucent screen saver shows the dashboard behind it.
             Color.black
 
-            if let folderID = preferences.screensaverImageFolderID {
+            if let backgroundSource {
                 ScreensaverBackground(
-                    folderID: folderID,
+                    source: backgroundSource,
                     interval: preferences.screensaverImageInterval.seconds
                 )
                 // Photographs are far brighter than the plain background, and
@@ -74,6 +74,15 @@ struct ScreensaverView: View {
             .animation(.linear(duration: 1), value: vertical)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var backgroundSource: ScreensaverBackground.Source? {
+        guard let id = preferences.screensaverBackgroundID else { return nil }
+        switch preferences.screensaverBackgroundSource {
+        case .off: return nil
+        case .mediaFolder: return .mediaFolder(id)
+        case .camera: return .camera(id)
+        }
     }
 
     private var accent: Color {

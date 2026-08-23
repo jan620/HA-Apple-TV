@@ -204,36 +204,34 @@ struct ScreensaverSettingsView: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Hintergrundbilder")
                 .font(.headline)
-            Text("""
-            Bilder aus dem Medien-Bereich deiner Home-Assistant-Instanz — also \
-            dem Ordner `media`. Sie laufen abgedunkelt hinter Uhr und Werten.
-            """)
-            .font(.caption)
-            .foregroundStyle(.secondary)
-            .fixedSize(horizontal: false, vertical: true)
+            Text(backgroundExplanation)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
 
-            HStack(spacing: 20) {
-                Button(preferences.screensaverImageFolderID == nil
-                       ? "Ordner wählen"
-                       : "Anderen Ordner wählen") {
-                    browsePath = []
-                    browseError = nil
-                    isBrowsing = true
-                }
-
-                if preferences.screensaverImageFolderID != nil {
-                    Button("Entfernen", role: .destructive) {
-                        preferences.setScreensaverImageFolder(id: nil, title: nil)
-                    }
-                }
+            RemoteOptionPicker(
+                title: "Quelle",
+                options: availableBackgroundSources.map(\.rawValue),
+                selection: preferences.screensaverBackgroundSource.rawValue,
+                label: { AppPreferences.ScreensaverBackgroundSource(rawValue: $0)?.title ?? $0 }
+            ) { raw in
+                guard let source = AppPreferences.ScreensaverBackgroundSource(rawValue: raw)
+                else { return }
+                // Switching sources throws away the old target: a media folder
+                // identifier means nothing to the camera path and vice versa.
+                preferences.setScreensaverBackground(source: source)
             }
 
-            if let title = preferences.screensaverImageFolderTitle {
-                Label(title, systemImage: "photo.on.rectangle.angled")
-                    .font(.callout)
-                    .foregroundStyle(Theme.accent)
-                    .focusableCard()
+            switch preferences.screensaverBackgroundSource {
+            case .off:
+                EmptyView()
+            case .mediaFolder:
+                mediaFolderChooser
+            case .camera:
+                cameraChooser
+            }
 
+            if preferences.screensaverBackgroundID != nil {
                 RemoteOptionPicker(
                     title: "Bildwechsel",
                     options: AppPreferences.ScreensaverImageInterval.allCases
@@ -250,6 +248,124 @@ struct ScreensaverSettingsView: View {
                     preferences.setScreensaverImageInterval(interval)
                 }
             }
+        }
+    }
+
+    /// The camera entry only appears once there is a camera to point it at —
+    /// an empty option that leads nowhere is worse than no option.
+    private var availableBackgroundSources: [AppPreferences.ScreensaverBackgroundSource] {
+        var sources: [AppPreferences.ScreensaverBackgroundSource] = [.off, .mediaFolder]
+        if !slideshowCameras.isEmpty {
+            sources.append(.camera)
+        }
+        return sources
+    }
+
+    private var backgroundExplanation: String {
+        switch preferences.screensaverBackgroundSource {
+        case .off:
+            return """
+            Optional laufen Bilder abgedunkelt hinter Uhr und Werten — aus dem \
+            Medien-Bereich deiner Instanz oder aus einer Diaschau-Integration.
+            """
+        case .mediaFolder:
+            return """
+            Bilder aus dem Medien-Bereich deiner Home-Assistant-Instanz, also \
+            dem Ordner media und allem, was du über media_dirs eingebunden hast.
+            """
+        case .camera:
+            return """
+            Eine Diaschau-Kamera liefert die Bilder selbst — etwa Album \
+            Slideshow mit PhotoPrism, Immich oder Google Fotos. Welche Bilder \
+            an der Reihe sind, entscheidet die Integration; die App holt in \
+            deinem Takt das jeweils aktuelle ab.
+            """
+        }
+    }
+
+    private var mediaFolderChooser: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Button(preferences.screensaverBackgroundID == nil
+                   ? "Ordner wählen"
+                   : "Anderen Ordner wählen") {
+                browsePath = []
+                browseError = nil
+                isBrowsing = true
+            }
+
+            if let title = preferences.screensaverBackgroundTitle {
+                Label(title, systemImage: "photo.on.rectangle.angled")
+                    .font(.callout)
+                    .foregroundStyle(Theme.accent)
+                    .focusableCard()
+            }
+        }
+    }
+
+    private var cameraChooser: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach(slideshowCameras) { camera in
+                let isSelected = preferences.screensaverBackgroundID == camera.entityID
+                Button {
+                    preferences.setScreensaverBackground(
+                        source: .camera,
+                        id: camera.entityID,
+                        title: store.displayName(for: camera.entityID)
+                    )
+                } label: {
+                    HStack(spacing: 18) {
+                        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                            .foregroundStyle(isSelected ? Theme.accent : Theme.inactive)
+                        Image(systemName: "photo.stack")
+                            .foregroundStyle(.secondary)
+                            .frame(width: 40)
+                        Text(store.displayName(for: camera.entityID))
+                            .font(.headline)
+                            .lineLimit(1)
+                        Spacer(minLength: 20)
+                        if let subtitle = slideshowSubtitle(camera) {
+                            Text(subtitle)
+                                .font(.callout)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                }
+                .buttonStyle(.card)
+            }
+        }
+    }
+
+    /// Every camera qualifies as a background, but the ones that are actually
+    /// slideshows announce an album, so they come first.
+    private var slideshowCameras: [HAEntity] {
+        store.entities.values
+            .filter { $0.domain == "camera" }
+            .sorted {
+                let leftIsSlideshow = slideshowSubtitle($0) != nil
+                let rightIsSlideshow = slideshowSubtitle($1) != nil
+                if leftIsSlideshow != rightIsSlideshow { return leftIsSlideshow }
+                return store.displayName(for: $0.entityID)
+                    .localizedCaseInsensitiveCompare(store.displayName(for: $1.entityID))
+                    == .orderedAscending
+            }
+    }
+
+    /// The Album Slideshow integration publishes the album and how many
+    /// pictures it holds; a doorbell camera publishes neither.
+    private func slideshowSubtitle(_ entity: HAEntity) -> String? {
+        let album = entity.attributes["album_title"]?.stringValue
+        let count = entity.attributes["media_count"]?.intValue
+        switch (album, count) {
+        case let (album?, count?):
+            return "\(album) · \(count) Bilder"
+        case let (album?, nil):
+            return album
+        case let (nil, count?):
+            return "\(count) Bilder"
+        default:
+            return nil
         }
     }
 
@@ -285,7 +401,11 @@ struct ScreensaverSettingsView: View {
 
                 if let folder = browsePath.last, browseImageCount > 0 {
                     Button("Diesen Ordner verwenden — \(browseImageCount) Bilder") {
-                        preferences.setScreensaverImageFolder(id: folder.id, title: folder.title)
+                        preferences.setScreensaverBackground(
+                            source: .mediaFolder,
+                            id: folder.id,
+                            title: folder.title
+                        )
                         isBrowsing = false
                     }
                 } else if !browsePath.isEmpty, !browseEntries.isEmpty {
