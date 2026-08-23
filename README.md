@@ -201,6 +201,25 @@ einrichten** im Dashboards-Tab jederzeit wiederholen.
 Zeigt Uhrzeit, Datum und ausgewählte Entitäten, wenn die App eine Weile
 unbenutzt bleibt. Einzurichten über **Bildschirmschoner** im Dashboards-Tab:
 an/aus, Verzögerung (1–10 Minuten) und die Entitäten, nach Bereichen gruppiert.
+**Jetzt anzeigen** startet ihn sofort, ohne die Verzögerung abzuwarten.
+
+Darstellung: Farbe, Schriftart und ob Uhrzeit und Datum erscheinen.
+
+**Hintergrundbilder** sind optional und kommen aus einer von zwei Quellen:
+
+- **Medien-Ordner** — ein Ordner aus dem Medien-Bereich der Instanz, also
+  `<config>/media` und alles, was über `media_dirs` eingebunden ist. Die App
+  blättert mit `media_source/browse_media` durch die Ordner, mischt die Bilder
+  einmal je Durchlauf und löst jede URL erst kurz vor der Anzeige auf — Home
+  Assistant signiert Medien-URLs nur kurzlebig.
+- **Diaschau** — eine Kamera-Entität, die die Bilder selbst liefert. So bindet
+  sich [Album Slideshow](https://github.com/eyalgal/album_slideshow) an, das
+  PhotoPrism, Immich, Google Fotos, Synology Photos und iCloud abdeckt. Die
+  Auswahl erscheint nur, wenn die Instanz überhaupt Kameras hat; Einträge mit
+  Album und Bildanzahl stehen oben.
+
+Das Wechselintervall (15 Sek bis 5 Min) gilt für beide. Bilder laufen um 45 %
+abgedunkelt, sonst wäre die Schrift auf hellen Motiven unlesbar.
 
 **Es ist kein Zusatz zum Bildschirmschoner des Apple TV.** tvOS hat keine
 Schnittstelle für fremde Bildschirmschoner und keine Möglichkeit, über den
