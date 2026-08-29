@@ -1,0 +1,30 @@
+## macOS
+.DS_Store
+
+## Xcode
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+DerivedData/
+build/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+## Swift Package Manager
+.build/
+.swiftpm/
+
+## Python
+__pycache__/
+*.pyc
+_site/
+
+## Claude Code
+.claude/
+
+## Xcode-Signierung (lokal, nie committen)
+Tools/development-team.txt
