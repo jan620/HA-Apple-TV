@@ -1,0 +1,14 @@
+version: 2
+
+# Die App selbst hat keine Abhängigkeiten — kein Swift Package Manager, kein
+# CocoaPods, nur Apple-Frameworks. Die einzige Lieferkette im Projekt sind die
+# Actions im Pages-Workflow, und genau die überwacht Dependabot hier.
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: CI
+    labels:
+      - dependencies
