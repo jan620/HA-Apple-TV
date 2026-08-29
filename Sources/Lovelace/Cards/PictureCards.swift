@@ -18,12 +18,9 @@ final class CameraStream: ObservableObject {
                 "entity_id": .string(entityID),
                 "format": .string("hls"),
             ])
-            guard let path = response["url"]?.stringValue else {
-                isUnavailable = true
-                return
-            }
-            let url = path.hasPrefix("http") ? URL(string: path) : server.url(path: path)
-            guard let url else {
+            guard let path = response["url"]?.stringValue,
+                  let url = Self.streamURL(from: path, server: server)
+            else {
                 isUnavailable = true
                 return
             }
@@ -42,6 +39,33 @@ final class CameraStream: ObservableObject {
     func stop() {
         player?.pause()
         player = nil
+    }
+
+    /// Turns the `camera/stream` answer into a URL, but only ever one that
+    /// points back at the configured instance.
+    ///
+    /// Home Assistant normally answers with a relative path. It may also answer
+    /// with an absolute one, and that is the dangerous case: `AVPlayer` fetches
+    /// on its own and never passes through the session delegate that pins the
+    /// certificate to the configured host and strips credentials on a redirect.
+    /// An absolute URL elsewhere would therefore be contacted outside every
+    /// trust decision the rest of the app makes, so it is refused instead.
+    /// `nonisolated` because it touches no state and has to be reachable from
+    /// the tests without hopping onto the main actor.
+    nonisolated static func streamURL(from path: String, server: HAServer) -> URL? {
+        guard path.lowercased().hasPrefix("http") else {
+            return server.url(path: path)
+        }
+
+        guard let candidate = URL(string: path),
+              let host = candidate.host,
+              let expected = server.baseURL.host,
+              host.caseInsensitiveCompare(expected) == .orderedSame,
+              candidate.port == server.baseURL.port,
+              candidate.scheme?.caseInsensitiveCompare(server.baseURL.scheme ?? "") == .orderedSame
+        else { return nil }
+
+        return candidate
     }
 }
 

@@ -384,6 +384,7 @@
 				4C21DC7309FCB92B673BAD22,
 				4F83869E082B2E8805511110,
 				8EBB2F898B143CA309DE2E3D,
+				B3CD24C9D2F94571EC842977,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -591,6 +592,7 @@
 				976EA1C17260ED8D3FA431AF,
 				BEDF92B2B8F9B83B675C4A61,
 				DCD03C06BB03DA1E8AB15E3D,
+				E1BB9D2078860F155AC0D569,
 				E5A1DDEAB171CF6A962870EE,
 			);
 			isa = PBXGroup;
@@ -714,6 +716,10 @@
 			lastKnownFileType = sourcecode.swift;
 			path = HAEntity.swift;
 			sourceTree = "<group>";
+		};
+		B3CD24C9D2F94571EC842977 = {
+			fileRef = E1BB9D2078860F155AC0D569;
+			isa = PBXBuildFile;
 		};
 		B50679232B542C06AB519BC1 = {
 			isa = PBXFileReference;
@@ -872,6 +878,12 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
 			path = AuthModels.swift;
+			sourceTree = "<group>";
+		};
+		E1BB9D2078860F155AC0D569 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = CameraStreamTests.swift;
 			sourceTree = "<group>";
 		};
 		E5A1DDEAB171CF6A962870EE = {
