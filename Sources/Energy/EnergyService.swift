@@ -71,7 +71,7 @@ final class EnergyService: ObservableObject {
     }
 
     private let client: HAWebSocketClient
-    private let logger = Logger(subsystem: "io.github.jan620.homedash", category: "energy")
+    private let logger = Logger(subsystem: "io.github.jan620.roomglance", category: "energy")
 
     init(client: HAWebSocketClient) {
         self.client = client

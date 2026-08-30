@@ -1,11 +1,11 @@
-# Datenschutzerklärung für HomeDash
+# Datenschutzerklärung für Roomglance
 
 **Stand:** 12. August 2026
 
 > **Vor der Veröffentlichung auszufüllen:** die Anbieterangaben unten. Sie
 > folgen der Anbieterkennzeichnung nach § 5 DDG, nicht Art. 13 DSGVO — beim
 > Anbieter findet keine Verarbeitung personenbezogener Daten statt, siehe unten.
-> Die Pflicht trifft geschäftsmäßig angebotene digitale Dienste; HomeDash ist
+> Die Pflicht trifft geschäftsmäßig angebotene digitale Dienste; Roomglance ist
 > kostenlos und ohne Kaufangebote, sodass sich darüber streiten lässt — die
 > Angabe ist im Zweifel die sichere Seite. Wird sie gemacht, muss die Anschrift
 > ladungsfähig sein; ein Postfach genügt dafür nicht.
@@ -26,7 +26,7 @@ E-Mail: jan_anan@yahoo.de
 
 ## Wer ist Verantwortlicher im Sinne der DSGVO?
 
-**Nicht der Anbieter dieser App.** HomeDash überträgt keine Daten an den
+**Nicht der Anbieter dieser App.** Roomglance überträgt keine Daten an den
 Anbieter; es existiert keine Serverkomponente, die Daten entgegennehmen könnte.
 Verantwortlicher für die Daten, die in der App sichtbar werden, ist der Betreiber
 der jeweiligen Home-Assistant-Instanz — also in aller Regel du selbst.
@@ -37,7 +37,7 @@ weil er sie nie erhält.
 
 ## Das Wichtigste in einem Absatz
 
-HomeDash ist ein Anzeige- und Steuerprogramm für deine eigene Home-Assistant-
+Roomglance ist ein Anzeige- und Steuerprogramm für deine eigene Home-Assistant-
 Installation. Die App spricht ausschließlich mit dem Server, den du selbst
 einträgst. Es gibt **keinen Server des Anbieters**, keine Analyse- oder
 Absturzberichte, keine Werbung und keine Weitergabe an Dritte. Alle Daten

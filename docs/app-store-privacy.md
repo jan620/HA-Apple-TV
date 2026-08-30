@@ -11,7 +11,7 @@ dabei, damit die Angaben bei einer Rückfrage belegbar sind.
 
 Apple definiert „erfassen" als das Übertragen von Daten vom Gerät weg, sodass
 sie für dich oder deine Partner länger zugänglich sind als für die
-Beantwortung der Anfrage in Echtzeit nötig. HomeDash überträgt Daten
+Beantwortung der Anfrage in Echtzeit nötig. Roomglance überträgt Daten
 ausschließlich an die Home-Assistant-Instanz, die der Nutzer selbst einträgt und
 betreibt. Es gibt keinen Server des Anbieters, keine Analyse-Bibliothek, keinen
 Absturzbericht-Dienst und keine Werbe-SDKs.
@@ -92,7 +92,7 @@ verfügbar. Beide Antworten sind aber zulässig:
   gegenüber dir nicht gelten.
 
 Ob du Händler bist, hängt daran, ob du die App zu gewerblichen Zwecken
-anbietest — In-App-Käufe wären dafür das deutlichste Indiz. HomeDash hat keine;
+anbietest — In-App-Käufe wären dafür das deutlichste Indiz. Roomglance hat keine;
 die App wird kostenlos und ohne Kaufangebote verbreitet, Trinkgelder laufen
 allein über das Repository. Das spricht für „kein Händler", ist aber eine
 Erklärung, die du selbst abgibst und verantwortest. Diese Einordnung hängt nicht

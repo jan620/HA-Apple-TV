@@ -1,5 +1,5 @@
 import XCTest
-@testable import HomeDash
+@testable import Roomglance
 
 /// These branches decide whether a tile looks on, whether clicking it toggles
 /// or opens details, and what the state line reads — all instantly visible and
