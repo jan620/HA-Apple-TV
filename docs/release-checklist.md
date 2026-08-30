@@ -16,7 +16,10 @@ Datenschutzerklärung. Der Text ist fertig, ihm fehlt nur die Adresse.
 2. **Settings → General**, ganz nach unten zur *Danger Zone*
 3. **Change visibility → Change to public**, Bestätigung eintippen
 4. **Settings → Pages**, unter *Build and deployment* die Quelle auf
-   **GitHub Actions** stellen
+   **GitHub Actions** stellen. **Dieser Schritt ist unvermeidbar** — der
+   Workflow kann Pages nicht selbst einschalten, weil das Anlegen einer
+   Pages-Site Administratorrechte verlangt, die das `GITHUB_TOKEN` einer
+   Action nicht hat. Ohne ihn scheitert jeder Lauf an `configure-pages`.
 5. **Actions** öffnen, den Workflow *Datenschutzerklärung veröffentlichen*
    auswählen, **Run workflow** → Branch `main`
 6. Nach etwa einer Minute prüfen: **https://jan620.github.io/HA-Apple-TV/**
