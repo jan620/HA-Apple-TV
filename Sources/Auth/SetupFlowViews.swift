@@ -49,9 +49,14 @@ struct ServerSetupView: View {
         .onDisappear { discovery.stop() }
     }
 
+    /// Der Titel trägt bewusst den App-Namen, nicht den von Home Assistant:
+    /// Das ist der erste Bildschirm überhaupt, und eine fremde Marke in
+    /// Riesenschrift an dieser Stelle liest sich, als wäre dies die App der
+    /// Open Home Foundation. Die Zeile darunter nennt sie weiterhin — dort ist
+    /// es eine Zweckangabe und damit unbedenklich.
     private var header: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Home Assistant")
+            Text("Roomglance")
                 .font(.largeTitle.bold())
             Text("Verbinde dieses Apple TV mit deiner Home Assistant Instanz.")
                 .font(.title3)

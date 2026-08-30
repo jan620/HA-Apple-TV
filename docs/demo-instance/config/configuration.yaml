@@ -1,0 +1,36 @@
+# Konfiguration der Wegwerf-Instanz für die App-Prüfung.
+#
+# Diese Datei wird beim ersten Start von Home Assistant um eigene Einträge
+# ergänzt; die hier stehenden bleiben erhalten.
+
+default_config:
+
+# Liefert Lichter, Klima, Abdeckungen, Sensoren, einen Media Player und eine
+# Wetter-Entität — genug, damit jeder Kartentyp der App etwas anzuzeigen hat.
+demo:
+
+# Deutsche Oberfläche, damit die Prüfung dasselbe sieht wie in den Screenshots.
+homeassistant:
+  name: Roomglance Demo
+  language: de
+  time_zone: Europe/Berlin
+  country: DE
+
+# Nötig, sobald die Instanz über einen Tunnel oder Reverse Proxy erreichbar ist:
+# Ohne diese Angaben lehnt Home Assistant Anfragen ab, die nicht direkt vom
+# Client kommen. Die Bereiche decken die üblichen Docker-Netze ab.
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+    - 10.0.0.0/8
+
+# Die Demo-Sensoren liefern Verbrauchswerte; damit lässt sich das
+# Energie-Dashboard in der Oberfläche einrichten und die App hat dort etwas
+# zu zeigen. Ohne Recorder bleiben die Statistiken leer.
+recorder:
+  purge_keep_days: 3
+
+logger:
+  default: warning
