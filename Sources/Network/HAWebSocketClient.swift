@@ -58,7 +58,7 @@ final class HAWebSocketClient: ObservableObject {
     var onConnected: (@MainActor () async -> Void)?
 
     private let auth: AuthManager
-    private let logger = Logger(subsystem: "io.github.jan620.roomglance", category: "websocket")
+    private let logger = Logger(subsystem: "io.roomglance.tvos", category: "websocket")
 
     private var task: URLSessionWebSocketTask?
     private var nextID = 1
