@@ -33,7 +33,7 @@ Voraussetzung: ein Mac mit Xcode 15 oder neuer.
 git clone <dieses-repo>
 cd HA-Apple-TV
 python3 Tools/generate_xcodeproj.py
-open HomeDash.xcodeproj
+open Roomglance.xcodeproj
 ```
 
 Dann auf den Apple TV Simulator oder dein Gerät bauen.
@@ -49,7 +49,7 @@ python3 Tools/generate_xcodeproj.py
 ```
 
 Die Datei ist in `.gitignore` und übersteht jedes Neuerzeugen. Alternativ als
-Umgebungsvariable `HOMEDASH_DEVELOPMENT_TEAM`. Die Team-ID steht in Xcode unter
+Umgebungsvariable `ROOMGLANCE_DEVELOPMENT_TEAM`. Die Team-ID steht in Xcode unter
 *Settings → Accounts → dein Account → Team*, oder im Developer-Portal unter
 *Membership*.
 
@@ -58,7 +58,7 @@ Umgebungsvariable `HOMEDASH_DEVELOPMENT_TEAM`. Die Team-ID steht in Xcode unter
 > erneut ausführen — die IDs sind deterministisch, der Diff bleibt minimal.
 > `--check` prüft die Struktur, ohne etwas zu schreiben. Meldet ein `git pull`
 > einen Konflikt in `project.pbxproj`, ist die lokale Fassung wegwerfbar:
-> `git checkout -- HomeDash.xcodeproj/project.pbxproj`.
+> `git checkout -- Roomglance.xcodeproj/project.pbxproj`.
 
 **App-Icon:** tvOS-Icons sind *geschichtet* — drei Bilder, die das System beim
 Fokussieren gegeneinander verschiebt. Die komplette Struktur samt PNGs erzeugt

@@ -1,5 +1,5 @@
 import XCTest
-@testable import HomeDash
+@testable import Roomglance
 
 /// `AVPlayer` fetches on its own and never passes through the session delegate
 /// that pins the certificate to the configured host. An absolute stream URL

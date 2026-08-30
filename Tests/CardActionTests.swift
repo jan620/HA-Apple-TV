@@ -1,5 +1,5 @@
 import XCTest
-@testable import HomeDash
+@testable import Roomglance
 
 /// `CardAction.parse` decides what every button press does. Its silent
 /// `default` paths make a wrong-but-plausible action easy to ship unnoticed.
