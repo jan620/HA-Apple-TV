@@ -1,5 +1,5 @@
 import XCTest
-@testable import HomeDash
+@testable import Roomglance
 
 /// Home Assistant describes folders and files with the same shape, and the
 /// screen saver has to tell them apart from `media_class` alone — a picture

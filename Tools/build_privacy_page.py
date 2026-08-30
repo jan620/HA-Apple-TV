@@ -20,7 +20,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOURCE = os.path.join(ROOT, "PRIVACY.md")
 DEFAULT_OUTPUT = os.path.join(ROOT, "_site")
 
-TITLE = "Datenschutzerklärung — HomeDash"
+TITLE = "Datenschutzerklärung — Roomglance"
 
 # Bewusst ohne externe Schriften oder Skripte: Die Seite soll auch dann
 # vollständig sein, wenn ein Prüfer sie mit blockierten Drittanbietern öffnet.
@@ -30,7 +30,7 @@ TEMPLATE = """<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
-<meta name="description" content="Datenschutzerklärung der tvOS-App HomeDash \
+<meta name="description" content="Datenschutzerklärung der tvOS-App Roomglance \
 für Home Assistant.">
 <meta name="color-scheme" content="light dark">
 <style>
@@ -113,7 +113,7 @@ footer {{
 {body}
 </main>
 <footer>
-<p>HomeDash ist quelloffen. Der Stand dieses Dokuments liegt im
+<p>Roomglance ist quelloffen. Der Stand dieses Dokuments liegt im
 <a href="https://github.com/jan620/HA-Apple-TV/blob/main/PRIVACY.md">Repository</a>.</p>
 </footer>
 </body>

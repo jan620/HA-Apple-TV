@@ -22,7 +22,7 @@ final class EntityStore: ObservableObject {
     @Published var lastServiceError: String?
 
     private let client: HAWebSocketClient
-    private let logger = Logger(subsystem: "io.github.jan620.homedash", category: "store")
+    private let logger = Logger(subsystem: "io.github.jan620.roomglance", category: "store")
     private var stateSubscription: Int?
 
     init(client: HAWebSocketClient) {
