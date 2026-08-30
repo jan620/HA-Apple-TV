@@ -8,7 +8,7 @@ Apple schneidet stillschweigend ab, wenn sie überschritten werden.
 ## Name (30 Zeichen)
 
 ```
-HomeDash
+Roomglance
 ```
 
 Der Markenname „Home Assistant" darf hier **nicht** stehen. Er gehört der
@@ -42,12 +42,12 @@ wo die Suche ihn ebenfalls findet.
 ## Beschreibung (4000 Zeichen)
 
 ```
-HomeDash bringt deine Home-Assistant-Installation auf den Fernseher — nativ
+Roomglance bringt deine Home-Assistant-Installation auf den Fernseher — nativ
 gebaut für tvOS, bedienbar mit der Siri Remote, ohne Umweg über eine Webansicht.
 
 DEINE DASHBOARDS
 Die Lovelace-Dashboards, die du dir eingerichtet hast, erscheinen so, wie du sie
-angelegt hast. HomeDash liest die Konfiguration von deinem Server und zeichnet
+angelegt hast. Roomglance liest die Konfiguration von deinem Server und zeichnet
 die Karten nativ nach — Kacheln, Entitätenlisten, Thermostate, Wettervorhersage,
 Verlaufsdiagramme, Kamerabilder.
 
@@ -81,7 +81,7 @@ gespeichert, und die Zugangstokens liegen gerätegebunden in der Schlüsselbund-
 Verwaltung des Apple TV.
 
 VORAUSSETZUNGEN
-Eine eigene Home-Assistant-Installation, erreichbar vom Apple TV aus. HomeDash
+Eine eigene Home-Assistant-Installation, erreichbar vom Apple TV aus. Roomglance
 ist ein Client — ohne eigene Instanz hat die App nichts anzuzeigen.
 
 QUELLOFFEN
@@ -89,7 +89,7 @@ Der vollständige Quelltext liegt öffentlich auf GitHub. Fehler melden,
 mitentwickeln oder einfach nachlesen, was die App tut: alles möglich.
 
 ---
-HomeDash ist ein unabhängiges Projekt und steht in keiner Verbindung zur Open
+Roomglance ist ein unabhängiges Projekt und steht in keiner Verbindung zur Open
 Home Foundation. „Home Assistant" ist eine Marke der Open Home Foundation und
 wird hier ausschließlich genannt, um den Zweck der App zu beschreiben.
 ```
@@ -124,11 +124,11 @@ smarthome,automation,dashboard,energy,heating,blinds,camera,lights,control,house
 **Description (4000)**
 
 ```
-HomeDash puts your Home Assistant installation on the television — built
+Roomglance puts your Home Assistant installation on the television — built
 natively for tvOS, operated with the Siri Remote, with no web view in between.
 
 YOUR DASHBOARDS
-The Lovelace dashboards you set up appear the way you built them. HomeDash reads
+The Lovelace dashboards you set up appear the way you built them. Roomglance reads
 the configuration from your server and draws the cards natively — tiles, entity
 lists, thermostats, weather forecasts, history graphs, camera feeds.
 
@@ -159,7 +159,7 @@ credentials are never stored, and access tokens live in the Apple TV keychain,
 bound to the device.
 
 REQUIREMENTS
-Your own Home Assistant installation, reachable from the Apple TV. HomeDash is a
+Your own Home Assistant installation, reachable from the Apple TV. Roomglance is a
 client — without an instance of your own there is nothing for it to show.
 
 OPEN SOURCE
@@ -167,7 +167,7 @@ The complete source is public on GitHub. Report a bug, contribute, or simply
 read what the app does.
 
 ---
-HomeDash is an independent project and is not affiliated with the Open Home
+Roomglance is an independent project and is not affiliated with the Open Home
 Foundation. "Home Assistant" is a trademark of the Open Home Foundation, used
 here solely to describe what the app is for.
 ```

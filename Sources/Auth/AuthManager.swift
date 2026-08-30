@@ -22,7 +22,7 @@ final class AuthManager: ObservableObject {
     private var cachedSession: URLSession?
 
     private let defaults: UserDefaults
-    private let logger = Logger(subsystem: "io.github.jan620.homedash", category: "auth")
+    private let logger = Logger(subsystem: "io.github.jan620.roomglance", category: "auth")
 
     private static let serverDefaultsKey = "ha.server"
 

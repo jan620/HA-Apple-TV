@@ -1,5 +1,5 @@
 import XCTest
-@testable import HomeDash
+@testable import Roomglance
 
 /// `JSONValue` sits under every card and every service call, so a wrong
 /// coercion breaks many places at once and quietly.

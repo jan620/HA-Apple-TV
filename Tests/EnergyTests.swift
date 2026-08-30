@@ -1,5 +1,5 @@
 import XCTest
-@testable import HomeDash
+@testable import Roomglance
 
 /// The energy dashboard is rebuilt from raw statistics, so its parsing and its
 /// derived flows carry the whole feature. The grid source in particular has two

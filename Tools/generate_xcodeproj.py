@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Generate HomeDash.xcodeproj from the sources on disk.
+"""Generate Roomglance.xcodeproj from the sources on disk.
 
 Xcode project files are tedious to keep in version control by hand and merge
 badly, so the project is generated instead. This script uses only the Python
 standard library — no XcodeGen, no CocoaPods, nothing to install.
 
     python3 Tools/generate_xcodeproj.py
-    open HomeDash.xcodeproj
+    open Roomglance.xcodeproj
 
 Re-run it whenever Swift files are added or removed.
 """
@@ -20,9 +20,9 @@ import re
 import shutil
 import sys
 
-PROJECT_NAME = "HomeDash"
-TEST_TARGET_NAME = "HomeDashTests"
-BUNDLE_ID = "io.github.jan620.homedash"
+PROJECT_NAME = "Roomglance"
+TEST_TARGET_NAME = "RoomglanceTests"
+BUNDLE_ID = "io.github.jan620.roomglance"
 DEPLOYMENT_TARGET = "17.0"
 SWIFT_VERSION = "5.0"
 
@@ -50,9 +50,9 @@ def development_team() -> str:
     Set it either through the environment or the file:
 
         echo ABCDE12345 > Tools/development-team.txt
-        HOMEDASH_DEVELOPMENT_TEAM=ABCDE12345 python3 Tools/generate_xcodeproj.py
+        ROOMGLANCE_DEVELOPMENT_TEAM=ABCDE12345 python3 Tools/generate_xcodeproj.py
     """
-    from_env = os.environ.get("HOMEDASH_DEVELOPMENT_TEAM", "").strip()
+    from_env = os.environ.get("ROOMGLANCE_DEVELOPMENT_TEAM", "").strip()
     if from_env:
         return from_env
 

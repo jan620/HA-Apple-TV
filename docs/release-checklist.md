@@ -33,17 +33,17 @@ Namen im App Store sind exklusiv und werden nach Anmeldezeitpunkt vergeben.
 Deshalb sofort, noch bevor irgendetwas fertig ist.
 
 1. **App Store Connect → Apps → +  → Neue App**
-2. Plattform **tvOS**, Name **HomeDash**, Primärsprache **Deutsch**
-3. **Bundle-ID**: `io.github.jan620.homedash` aus der Liste wählen. Steht sie
+2. Plattform **tvOS**, Name **Roomglance**, Primärsprache **Deutsch**
+3. **Bundle-ID**: `io.github.jan620.roomglance` aus der Liste wählen. Steht sie
    nicht darin, vorher unter
    *developer.apple.com → Certificates, Identifiers & Profiles → Identifiers*
    anlegen — Typ *App IDs*, Plattform *tvOS*
-4. **SKU**: frei wählbar, erscheint nirgends öffentlich, z. B. `homedash-tvos`
+4. **SKU**: frei wählbar, erscheint nirgends öffentlich, z. B. `roomglance-tvos`
 5. Zugriff auf **Vollzugriff** lassen
 
-Meldet Apple den Namen als vergeben, hilft ein Zusatz wie *HomeDash for Home
+Meldet Apple den Namen als vergeben, hilft ein Zusatz wie *Roomglance for Home
 Assistant* — Vorsicht: Der Markenname darf **nicht** in den App-Namen, siehe
-`app-store-listing.md`. Dann eher *HomeDash Smart Home*.
+`app-store-listing.md`. Dann eher *Roomglance Smart Home*.
 
 ## 3 · Signing einrichten
 
@@ -51,7 +51,7 @@ Assistant* — Vorsicht: Der Markenname darf **nicht** in den App-Namen, siehe
    falls schon einmal für ein Gerät signiert wurde:
 
    ```bash
-   grep -m1 -o 'DEVELOPMENT_TEAM = [A-Z0-9]*' HomeDash.xcodeproj/project.pbxproj
+   grep -m1 -o 'DEVELOPMENT_TEAM = [A-Z0-9]*' Roomglance.xcodeproj/project.pbxproj
    ```
 
 2. Lokal hinterlegen, damit sie das Neuerzeugen des Projekts übersteht:
@@ -61,7 +61,7 @@ Assistant* — Vorsicht: Der Markenname darf **nicht** in den App-Namen, siehe
    python3 Tools/generate_xcodeproj.py
    ```
 
-3. In Xcode prüfen: Target *HomeDash* → *Signing & Capabilities* → Team steht,
+3. In Xcode prüfen: Target *Roomglance* → *Signing & Capabilities* → Team steht,
    *Automatically manage signing* ist aktiv, keine Fehlermeldung.
 
 Mit einem bezahlten Account entfällt die Sieben-Tage-Grenze der kostenlosen
@@ -143,7 +143,7 @@ korrigierten Build also `CFBundleVersion` hochzählen.
 ## 7 · TestFlight
 
 1. **TestFlight → Interne Tests**, Gruppe anlegen, sich selbst hinzufügen
-2. Auf dem Apple TV die TestFlight-App installieren und HomeDash daraus laden
+2. Auf dem Apple TV die TestFlight-App installieren und Roomglance daraus laden
 3. Einmal den kompletten Ablauf durchgehen: Anmeldung, Onboarding, Dashboards,
    Steuerung, Bildschirmschoner
 
