@@ -211,13 +211,18 @@ final class AppPreferences: ObservableObject {
             .flatMap(ScreensaverPalette.init(rawValue:)) ?? .blue
         screensaverTypeface = defaults.string(forKey: Key.screensaverTypeface)
             .flatMap(ScreensaverTypeface.init(rawValue:)) ?? .rounded
-        screensaverBackgroundID = defaults.string(forKey: Key.screensaverBackgroundID)
+        // Read into a local first: the fallback below needs this value, and
+        // reading the property back would go through the @Published wrapper —
+        // an access to `self` that is not allowed until every stored property
+        // has a value.
+        let backgroundID = defaults.string(forKey: Key.screensaverBackgroundID)
+        screensaverBackgroundID = backgroundID
         screensaverBackgroundTitle = defaults.string(forKey: Key.screensaverBackgroundTitle)
         // A folder picked before camera slideshows were an option has no stored
         // source; it can only have been a media folder.
         screensaverBackgroundSource = defaults.string(forKey: Key.screensaverBackgroundSource)
             .flatMap(ScreensaverBackgroundSource.init(rawValue:))
-            ?? (screensaverBackgroundID == nil ? .off : .mediaFolder)
+            ?? (backgroundID == nil ? .off : .mediaFolder)
         screensaverImageInterval = ScreensaverImageInterval(
             rawValue: defaults.integer(forKey: Key.screensaverImageInterval)
         ) ?? .oneMinute
