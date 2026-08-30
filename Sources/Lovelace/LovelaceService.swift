@@ -18,7 +18,7 @@ final class LovelaceService: ObservableObject {
 
     private let client: HAWebSocketClient
     private let store: EntityStore
-    private let logger = Logger(subsystem: "io.github.jan620.roomglance", category: "lovelace")
+    private let logger = Logger(subsystem: "io.roomglance.tvos", category: "lovelace")
 
     init(client: HAWebSocketClient, store: EntityStore) {
         self.client = client

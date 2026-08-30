@@ -22,7 +22,7 @@ import sys
 
 PROJECT_NAME = "Roomglance"
 TEST_TARGET_NAME = "RoomglanceTests"
-BUNDLE_ID = "io.github.jan620.roomglance"
+BUNDLE_ID = "io.roomglance.tvos"
 DEPLOYMENT_TARGET = "17.0"
 SWIFT_VERSION = "5.0"
 
