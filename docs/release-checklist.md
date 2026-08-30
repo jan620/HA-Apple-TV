@@ -1,120 +1,208 @@
-# Veröffentlichung im App Store — Reihenfolge zum Abhaken
+# Schritt für Schritt in den App Store
 
-Alles, was zwischen dem heutigen Stand und einer freigegebenen App liegt. Die
-Reihenfolge ist nicht willkürlich: Jeder Block setzt den vorigen voraus.
+Ab dem Punkt, an dem das Apple Developer Program bereits vorhanden ist. Die
+Reihenfolge ist bewusst gewählt: Schritt 2 und 3 dauern in der Wartezeit am
+längsten, deshalb stehen sie vorn. Schritt 6 ist der, an dem Apps zu
+selbstgehosteten Diensten üblicherweise scheitern.
 
 ---
 
-## 1. Konto und Name
+## 1 · Repository öffentlich stellen und Datenschutzerklärung ausliefern
 
-- [ ] **Apple Developer Program**, 99 €/Jahr. Die Aufnahme kann Tage dauern und
-      blockiert alles Weitere — TestFlight ebenso wie den Store.
-      Als Einzelperson wird der eigene Name zum Entwicklernamen im Store; eine
-      Organisation setzt eine D-U-N-S-Nummer und damit ein Unternehmen voraus.
-- [ ] **App-Eintrag in App Store Connect anlegen**, sobald das Konto steht.
-      Damit ist der Name „HomeDash" reserviert. Namen werden nicht geteilt, und
-      ein besetzter Name ist später nur noch mit Zusatz zu haben.
-- [ ] **Bundle-ID registrieren:** `io.github.jan620.homedash`. Muss exakt zu
-      `PRODUCT_BUNDLE_IDENTIFIER` im Projekt passen.
-- [ ] **Signing-Team lokal hinterlegen** (siehe README, Abschnitt *Bauen und
-      installieren*) — nicht in Xcode setzen, sonst kollidiert es beim nächsten
-      `git pull` mit der generierten Projektdatei.
+Apple verlangt bei der Einreichung eine öffentlich erreichbare URL zur
+Datenschutzerklärung. Der Text ist fertig, ihm fehlt nur die Adresse.
 
-## 2. Die Instanz für die App-Prüfung
+1. `https://github.com/jan620/HA-Apple-TV` öffnen
+2. **Settings → General**, ganz nach unten zur *Danger Zone*
+3. **Change visibility → Change to public**, Bestätigung eintippen
+4. **Settings → Pages**, unter *Build and deployment* die Quelle auf
+   **GitHub Actions** stellen
+5. **Actions** öffnen, den Workflow *Datenschutzerklärung veröffentlichen*
+   auswählen, **Run workflow** → Branch `main`
+6. Nach etwa einer Minute prüfen: **https://jan620.github.io/HA-Apple-TV/**
 
-**Das ist der häufigste Ablehnungsgrund für Apps zu selbstgehosteten Diensten.**
-Ohne erreichbare Instanz sieht die Prüfung nur den Einrichtungsbildschirm und
-bewertet die App als unvollständig (Richtlinie 2.1).
+Diese URL kommt später in App Store Connect ins Feld *Privacy Policy URL*.
+Als *Support URL* genügt `https://github.com/jan620/HA-Apple-TV`.
 
-- [ ] **Eigene Demo-Instanz aufsetzen** — nicht die produktive. Begründung siehe
-      unten unter *Warum keine Konten auf der eigenen Instanz*.
-- [ ] Die `demo`-Integration aktivieren; sie liefert Lichter, Klima, Abdeckungen,
-      Sensoren und einen Media Player, also genug, damit die Kartentypen der App
-      etwas zu zeigen haben.
-- [ ] **Bereiche anlegen** und Geräte zuordnen — sonst bleibt die Räume-Ansicht
-      leer.
-- [ ] Ein **Dashboard** mit ein paar Karten anlegen, damit die Dashboard-Auswahl
-      im Onboarding nicht leer ist.
-- [ ] Optional: **Energie-Dashboard** konfigurieren, sonst bleibt dieser Teil der
-      App unsichtbar.
-- [ ] **Von außen erreichbar machen**, für die Dauer der Prüfung. Nabu Casa
-      (31 Tage kostenlos zum Testen) oder ein Cloudflare Tunnel. Die Prüfung
-      sitzt nicht in Deutschland — eine Adresse im Heimnetz nützt nichts.
-- [ ] **Administrator-Konto für die Prüfung** anlegen. Ohne Adminrechte gibt
-      Home Assistant die Bereichsliste nicht heraus, und die App wirkt dadurch
-      funktionsärmer, als sie ist.
-- [ ] Adresse, Benutzername und Passwort in die **App Review Notes** eintragen
-      (Text steht in `app-store-listing.md`).
+## 2 · App-Eintrag anlegen und den Namen sichern
 
-### Warum keine Konten auf der eigenen Instanz
+Namen im App Store sind exklusiv und werden nach Anmeldezeitpunkt vergeben.
+Deshalb sofort, noch bevor irgendetwas fertig ist.
 
-Home Assistant kennt keine Berechtigungen je Entität. Ein Benutzer ist
-Administrator oder nicht — und auch ein Nicht-Administrator sieht **sämtliche
-Entitäten**: Kamerabilder, Anwesenheit der Haushaltsmitglieder, Schlösser,
-Verbrauchsverläufe. Ein Konto „mit wenigen Berechtigungen" lässt sich in der
-Oberfläche nicht erzeugen.
+1. **App Store Connect → Apps → +  → Neue App**
+2. Plattform **tvOS**, Name **HomeDash**, Primärsprache **Deutsch**
+3. **Bundle-ID**: `io.github.jan620.homedash` aus der Liste wählen. Steht sie
+   nicht darin, vorher unter
+   *developer.apple.com → Certificates, Identifiers & Profiles → Identifiers*
+   anlegen — Typ *App IDs*, Plattform *tvOS*
+4. **SKU**: frei wählbar, erscheint nirgends öffentlich, z. B. `homedash-tvos`
+5. Zugriff auf **Vollzugriff** lassen
 
-Dazu kommt: Wer die App bedienen kann, kann auch schalten. Die Prüfung würde
-also Lichter, Rollläden und Schlösser in einer bewohnten Wohnung bedienen — und
-zwar zu einem Zeitpunkt, den du nicht kennst.
+Meldet Apple den Namen als vergeben, hilft ein Zusatz wie *HomeDash for Home
+Assistant* — Vorsicht: Der Markenname darf **nicht** in den App-Namen, siehe
+`app-store-listing.md`. Dann eher *HomeDash Smart Home*.
 
-Der Aufwand für eine zweite Instanz ist gering: ein Container mit der
-`demo`-Integration reicht.
+## 3 · Signing einrichten
 
-## 3. Rechtliches und Konten
+1. Team-ID herausfinden (Xcode → *Settings → Accounts → Konto auswählen*) oder,
+   falls schon einmal für ein Gerät signiert wurde:
 
-- [ ] **Datenschutzerklärung öffentlich erreichbar.** `PRIVACY.md` ist fertig
-      samt Anbieterangaben; es fehlt nur die URL. Über GitHub Pages heißt sie
-      `https://jan620.github.io/HA-Apple-TV/` — dafür muss das Repository
-      öffentlich sein und unter *Settings → Pages* als Quelle **GitHub Actions**
-      eingestellt werden.
-- [ ] **Support-URL.** Das öffentliche Repository genügt; Apple verlangt eine
-      Seite, auf der Nutzer Hilfe bekommen.
-- [ ] **Händlerstatus nach DSA erklären.** Die Erklärung ist Pflicht für den
-      EU-Vertrieb, beide Antworten sind zulässig. Ohne In-App-Käufe ist „kein
-      Händler" vertretbar; Apple veröffentlicht dann deine Anschrift **nicht**,
-      blendet aber den Hinweis ein, dass Verbraucherrechte gegenüber dir nicht
-      gelten. Einzelheiten in `app-store-privacy.md`.
-- [ ] **Privacy Nutrition Labels** ausfüllen — „Data Not Collected", Antworten in
-      `app-store-privacy.md`.
+   ```bash
+   grep -m1 -o 'DEVELOPMENT_TEAM = [A-Z0-9]*' HomeDash.xcodeproj/project.pbxproj
+   ```
 
-## 4. Der Eintrag im Store
+2. Lokal hinterlegen, damit sie das Neuerzeugen des Projekts übersteht:
 
-- [ ] Texte aus `app-store-listing.md` übernehmen: Untertitel, Beschreibung,
-      Werbetext, Keywords. **Den Markenhinweis nicht kürzen** (siehe dort).
-- [ ] **Screenshots**, mindestens einer in 1920 × 1080. Im Simulator mit
-      ⌘S, auf dem Gerät über Xcode → *Window → Devices and Simulators →
-      Take Screenshot*. Vorschlag für die Auswahl:
-      1. Ein Dashboard mit Karten
-      2. Die Räume-Ansicht
-      3. Das Energie-Dashboard
-      4. Der Bildschirmschoner mit Hintergrundbild
-      5. Die Detailansicht einer Lampe oder Klimaanlage
-- [ ] **Kategorie:** Dienstprogramme, alternativ Lifestyle.
-- [ ] **Altersfreigabe:** 4+. Keine der Fragen trifft zu.
-- [ ] **Top-Shelf-Bild** prüfen — liegt im Asset-Katalog, erscheint auf dem
-      Home-Bildschirm, wenn die App in der obersten Reihe steht.
+   ```bash
+   echo DEINE-TEAM-ID > Tools/development-team.txt
+   python3 Tools/generate_xcodeproj.py
+   ```
 
-## 5. Vor dem Hochladen
+3. In Xcode prüfen: Target *HomeDash* → *Signing & Capabilities* → Team steht,
+   *Automatically manage signing* ist aktiv, keine Fehlermeldung.
 
-- [ ] Auf **echter Hardware** getestet, nicht nur im Simulator. Fokus mit der
-      Siri Remote, Kamera-Streams und der Bildschirmschoner verhalten sich dort
-      anders.
-- [ ] **Version und Build** in `Resources/Info.plist` — `1.0` / `1` für die
-      erste Einreichung. Jeder weitere Upload braucht eine höhere Build-Nummer.
-- [ ] `xcodebuild test` läuft durch.
-- [ ] Archiv bauen (*Product → Archive*) und über den Organizer hochladen.
-- [ ] **TestFlight**, mindestens ein Durchgang. Interne Tester brauchen keine
-      Beta-Prüfung und sind sofort verfügbar.
+Mit einem bezahlten Account entfällt die Sieben-Tage-Grenze der kostenlosen
+Signierung; die App bleibt auf dem Apple TV lauffähig.
 
-## 6. Nach der Freigabe
+## 4 · Demo-Instanz für die App-Prüfung
 
-- [ ] Demo-Instanz wieder vom Netz nehmen — aber **erst nach der Freigabe**, und
-      auch bei jedem Update wieder erreichbar machen. Jede neue Version wird
-      erneut geprüft.
-- [ ] Ko-fi-Handle in `.github/FUNDING.yml` eintragen, falls noch offen.
-- [ ] Ein Release-Tag im Repository setzen, damit sich Store-Versionen und
-      Quellstand zuordnen lassen.
+**Nicht die produktive Instanz verwenden.** Home Assistant kennt keine
+Berechtigungen je Entität — auch ein Konto ohne Administratorrechte sieht
+sämtliche Entitäten, also Kameras, Anwesenheit und Schlösser, und kann alles
+schalten. Ohne Administratorrechte wiederum gibt Home Assistant die
+Bereichsliste nicht heraus, wodurch die App funktionsärmer wirkt, als sie ist.
+
+1. Zweite Instanz starten, z. B.:
+
+   ```bash
+   docker run -d --name ha-demo -p 8124:8123 \
+     -v /pfad/zu/ha-demo:/config \
+     ghcr.io/home-assistant/home-assistant:stable
+   ```
+
+2. In `/pfad/zu/ha-demo/configuration.yaml` ergänzen:
+
+   ```yaml
+   demo:
+   ```
+
+   Das liefert Lichter, Klima, Abdeckungen, Sensoren und einen Media Player.
+3. Neu starten, Einrichtungsassistenten durchlaufen, **Administrator-Konto** für
+   die Prüfung anlegen
+4. **Einstellungen → Bereiche** — drei bis vier Bereiche anlegen und die
+   Demo-Geräte zuordnen. Ohne Bereiche bleibt die Räume-Ansicht leer.
+5. Ein **Dashboard** mit ein paar Karten anlegen, damit die Dashboard-Auswahl im
+   Onboarding nicht leer ist
+6. Optional das **Energie-Dashboard** konfigurieren, sonst bleibt dieser Teil
+   der App unsichtbar
+7. **Von außen erreichbar machen** — die App-Prüfung sitzt nicht in Deutschland,
+   eine Adresse im Heimnetz nützt nichts. Entweder Nabu Casa (31 Tage kostenlos)
+   oder ein Cloudflare Tunnel auf eine Subdomain.
+8. Von einem fremden Netz aus testen, dass Adresse und Anmeldung funktionieren —
+   am einfachsten über das Mobilfunknetz des Telefons
+
+## 5 · Screenshots
+
+Mindestens einer in **1920 × 1080**. Im Simulator ⌘S, auf dem Gerät über
+Xcode → *Window → Devices and Simulators → Take Screenshot*.
+
+Vorschlag für fünf:
+
+1. Ein Dashboard mit Karten
+2. Die Räume-Ansicht
+3. Das Energie-Dashboard mit dem Sankey-Diagramm
+4. Der Bildschirmschoner mit Hintergrundbild
+5. Die Detailansicht einer Lampe oder Klimaanlage
+
+Kein Screenshot sollte das Home-Assistant-Logo als Hauptmotiv zeigen. Taucht es
+als Teil eines Dashboards auf, ist das unkritisch.
+
+## 6 · Bauen und hochladen
+
+1. Sicherstellen, dass alles aktuell ist:
+
+   ```bash
+   git pull
+   python3 Tools/generate_xcodeproj.py
+   ```
+
+2. In Xcode das Ziel auf **Any tvOS Device (arm64)** stellen — nicht auf den
+   Simulator, sonst ist *Archive* ausgegraut
+3. **Product → Archive**
+4. Im Organizer **Distribute App → App Store Connect → Upload**
+5. Warten, bis die Verarbeitung durch ist (Minuten bis eine Stunde). Danach
+   erscheint der Build in App Store Connect unter *TestFlight*
+
+Version und Build stehen in `Resources/Info.plist` auf `1.0` / `1`. **Jeder
+weitere Upload braucht eine höhere Build-Nummer** — bei einem abgelehnten oder
+korrigierten Build also `CFBundleVersion` hochzählen.
+
+## 7 · TestFlight
+
+1. **TestFlight → Interne Tests**, Gruppe anlegen, sich selbst hinzufügen
+2. Auf dem Apple TV die TestFlight-App installieren und HomeDash daraus laden
+3. Einmal den kompletten Ablauf durchgehen: Anmeldung, Onboarding, Dashboards,
+   Steuerung, Bildschirmschoner
+
+Interne Tests brauchen keine Beta-Prüfung und stehen sofort bereit. Dieser
+Schritt ist optional, fängt aber genau die Fehler ab, die sonst eine Ablehnung
+und damit eine weitere Wartewoche kosten.
+
+## 8 · Store-Eintrag ausfüllen
+
+Alle Texte stehen fertig in `app-store-listing.md`.
+
+1. **Name, Untertitel, Werbetext, Beschreibung, Keywords** übernehmen.
+   Den Markenhinweis am Ende der Beschreibung **nicht kürzen**
+2. **Screenshots** hochladen
+3. **Support-URL**: `https://github.com/jan620/HA-Apple-TV`
+4. **Datenschutz-URL**: `https://jan620.github.io/HA-Apple-TV/`
+5. **Kategorie**: Dienstprogramme, sekundär Lifestyle
+6. **Altersfreigabe**: alle Fragen mit Nein beantworten, ergibt 4+
+7. **Copyright**: `2026 Jan Ananthapavan`
+
+## 9 · Datenschutz und Händlerstatus
+
+1. **App-Datenschutz → Bearbeiten**: auf die Frage *Erfasst diese App Daten?*
+   mit **Nein** antworten. Begründung und die entfallenden Folgefragen stehen in
+   `app-store-privacy.md`
+2. **Tracking über Apps und Websites hinweg**: Nein
+3. **Händlerstatus (DSA)** unter *Business → Compliance*: Die Erklärung ist für
+   den EU-Vertrieb Pflicht, beide Antworten sind zulässig. Ohne In-App-Käufe ist
+   **kein Händler** vertretbar — dann veröffentlicht Apple deine Anschrift
+   nicht, blendet aber den Hinweis ein, dass verbraucherschutzrechtliche
+   Ansprüche gegenüber dir nicht gelten
+4. **Exportbestimmungen**: Die Frage entfällt, weil
+   `ITSAppUsesNonExemptEncryption = false` bereits im Info.plist steht
+
+## 10 · Einreichen
+
+1. Build auswählen
+2. **App Review Notes** ausfüllen — der fertige Text steht in
+   `app-store-listing.md`, es sind nur Adresse, Benutzername und Passwort der
+   Demo-Instanz einzusetzen. **Ohne diesen Text wird die App abgelehnt**, weil
+   die Prüfung ohne erreichbare Instanz nur den Einrichtungsbildschirm sieht
+3. Kontaktdaten für Rückfragen eintragen
+4. **Freigabe**: „Manuell freigeben" wählen, dann entscheidest du nach der
+   Genehmigung selbst über den Zeitpunkt
+5. **Zur Prüfung einreichen**
+
+Die Prüfung dauert erfahrungsgemäß ein bis drei Tage. Bei einer Ablehnung
+antwortet man im *Resolution Center* — oft genügt eine Erklärung, ohne dass ein
+neuer Build nötig wäre.
+
+## 11 · Nach der Freigabe
+
+1. Demo-Instanz kann vom Netz — aber **vor jedem Update wieder hoch**, denn jede
+   Version wird erneut geprüft
+2. Release-Tag setzen, damit sich Store-Version und Quellstand zuordnen lassen:
+
+   ```bash
+   git tag -a v1.0 -m "Erste Veröffentlichung im App Store"
+   git push origin v1.0
+   ```
+
+3. Im README auf den App Store verlinken
 
 ---
 
@@ -122,9 +210,11 @@ Der Aufwand für eine zweite Instanz ist gering: ein Container mit der
 
 - Eigenständiges App-Icon in allen geforderten Ebenen samt Top-Shelf-Bildern
 - `PrivacyInfo.xcprivacy` mit `NSPrivacyAccessedAPICategoryUserDefaults` (`CA92.1`)
-- `ITSAppUsesNonExemptEncryption = false` — beantwortet die Exportfrage einmalig
-- Datenschutzerklärung samt Anbieterangaben nach § 5 DDG
-- MIT-Lizenz
+- `ITSAppUsesNonExemptEncryption = false`
+- Datenschutzerklärung samt Anbieterangaben nach § 5 DDG, plus Workflow zur
+  Veröffentlichung über GitHub Pages
+- MIT-Lizenz, Berechtigungstext fürs lokale Netzwerk
+- Store-Texte deutsch und englisch samt Markenhinweis, App Review Notes
 - Keine In-App-Käufe, keine Analyse- oder Werbe-Bibliotheken, keine
   Fremdabhängigkeiten
-- Berechtigungstext für den Zugriff auf das lokale Netzwerk
+- Zwei Sicherheits-Reviews, Befunde behoben
