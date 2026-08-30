@@ -75,34 +75,25 @@ sämtliche Entitäten, also Kameras, Anwesenheit und Schlösser, und kann alles
 schalten. Ohne Administratorrechte wiederum gibt Home Assistant die
 Bereichsliste nicht heraus, wodurch die App funktionsärmer wirkt, als sie ist.
 
-1. Zweite Instanz starten, z. B.:
+Compose-Datei und Konfiguration liegen fertig unter
+[`demo-instance/`](demo-instance/README.md); dort steht auch die ausführliche
+Anleitung. Der Kurzweg:
 
-   ```bash
-   docker run -d --name ha-demo -p 8124:8123 \
-     -v /pfad/zu/ha-demo:/config \
-     ghcr.io/home-assistant/home-assistant:stable
-   ```
+```bash
+docker compose -f docs/demo-instance/docker-compose.yml up -d
+```
 
-2. In `/pfad/zu/ha-demo/configuration.yaml` ergänzen:
+Danach `http://<host>:8124` öffnen und der Reihe nach:
 
-   ```yaml
-   demo:
-   ```
-
-   Das liefert Lichter, Klima, Abdeckungen, Sensoren und einen Media Player.
-3. Neu starten, Einrichtungsassistenten durchlaufen, **Administrator-Konto** für
-   die Prüfung anlegen
-4. **Einstellungen → Bereiche** — drei bis vier Bereiche anlegen und die
-   Demo-Geräte zuordnen. Ohne Bereiche bleibt die Räume-Ansicht leer.
-5. Ein **Dashboard** mit ein paar Karten anlegen, damit die Dashboard-Auswahl im
-   Onboarding nicht leer ist
-6. Optional das **Energie-Dashboard** konfigurieren, sonst bleibt dieser Teil
-   der App unsichtbar
-7. **Von außen erreichbar machen** — die App-Prüfung sitzt nicht in Deutschland,
-   eine Adresse im Heimnetz nützt nichts. Entweder Nabu Casa (31 Tage kostenlos)
-   oder ein Cloudflare Tunnel auf eine Subdomain.
-8. Von einem fremden Netz aus testen, dass Adresse und Anmeldung funktionieren —
-   am einfachsten über das Mobilfunknetz des Telefons
+1. Einrichtungsassistent durchlaufen — das dabei angelegte Konto ist
+   **Administrator**, genau das braucht die Prüfung
+2. **Drei bis vier Bereiche** anlegen und die Demo-Entitäten zuordnen; ohne
+   Bereiche bleibt die Räume-Ansicht leer
+3. Ein **Dashboard** mit ein paar Karten anlegen
+4. Optional das **Energie-Dashboard** einrichten — am besten einen Tag vor der
+   Einreichung, damit Statistiken vorliegen
+5. **Von außen erreichbar machen** (Nabu Casa oder Cloudflare Tunnel) und aus
+   einem fremden Netz testen, etwa über das Mobilfunknetz des Telefons
 
 ## 5 · Screenshots
 
