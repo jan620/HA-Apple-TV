@@ -13,7 +13,7 @@ Wartezeit am längsten und blockieren den Rest.
       <https://jan620.github.io/HA-Apple-TV/>
 - [x] Name geklärt und überall eingetragen: **Roomglance**
       (HomeDash war im App Store vergeben)
-- [x] Bundle-ID festgelegt: `io.github.jan620.roomglance`
+- [x] Bundle-ID festgelegt: `io.roomglance.tvos`
 - [x] Ko-fi- und Sponsors-Handles
 - [x] App-Icon, Top-Shelf-Bilder, Privacy Manifest, Exporterklärung
 - [x] Store-Texte, App Review Notes, Nutrition-Label-Antworten vorbereitet
@@ -30,10 +30,10 @@ bevor irgendetwas fertig ist.
 
 - [ ] Falls nötig, App-ID anlegen: developer.apple.com →
       *Certificates, Identifiers & Profiles → Identifiers → +* → *App IDs* →
-      Plattform tvOS → `io.github.jan620.roomglance`
+      Plattform tvOS → `io.roomglance.tvos`
 - [ ] App Store Connect → *Apps → + → Neue App*
 - [ ] Plattform **tvOS**, Name **Roomglance**, Primärsprache **Deutsch**
-- [ ] Bundle-ID `io.github.jan620.roomglance`, SKU `roomglance-tvos`
+- [ ] Bundle-ID `io.roomglance.tvos`, SKU `roomglance-tvos`
 
 > Meldet Apple den Namen als vergeben: **nicht** improvisieren, sondern melden —
 > dann suchen wir eine geprüfte Alternative statt einer, die später Ärger macht.
