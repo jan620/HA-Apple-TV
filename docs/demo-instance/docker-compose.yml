@@ -1,0 +1,24 @@
+# Wegwerf-Instanz für die App-Prüfung im App Store.
+#
+# Bewusst getrennt von der produktiven Instanz: Home Assistant kennt keine
+# Berechtigungen je Entität, ein Prüfkonto würde also Kameras, Anwesenheit und
+# Schlösser sehen und schalten können.
+#
+#   docker compose -f docs/demo-instance/docker-compose.yml up -d
+#
+# Danach http://<host>:8124 im Browser öffnen und den Assistenten durchlaufen.
+
+services:
+  homeassistant-demo:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: ha-demo
+    restart: unless-stopped
+    # Absichtlich kein network_mode: host — die Demo braucht weder Bonjour noch
+    # Zugriff auf Geräte im Heimnetz, und so bleibt sie sauber gekapselt.
+    ports:
+      - "8124:8123"
+    volumes:
+      - ./config:/config
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - TZ=Europe/Berlin

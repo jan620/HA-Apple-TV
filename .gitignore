@@ -28,3 +28,7 @@ _site/
 
 ## Xcode-Signierung (lokal, nie committen)
 Tools/development-team.txt
+
+## Laufzeitdaten der Demo-Instanz — enthält Benutzer und Zugangsdaten
+docs/demo-instance/config/*
+!docs/demo-instance/config/configuration.yaml
