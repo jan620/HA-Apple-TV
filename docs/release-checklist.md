@@ -67,8 +67,8 @@ Projektdatei, und jeder `git pull` kollidiert.
 
 ## 4 · Prüfen
 
-- [ ] **⌘U** — Testtarget laufen lassen. `CameraStreamTests` und
-      `MediaSourceTests` wurden noch nie ausgeführt
+- [x] **⌘U** — Testtarget läuft im Simulator fehlerfrei durch. Der erste Lauf
+      hat einen echten Fehler in `HAServer.normalizedURL` gefunden (PR #14)
 - [ ] Auf dem **echten Apple TV**: Anmeldung, Onboarding, ein Dashboard, die
       Räume-Ansicht, das Energie-Dashboard
 - [ ] Zurück-Taste an mehreren Stellen — muss ins Menü führen, nicht aus der App
@@ -113,21 +113,23 @@ Wartewoche kosten. Interne Tests brauchen keine Beta-Prüfung.
 
 Alle Texte fertig in [`app-store-listing.md`](app-store-listing.md).
 
-- [ ] Name, Untertitel, Werbetext, Beschreibung, Keywords übernehmen —
+- [x] Name, Untertitel, Werbetext, Beschreibung, Keywords übernehmen —
       **den Markenhinweis am Ende der Beschreibung nicht kürzen**
-- [ ] Screenshots hochladen
-- [ ] Support-URL `https://github.com/jan620/HA-Apple-TV`
-- [ ] Datenschutz-URL `https://jan620.github.io/HA-Apple-TV/`
-- [ ] Kategorie *Dienstprogramme*, sekundär *Lifestyle*
-- [ ] Altersfreigabe: alle Fragen mit Nein → ergibt 4+
-- [ ] Copyright `2026 Yoga Ananthapavan Yogananthar`
+- [ ] Screenshots hochladen — braucht die laufende Demo-Instanz, siehe Schritt 5
+- [x] Support-URL `https://github.com/jan620/HA-Apple-TV`
+- [x] Datenschutz-URL `https://jan620.github.io/HA-Apple-TV/`
+- [x] Kategorie *Dienstprogramme*, sekundär *Lifestyle*
+- [x] Altersfreigabe: alle Fragen mit Nein → ergibt 4+
+- [x] Copyright `2026 Yoga Ananthapavan Yogananthar`
 
 ## 9 · Datenschutz und Händlerstatus
 
 Begründungen in [`app-store-privacy.md`](app-store-privacy.md).
 
-- [ ] *App-Datenschutz*: „Erfasst diese App Daten?" → **Nein**
-- [ ] Tracking über Apps und Websites hinweg → **Nein**
+- [x] *App-Datenschutz*: „Erfasst diese App Daten?" → **Nein**
+- [ ] Tracking über Apps und Websites hinweg → **Nein**. Sachlich eindeutig:
+      keine einzige Fremdabhängigkeit, kein Analyse-SDK, keine IDFA-Abfrage —
+      die App importiert ausschließlich Apple-Systemframeworks
 - [ ] **Händlerstatus (DSA)** unter *Business → Compliance* — die Erklärung ist
       Pflicht, beide Antworten sind zulässig. Ohne In-App-Käufe ist
       „kein Händler" vertretbar; dann veröffentlicht Apple deine Anschrift nicht
