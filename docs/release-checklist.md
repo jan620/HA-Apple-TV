@@ -28,12 +28,12 @@ Wartezeit am längsten und blockieren den Rest.
 Namen sind exklusiv und werden nach Anmeldezeitpunkt vergeben. Zuerst, noch
 bevor irgendetwas fertig ist.
 
-- [ ] Falls nötig, App-ID anlegen: developer.apple.com →
+- [x] Falls nötig, App-ID anlegen: developer.apple.com →
       *Certificates, Identifiers & Profiles → Identifiers → +* → *App IDs* →
       Plattform tvOS → `io.roomglance.tvos`
-- [ ] App Store Connect → *Apps → + → Neue App*
-- [ ] Plattform **tvOS**, Name **Roomglance**, Primärsprache **Deutsch**
-- [ ] Bundle-ID `io.roomglance.tvos`, SKU `roomglance-tvos`
+- [x] App Store Connect → *Apps → + → Neue App*
+- [x] Plattform **tvOS**, Name **Roomglance**, Primärsprache **Deutsch**
+- [x] Bundle-ID `io.roomglance.tvos`, SKU `roomglance-tvos`
 
 > Meldet Apple den Namen als vergeben: **nicht** improvisieren, sondern melden —
 > dann suchen wir eine geprüfte Alternative statt einer, die später Ärger macht.
@@ -120,7 +120,7 @@ Alle Texte fertig in [`app-store-listing.md`](app-store-listing.md).
 - [ ] Datenschutz-URL `https://jan620.github.io/HA-Apple-TV/`
 - [ ] Kategorie *Dienstprogramme*, sekundär *Lifestyle*
 - [ ] Altersfreigabe: alle Fragen mit Nein → ergibt 4+
-- [ ] Copyright `2026 Y. Ananthapavan`
+- [ ] Copyright `2026 Yoga Ananthapavan Yogananthar`
 
 ## 9 · Datenschutz und Händlerstatus
 
