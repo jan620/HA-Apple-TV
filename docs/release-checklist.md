@@ -120,7 +120,7 @@ Alle Texte fertig in [`app-store-listing.md`](app-store-listing.md).
 - [ ] Datenschutz-URL `https://jan620.github.io/HA-Apple-TV/`
 - [ ] Kategorie *Dienstprogramme*, sekundär *Lifestyle*
 - [ ] Altersfreigabe: alle Fragen mit Nein → ergibt 4+
-- [ ] Copyright `2026 Jan Ananthapavan`
+- [ ] Copyright `2026 Y. Ananthapavan`
 
 ## 9 · Datenschutz und Händlerstatus
 
