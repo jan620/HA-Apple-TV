@@ -1,0 +1,47 @@
+name: Tests
+
+# Führt das Testtarget auf einem tvOS-Simulator aus. Für öffentliche
+# Repositories sind GitHub-gehostete Standard-Runner ohne Minutenlimit frei,
+# auch die macOS-Runner.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Ein neuer Push auf denselben Branch macht den laufenden Job überflüssig.
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: tvOS-Simulator
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Projektdatei erzeugen
+        run: python3 Tools/generate_xcodeproj.py
+
+      # Der Generator ist deterministisch, und die eingecheckte Projektdatei
+      # enthält keine Team-ID. Ein Diff bedeutet deshalb: Xcode hat die Datei
+      # überschrieben und jemand hat das mitgecheckt — genau die Kollision, die
+      # `Tools/development-team.txt` verhindern soll.
+      - name: Projektdatei ist unverändert
+        run: git diff --exit-code Roomglance.xcodeproj
+
+      # Signieren ist für den Simulator nicht nötig, und auf dem Runner gibt es
+      # ohnehin kein Zertifikat.
+      - name: Testtarget
+        run: |
+          xcodebuild test \
+            -project Roomglance.xcodeproj \
+            -scheme Roomglance \
+            -destination 'platform=tvOS Simulator,name=Apple TV 4K (3rd generation),OS=latest' \
+            CODE_SIGNING_ALLOWED=NO
