@@ -20,8 +20,8 @@
 Angaben nach § 5 DDG:
 
 Yoga Ananthapavan Yogananthar<br>
-Sandäckerweg 9<br>
-76646 Bruchsal<br>
+Pröbstener Str. 20<br>
+87637 Eisenberg<br>
 E-Mail: jan_anan@yahoo.de
 
 ## Wer ist Verantwortlicher im Sinne der DSGVO?
