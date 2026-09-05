@@ -130,9 +130,20 @@ Begründungen in [`app-store-privacy.md`](app-store-privacy.md).
 - [ ] Tracking über Apps und Websites hinweg → **Nein**. Sachlich eindeutig:
       keine einzige Fremdabhängigkeit, kein Analyse-SDK, keine IDFA-Abfrage —
       die App importiert ausschließlich Apple-Systemframeworks
-- [ ] **Händlerstatus (DSA)** unter *Business → Compliance* — die Erklärung ist
-      Pflicht, beide Antworten sind zulässig. Ohne In-App-Käufe ist
-      „kein Händler" vertretbar; dann veröffentlicht Apple deine Anschrift nicht
+- [ ] **Händlerstatus (DSA)** — steht **nicht** im App-Eintrag, sondern auf
+      Account-Ebene: *Business → Tab Agreements → Abschnitt Compliance →
+      Complete Compliance Requirements* neben *Digital Services Act*.
+      Erfordert die Rolle **Account Holder oder Admin**; mit einer anderen
+      Rolle ist der Bereich *Business* gar nicht sichtbar
+
+> Die Erklärung ist Pflicht, beide Antworten sind zulässig, und in der EU
+> verteilen lässt sich in beiden Fällen. Als Händler erscheinen Anschrift,
+> Telefon und E-Mail auf der Produktseite, dazu kommen Zahlungskontodaten und
+> eine Compliance-Bestätigung. Als Nicht-Händler entfällt das; Apple weist
+> EU-Nutzer dann darauf hin, dass verbraucherschutzrechtliche Ansprüche
+> zwischen Anbieter und Nutzer nicht gelten — bei einer kostenlosen App ohne
+> Kaufvertrag ohne praktische Folge. Je App lässt sich der Account-Status
+> später überschreiben: *App Information → App Store Regulations and Permits*.
 
 > Die Exportfrage entfällt, `ITSAppUsesNonExemptEncryption` steht schon im
 > Info.plist.
