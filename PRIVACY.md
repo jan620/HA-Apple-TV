@@ -19,7 +19,7 @@
 
 Angaben nach § 5 DDG:
 
-Jan Ananthapavan<br>
+Yoga Ananthapavan Yogananthar<br>
 Sandäckerweg 9<br>
 76646 Bruchsal<br>
 E-Mail: jan_anan@yahoo.de

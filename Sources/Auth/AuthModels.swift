@@ -28,10 +28,6 @@ struct HAServer: Codable, Hashable {
             text = (isPrivateAddress(text) ? "http://" : "https://") + text
         }
 
-        while text.hasSuffix("/") {
-            text.removeLast()
-        }
-
         guard var components = URLComponents(string: text),
               let scheme = components.scheme?.lowercased(),
               scheme == "http" || scheme == "https",
@@ -41,6 +37,15 @@ struct HAServer: Codable, Hashable {
         components.scheme = scheme
         components.query = nil
         components.fragment = nil
+
+        // Am Pfad kürzen, nicht an der eingegebenen Zeichenkette: Bei
+        // `https://example.com/?a=b` steht der Schrägstrich vor der Query, eine
+        // Prüfung auf das Ende der Eingabe griffe dort ins Leere und ließe nach
+        // dem Entfernen der Query ein `https://example.com/` zurück.
+        while components.path.hasSuffix("/") {
+            components.path.removeLast()
+        }
+
         return components.url
     }
 
