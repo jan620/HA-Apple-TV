@@ -16,15 +16,14 @@ homeassistant:
   time_zone: Europe/Berlin
   country: DE
 
-# Nötig, sobald die Instanz über einen Tunnel oder Reverse Proxy erreichbar ist:
-# Ohne diese Angaben lehnt Home Assistant Anfragen ab, die nicht direkt vom
-# Client kommen. Die Bereiche decken die üblichen Docker-Netze ab.
+# Caddy läuft im selben Compose-Netz und reicht die Anfragen weiter. Ohne
+# diese Angaben lehnt Home Assistant alles ab, was nicht direkt vom Client
+# kommt — mit „400: Bad Request" und einem Eintrag im Log. Der Bereich deckt
+# die Adressen ab, die Docker seinen Compose-Netzen gibt.
 http:
   use_x_forwarded_for: true
   trusted_proxies:
     - 172.16.0.0/12
-    - 192.168.0.0/16
-    - 10.0.0.0/8
 
 # Die Demo-Sensoren liefern Verbrauchswerte; damit lässt sich das
 # Energie-Dashboard in der Oberfläche einrichten und die App hat dort etwas

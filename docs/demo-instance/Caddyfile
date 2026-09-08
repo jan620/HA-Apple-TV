@@ -1,0 +1,9 @@
+# Caddy holt das Let's-Encrypt-Zertifikat für diesen Namen automatisch, sobald
+# der A-Eintrag auf den Server zeigt und Port 80 erreichbar ist.
+#
+# WebSocket braucht keine Konfiguration: Caddy reicht Upgrade-Anfragen von
+# selbst durch. Genau daran ist der Synology-Proxy gescheitert.
+
+{$DEMO_DOMAIN} {
+	reverse_proxy homeassistant:8123
+}
