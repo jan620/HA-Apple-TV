@@ -36,6 +36,14 @@ jobs:
       - name: Projektdatei ist unverändert
         run: git diff --exit-code Roomglance.xcodeproj
 
+      # Welche Simulatorgeräte vorangelegt sind, sichert GitHub nicht zu — die
+      # Abbilder wechseln. Ein fest verdrahteter Gerätename scheitert dann mit
+      # „no available devices matched the request", obwohl die tvOS-Laufzeit da
+      # ist. Deshalb wird nachgesehen statt geraten.
+      - name: tvOS-Simulator bereitstellen
+        id: simulator
+        run: echo "udid=$(python3 Tools/ci_tvos_simulator.py)" >> "$GITHUB_OUTPUT"
+
       # Signieren ist für den Simulator nicht nötig, und auf dem Runner gibt es
       # ohnehin kein Zertifikat.
       - name: Testtarget
@@ -43,5 +51,5 @@ jobs:
           xcodebuild test \
             -project Roomglance.xcodeproj \
             -scheme Roomglance \
-            -destination 'platform=tvOS Simulator,name=Apple TV 4K (3rd generation),OS=latest' \
+            -destination "id=${{ steps.simulator.outputs.udid }}" \
             CODE_SIGNING_ALLOWED=NO
