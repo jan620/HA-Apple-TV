@@ -41,18 +41,24 @@ bevor irgendetwas fertig ist.
 ## 2 · Demo-Instanz aufsetzen
 
 Der häufigste Ablehnungsgrund für Apps zu selbstgehosteten Diensten. Alles
-Nötige liegt fertig unter [`demo-instance/`](demo-instance/README.md).
+Nötige liegt fertig unter [`demo-instance/`](demo-instance/README.md) — auf
+einem Mietserver statt auf der NAS, damit die Erreichbarkeit von außen nicht
+am heimischen Reverse Proxy hängt.
 
-- [ ] `docker compose -f docs/demo-instance/docker-compose.yml up -d`
-- [ ] `http://<host>:8124` öffnen, Assistenten durchlaufen,
+- [ ] Hetzner-Server anlegen (CX22, Ubuntu 24.04), Firewall auf 22, 80, 443
+- [ ] A-Eintrag auf die Server-IP setzen — **vor** dem ersten Start,
+      sonst bekommt Caddy kein Zertifikat
+- [ ] Docker installieren, Dateien kopieren, `DEMO_DOMAIN` in `.env` eintragen
+- [ ] `docker compose up -d`
+- [ ] Oberfläche öffnen, Assistenten durchlaufen,
       **Administrator-Konto** anlegen (z. B. `appreview`)
-- [ ] Drei bis vier **Bereiche** anlegen und Demo-Entitäten zuordnen
-- [ ] Ein **Dashboard** mit ein paar Karten anlegen
+- [ ] Vier **Bereiche** anlegen und Demo-Entitäten zuordnen
+- [ ] Ein **Dashboard** mit `entities`-, `thermostat`- und
+      `weather-forecast`-Karte anlegen
 - [ ] **Energie-Dashboard** einrichten — mindestens einen Tag vor der
       Einreichung, sonst fehlen die Statistiken
-- [ ] Von außen erreichbar machen (Nabu Casa oder Cloudflare Tunnel)
 - [ ] **Aus einem fremden Netz testen**, am einfachsten über Mobilfunk
-- [ ] Adresse, Benutzername und Passwort notieren — kommen in Schritt 7
+- [ ] Adresse, Benutzername und Passwort notieren — kommen in Schritt 10
 
 ## 3 · Signing dauerhaft einrichten
 
