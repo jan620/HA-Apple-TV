@@ -94,6 +94,33 @@ struct ClimateControls: View {
 
     private var target: Double? { entity.attributes["temperature"]?.doubleValue }
     private var current: Double? { entity.attributes["current_temperature"]?.doubleValue }
+
+    /// Im Modus „Heizen/Kühlen" setzt Home Assistant kein `temperature`, sondern
+    /// ein Paar aus unterer und oberer Grenze. Wer nur `temperature` liest,
+    /// zeigt bei solchen Thermostaten einen Strich statt der Solltemperatur.
+    private var targetLow: Double? { entity.attributes["target_temp_low"]?.doubleValue }
+    private var targetHigh: Double? { entity.attributes["target_temp_high"]?.doubleValue }
+
+    private var targetText: String {
+        Self.targetText(target: target, low: targetLow, high: targetHigh, unit: unit)
+    }
+
+    /// Freistehend, damit die Fallunterscheidung geprüft werden kann, ohne eine
+    /// Ansicht aufzubauen.
+    nonisolated static func targetText(
+        target: Double?,
+        low: Double?,
+        high: Double?,
+        unit: String
+    ) -> String {
+        if let target {
+            return "\(HANumber.format(target))\(unit)"
+        }
+        if let low, let high {
+            return "\(HANumber.format(low)) – \(HANumber.format(high))\(unit)"
+        }
+        return "—"
+    }
     private var stepSize: Double { entity.attributes["target_temp_step"]?.doubleValue ?? 0.5 }
     private var minimum: Double { entity.attributes["min_temp"]?.doubleValue ?? 7 }
     private var maximum: Double { entity.attributes["max_temp"]?.doubleValue ?? 35 }
@@ -113,7 +140,7 @@ struct ClimateControls: View {
 
             RemoteStepper(
                 title: "Soll · \(entity.displayState)",
-                valueText: target.map { "\(HANumber.format($0))\(unit)" } ?? "—"
+                valueText: targetText
             ) {
                 adjustTarget(by: -stepSize)
             } onIncrease: {
@@ -163,6 +190,26 @@ struct ClimateControls: View {
     }
 
     private func adjustTarget(by delta: Double) {
+        // Bei einem Bereich wandern beide Grenzen mit, der Abstand zwischen
+        // ihnen bleibt erhalten — das entspricht dem, was die Weboberfläche
+        // beim Ziehen des ganzen Bogens tut.
+        if target == nil, let targetLow, let targetHigh {
+            let low = min(max(targetLow + delta, minimum), maximum)
+            let high = min(max(targetHigh + delta, minimum), maximum)
+            Task {
+                await store.callService(
+                    domain: "climate",
+                    service: "set_temperature",
+                    entity: entity,
+                    data: [
+                        "target_temp_low": .number(low),
+                        "target_temp_high": .number(high),
+                    ]
+                )
+            }
+            return
+        }
+
         let base = target ?? current ?? minimum
         let next = min(max(base + delta, minimum), maximum)
         Task {
@@ -417,12 +464,19 @@ struct WeatherCardView: View {
                                         Image(systemName: Self.symbol(for: entry.condition ?? ""))
                                             .font(.title2)
                                             .symbolRenderingMode(.multicolor)
+                                        // Ohne Begrenzung bricht eine Zahl wie
+                                        // „−27,8°" in der 90 Punkt breiten
+                                        // Spalte hinter dem Komma um.
                                         Text(entry.temperature.map { HANumber.format($0) + "°" } ?? "—")
                                             .font(.headline)
+                                            .lineLimit(1)
+                                            .minimumScaleFactor(0.6)
                                         if let low = entry.templow {
                                             Text(HANumber.format(low) + "°")
                                                 .font(.caption)
                                                 .foregroundStyle(.secondary)
+                                                .lineLimit(1)
+                                                .minimumScaleFactor(0.6)
                                         }
                                     }
                                     .frame(width: 90)

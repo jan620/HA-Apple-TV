@@ -74,11 +74,29 @@ struct LovelaceViewRenderer: View {
 
     /// Cards are dealt round-robin into the columns, the same ordering Home
     /// Assistant's masonry view uses before it measures heights.
+    ///
+    /// Eine Überschrift bleibt dabei mit der Karte zusammen, die auf sie folgt.
+    /// Ohne das reißt die Rundverteilung beide auseinander: „Licht" landete in
+    /// einer Spalte, das Raster mit den Lampen in der nächsten, und über den
+    /// Rollläden stand dann die Überschrift einer anderen Domäne.
     private var distributedColumns: [[LovelaceCardConfig]] {
         var columns = Array(repeating: [LovelaceCardConfig](), count: columnCount)
-        for (index, card) in view.cards.enumerated() {
-            columns[index % columnCount].append(card)
+        var column = 0
+        var index = view.cards.startIndex
+
+        while index < view.cards.endIndex {
+            columns[column].append(view.cards[index])
+            let wasHeading = view.cards[index].type == "heading"
+            index += 1
+
+            if wasHeading, index < view.cards.endIndex {
+                columns[column].append(view.cards[index])
+                index += 1
+            }
+
+            column = (column + 1) % columnCount
         }
+
         return columns.filter { !$0.isEmpty }
     }
 
