@@ -50,10 +50,10 @@ am heimischen Reverse Proxy hängt.
       sonst bekommt Caddy kein Zertifikat
 - [x] Docker installieren, Dateien kopieren, `DEMO_DOMAIN` in `.env` eintragen
 - [x] `docker compose up -d`
-- [ ] Oberfläche öffnen, Assistenten durchlaufen,
+- [x] Oberfläche öffnen, Assistenten durchlaufen,
       **Administrator-Konto** anlegen (z. B. `appreview`)
-- [ ] Langlebigen Zugangstoken erzeugen (*Profil → Sicherheit*)
-- [ ] `seed_demo.py` laufen lassen — legt Bereiche, Zuordnung, Dashboard und
+- [x] Langlebigen Zugangstoken erzeugen (*Profil → Sicherheit*)
+- [x] `seed_demo.py` laufen lassen — legt Bereiche, Zuordnung, Dashboard und
       Energie-Dashboard in einem Durchlauf an
 - [ ] Ergebnis in der Oberfläche durchsehen. **Mindestens einen Tag vor der
       Einreichung**, sonst fehlen dem Energie-Dashboard die Statistiken
