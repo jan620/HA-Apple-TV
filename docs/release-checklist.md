@@ -52,11 +52,11 @@ am heimischen Reverse Proxy hängt.
 - [ ] `docker compose up -d`
 - [ ] Oberfläche öffnen, Assistenten durchlaufen,
       **Administrator-Konto** anlegen (z. B. `appreview`)
-- [ ] Vier **Bereiche** anlegen und Demo-Entitäten zuordnen
-- [ ] Ein **Dashboard** mit `entities`-, `thermostat`- und
-      `weather-forecast`-Karte anlegen
-- [ ] **Energie-Dashboard** einrichten — mindestens einen Tag vor der
-      Einreichung, sonst fehlen die Statistiken
+- [ ] Langlebigen Zugangstoken erzeugen (*Profil → Sicherheit*)
+- [ ] `seed_demo.py` laufen lassen — legt Bereiche, Zuordnung, Dashboard und
+      Energie-Dashboard in einem Durchlauf an
+- [ ] Ergebnis in der Oberfläche durchsehen. **Mindestens einen Tag vor der
+      Einreichung**, sonst fehlen dem Energie-Dashboard die Statistiken
 - [ ] **Aus einem fremden Netz testen**, am einfachsten über Mobilfunk
 - [ ] Adresse, Benutzername und Passwort notieren — kommen in Schritt 10
 
