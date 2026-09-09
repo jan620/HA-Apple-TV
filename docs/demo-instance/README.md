@@ -68,13 +68,13 @@ curl -fsSL https://get.docker.com | sh
 
 ## 4 · Instanz starten
 
-Die drei Dateien aus diesem Verzeichnis auf den Server legen —
-`docker-compose.yml`, `Caddyfile` und `config/configuration.yaml`:
+Am einfachsten das Repository klonen — Home Assistant legt seine Laufzeitdaten
+unter `config/` an, und die sind über die `.gitignore` bereits ausgeschlossen:
 
 ```bash
-mkdir -p /opt/ha-demo
-cd /opt/ha-demo
-# Dateien hierher kopieren, z. B. mit scp oder git clone
+cd /opt
+git clone --depth 1 https://github.com/jan620/HA-Apple-TV.git
+cd HA-Apple-TV/docs/demo-instance
 cp .env.example .env
 nano .env          # DEMO_DOMAIN eintragen
 docker compose up -d
@@ -95,54 +95,73 @@ Benutzername und Passwort so wählen, dass sie sich in die App Review Notes
 schreiben lassen; etwa `appreview` und ein zufälliges Passwort. Es sind
 Wegwerf-Zugangsdaten für eine Instanz ohne echte Daten.
 
-> **WebSocket** braucht keine Einstellung. Caddy reicht Upgrade-Anfragen von
-> selbst durch, und `trusted_proxies` in der `configuration.yaml` deckt das
-> Compose-Netz bereits ab.
+> **WebSocket** braucht keine Einstellung, Caddy reicht Upgrade-Anfragen von
+> selbst durch. Die Weiterleitungs-Kopfzeilen entfernt Caddy dagegen bewusst —
+> die Begründung steht im `Caddyfile`.
 
-## 5 · Bereiche anlegen
+## 5 · Einrichten lassen statt klicken
 
-**Einstellungen → Bereiche, Labels & Zonen → Bereich erstellen**
+`seed_demo.py` erledigt Bereiche, Zuordnung, Dashboard und Energie-Dashboard in
+einem Durchlauf. Es liest die Entitäten aus der laufenden Instanz, rät also
+keine Namen und funktioniert auch, wenn eine neuere Home-Assistant-Fassung
+andere Demo-Entitäten mitbringt.
 
-Vier genügen: Wohnzimmer, Küche, Schlafzimmer, Büro. Danach unter
-**Einstellungen → Geräte & Dienste → Entitäten** die Demo-Entitäten auf die
-Bereiche verteilen — Mehrfachauswahl über die Checkboxen, dann *Bereich
-zuweisen*.
+Zuerst einen Token holen: **Profil → Sicherheit → Langlebige Zugangstoken →
+Token erstellen**. Er wird genau einmal angezeigt.
 
-Darauf achten, dass in jedem Bereich etwas Sichtbares landet: eine Lampe, ein
-Sensor, am besten ein Thermostat. Ohne diesen Schritt bleibt die Räume-Ansicht
-leer, und das ist einer der beiden Modi, die im Onboarding zur Wahl stehen.
+```bash
+docker compose cp seed_demo.py homeassistant:/tmp/seed_demo.py
+docker compose exec homeassistant python /tmp/seed_demo.py --token <TOKEN>
+```
 
-## 6 · Ein Dashboard anlegen
+Der Aufruf läuft im Container, weil dort `aiohttp` schon vorhanden ist — auf
+dem Server müsste es erst installiert werden.
 
-**Einstellungen → Dashboards → Dashboard hinzufügen**
+Das Skript ist wiederholbar: vorhandene Bereiche werden erkannt, bereits
+zugeordnete Entitäten bleiben unangetastet.
 
-Drei Karten reichen und decken ab, was Roomglance nativ zeichnet:
+Was es anlegt:
 
-- eine `entities`-Karte mit ein paar Lampen und Sensoren
-- eine `thermostat`-Karte
-- eine `weather-forecast`-Karte
+- **Bereiche** Wohnzimmer, Küche, Schlafzimmer, Büro
+- **Zuordnung** je Domäne reihum, damit jeder Raum etwas Sichtbares hat und
+  nicht alle Lampen im Wohnzimmer landen
+- **Dashboard** „Demo" mit `entities`-, `thermostat`-, `weather-forecast`- und
+  Rollladen-Karte — genau die Typen, die Roomglance nativ zeichnet
+- **Energie-Dashboard** mit dem ersten Sensor, der `device_class: energy` und
+  eine aufsummierende `state_class` hat
 
-## 7 · Energie-Dashboard
+Danach in der Oberfläche kurz durchsehen und bei Bedarf nachjustieren.
 
-**Einstellungen → Dashboards → Energie**
+> **Die Statistiken entstehen erst im Betrieb.** Die Instanz also lieber einen
+> Tag vor der Einreichung aufsetzen als eine Stunde — sonst bleiben die
+> Energie-Diagramme leer. Ohne Energie-Dashboard blendet die App den Bereich
+> aus; das ist kein Fehler, aber ein Teil der App bleibt der Prüfung verborgen.
 
-Als Netzverbrauch einen der Demo-Verbrauchssensoren eintragen. Die Statistiken
-entstehen erst im Betrieb — **die Instanz also lieber einen Tag vor der
-Einreichung starten als eine Stunde.** Ohne Energie-Dashboard blendet die App
-den Bereich aus; das ist kein Fehler, aber ein Teil der App bleibt der Prüfung
-dann verborgen.
+## 6 · Von Hand, falls das Skript nicht durchläuft
 
-## 8 · Von unterwegs testen
+**Einstellungen → Bereiche, Labels & Zonen → Bereich erstellen** — vier
+genügen. Danach unter **Einstellungen → Geräte & Dienste → Entitäten** die
+Demo-Entitäten verteilen; Mehrfachauswahl über die Checkboxen, dann *Bereich
+zuweisen*. In jedem Bereich sollte etwas Sichtbares landen, am besten ein
+Thermostat.
+
+**Einstellungen → Dashboards → Dashboard hinzufügen** — eine `entities`-Karte,
+eine `thermostat`-Karte, eine `weather-forecast`-Karte.
+
+**Einstellungen → Dashboards → Energie** — einen Demo-Verbrauchssensor als
+Netzbezug.
+
+## 7 · Von unterwegs testen
 
 Adresse im Mobilfunknetz aufrufen, anmelden, und einmal mit der App verbinden.
 Klappt das nicht, klappt es bei Apple auch nicht.
 
-## 9 · In die App Review Notes eintragen
+## 8 · In die App Review Notes eintragen
 
 Der fertige Text steht in `../app-store-listing.md` unter *App Review Notes*.
 Einzusetzen sind nur Adresse, Benutzername und Passwort.
 
-## 10 · Nach der Freigabe
+## 9 · Nach der Freigabe
 
 Den Server bei Hetzner löschen — oder, wenn er für das nächste Update stehen
 bleiben soll, wenigstens vom Netz nehmen.
