@@ -39,6 +39,17 @@ ROOMS = ["Wohnzimmer", "Küche", "Schlafzimmer", "Büro"]
 # zuerst bekommt — Licht und Klima sind die dankbarsten Kacheln.
 ROOM_DOMAINS = ["light", "climate", "cover", "sensor", "binary_sensor", "media_player"]
 
+# Die Demo-Entitäten heißen sprechend: „Kitchen Lights", „Bed Light",
+# „Office RGBW Lights". Sie stur reihum zu verteilen führt zu Bürolampen in der
+# Küche — für eine Prüfung, die sich die Räume ansieht, ein unnötig schlechter
+# Eindruck. Passt ein Name, entscheidet er; sonst geht es reihum weiter.
+ROOM_HINTS = {
+    "Küche": ["kitchen", "küche", "kuche", "oven", "fridge"],
+    "Schlafzimmer": ["bed", "schlaf", "bedroom", "nacht"],
+    "Büro": ["office", "büro", "buro", "desk", "study", "arbeitszimmer"],
+    "Wohnzimmer": ["living", "wohnzimmer", "couch", "lounge", "tv", "hall", "entrance"],
+}
+
 DASHBOARD_PATH = "demo-dashboard"
 DASHBOARD_TITLE = "Demo"
 
@@ -112,22 +123,40 @@ def group_by_domain(entity_ids: list[str]) -> dict[str, list[str]]:
     return grouped
 
 
-def is_presentable(entity_id: str, states: dict[str, dict]) -> bool:
+def room_hint(entity_id: str, state: dict | None) -> str | None:
+    """Raum, den der Name nahelegt — sonst None."""
+    name = (state or {}).get("attributes", {}).get("friendly_name", "")
+    haystack = f"{entity_id} {name}".lower()
+    for room, hints in ROOM_HINTS.items():
+        if any(hint in haystack for hint in hints):
+            return room
+    return None
+
+
+def is_presentable(entity_id: str, states: dict[str, dict], entry: dict | None = None) -> bool:
     """Taugt die Entität für einen Screenshot?
 
-    Aussortiert werden Entitäten ohne Wert und Diagnosesensoren. Home Assistant
-    liefert unter anderem vier Backup-Sensoren, die dauerhaft auf „Unbekannt"
-    stehen — vier solche Zeilen auf einem App-Store-Screenshot verkaufen die
-    App schlecht.
+    Drei Gründe zum Aussortieren, in dieser Reihenfolge:
+
+    1. `entity_category` ist `diagnostic` oder `config`. Das ist Home Assistants
+       eigenes Kennzeichen für Technik, die in der Hauptansicht nichts verloren
+       hat — die Backup-Sensoren tragen es.
+    2. Kein Wert: `unknown` oder `unavailable`.
+    3. Ein Sensor ohne Einheit und ohne `device_class` ist ein Zustandssensor
+       wie „Letztes Backup" — technisch korrekt, aber nichts fürs Schaufenster.
+
+    Punkt 1 braucht den Registrierungseintrag; im Dashboard-Bau steht er nicht
+    zur Verfügung, deshalb ist er freiwillig.
     """
+    if entry and entry.get("entity_category") in ("diagnostic", "config"):
+        return False
+
     state = states.get(entity_id)
     if state is None:
         return False
     if state.get("state") in ("unknown", "unavailable", "", None):
         return False
 
-    # Ein Messwert braucht eine Einheit, sonst ist es ein Zustandssensor wie
-    # „Letztes Backup" — technisch korrekt, aber nichts fürs Schaufenster.
     if entity_id.startswith("sensor."):
         attributes = state.get("attributes", {})
         return bool(attributes.get("unit_of_measurement") or attributes.get("device_class"))
@@ -147,25 +176,49 @@ async def assign_areas(
     Lampen im Wohnzimmer und sonst nichts.
     """
     registry = await client.send(type="config/entity_registry/list")
-    # Ohne --reassign nur Einträge ohne Bereich anfassen: eine von Hand
-    # getroffene Zuordnung soll ein zweiter Lauf nicht überschreiben.
+    aktiv = [entry for entry in registry if not entry.get("disabled_by")]
+
+    # Bei --reassign zuerst aufräumen. Ohne das behalten Entitäten, die nach
+    # verschärftem Filter nicht mehr in einen Raum gehören, ihre alte Zuordnung
+    # — und tauchen weiter in der Räume-Ansicht auf.
+    if reassign:
+        geleert = 0
+        for entry in aktiv:
+            if entry.get("area_id"):
+                await client.send(
+                    type="config/entity_registry/update",
+                    entity_id=entry["entity_id"],
+                    area_id=None,
+                )
+                geleert += 1
+        print(f"  Zuordnung von {geleert} Entitäten gelöst")
+
     free = [
         entry["entity_id"]
-        for entry in registry
+        for entry in aktiv
         if (reassign or not entry.get("area_id"))
-        and not entry.get("disabled_by")
-        and is_presentable(entry["entity_id"], states)
+        and is_presentable(entry["entity_id"], states, entry)
     ]
 
     by_domain = group_by_domain(free)
     per_room: dict[str, list[str]] = {name: [] for name in ROOMS}
+    # Je Domäne ein eigener Zeiger, damit die Rundverteilung nicht immer beim
+    # Wohnzimmer anfängt und dort alles landet.
+    naechster = {domain: 0 for domain in ROOM_DOMAINS}
 
     for domain in ROOM_DOMAINS:
-        for index, entity_id in enumerate(by_domain.get(domain, [])):
+        for entity_id in by_domain.get(domain, []):
             # Sensoren gibt es viele; drei je Raum reichen für eine ruhige Ansicht.
-            if domain in ("sensor", "binary_sensor") and index >= len(ROOMS) * 3:
-                break
-            room = ROOMS[index % len(ROOMS)]
+            if domain in ("sensor", "binary_sensor"):
+                if sum(1 for room in ROOMS for e in per_room[room]
+                       if e.startswith(domain + ".")) >= len(ROOMS) * 3:
+                    break
+
+            room = room_hint(entity_id, states.get(entity_id))
+            if room is None:
+                room = ROOMS[naechster[domain] % len(ROOMS)]
+                naechster[domain] += 1
+
             await client.send(
                 type="config/entity_registry/update",
                 entity_id=entity_id,
@@ -175,10 +228,19 @@ async def assign_areas(
 
     for room, entity_ids in per_room.items():
         print(f"  {room}: {len(entity_ids)} Entitäten")
+
+    leer = [room for room, ids in per_room.items() if not ids]
+    if leer:
+        print(f"  Achtung, ohne Entitäten: {', '.join(leer)}")
+
     return per_room
 
 
-async def build_dashboard(client: Client, states: dict[str, dict]) -> None:
+async def build_dashboard(
+    client: Client,
+    states: dict[str, dict],
+    registry: dict[str, dict],
+) -> None:
     """Ein Dashboard mit genau den Karten anlegen, die die App nativ zeichnet."""
     dashboards = await client.send(type="lovelace/dashboards/list")
     if not any(board.get("url_path") == DASHBOARD_PATH for board in dashboards):
@@ -195,7 +257,11 @@ async def build_dashboard(client: Client, states: dict[str, dict]) -> None:
     else:
         print(f"  Dashboard vorhanden: {DASHBOARD_TITLE}")
 
-    zeigbar = [entity_id for entity_id in states if is_presentable(entity_id, states)]
+    zeigbar = [
+        entity_id
+        for entity_id in states
+        if is_presentable(entity_id, states, registry.get(entity_id))
+    ]
     by_domain = group_by_domain(zeigbar)
     cards: list[dict[str, Any]] = []
 
@@ -285,6 +351,10 @@ async def main() -> int:
                 state["entity_id"]: state
                 for state in await client.send(type="get_states")
             }
+            registry = {
+                entry["entity_id"]: entry
+                for entry in await client.send(type="config/entity_registry/list")
+            }
             print(f"{len(states)} Entitäten gefunden.\n")
 
             print("Bereiche:")
@@ -294,7 +364,7 @@ async def main() -> int:
             await assign_areas(client, areas, states, reassign=args.reassign)
 
             print("\nDashboard:")
-            await build_dashboard(client, states)
+            await build_dashboard(client, states, registry)
 
             print("\nEnergie:")
             await configure_energy(client, states)
