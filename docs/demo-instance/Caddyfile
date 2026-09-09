@@ -2,8 +2,28 @@
 # der A-Eintrag auf den Server zeigt und Port 80 erreichbar ist.
 #
 # WebSocket braucht keine Konfiguration: Caddy reicht Upgrade-Anfragen von
-# selbst durch. Genau daran ist der Synology-Proxy gescheitert.
+# selbst durch.
+#
+# Die beiden `header_up`-Zeilen entfernen die Weiterleitungs-Kopfzeilen, die
+# Caddy sonst setzt. Ohne sie antwortet Home Assistant auf jede Anfrage mit
+# `400: Bad Request` und schreibt ins Log:
+#
+#   A request from a reverse proxy was received from <ip>, but your HTTP
+#   integration is not set-up for reverse proxies
+#
+# Das erscheint auch dann, wenn `use_x_forwarded_for: true` und passende
+# `trusted_proxies` in der configuration.yaml stehen und `check_config` sie
+# bestätigt — reproduzierbar auf zwei unabhängigen Aufbauten. Warum der
+# laufende Prozess die Einstellung nicht anwendet, ist ungeklärt.
+#
+# Kommen gar keine Weiterleitungs-Kopfzeilen an, greift die Prüfung nicht, und
+# Home Assistant beantwortet die Anfrage normal. Der Preis: es sieht Caddys
+# Adresse statt der des Besuchers. Für eine Wegwerf-Instanz ohne echte Nutzer
+# ist das bedeutungslos — Anmeldesperren sind standardmäßig aus.
 
 {$DEMO_DOMAIN} {
-	reverse_proxy homeassistant:8123
+	reverse_proxy homeassistant:8123 {
+		header_up -X-Forwarded-For
+		header_up -X-Forwarded-Proto
+	}
 }

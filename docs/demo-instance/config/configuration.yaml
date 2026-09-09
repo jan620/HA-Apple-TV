@@ -16,14 +16,12 @@ homeassistant:
   time_zone: Europe/Berlin
   country: DE
 
-# Caddy läuft im selben Compose-Netz und reicht die Anfragen weiter. Ohne
-# diese Angaben lehnt Home Assistant alles ab, was nicht direkt vom Client
-# kommt — mit „400: Bad Request" und einem Eintrag im Log. Der Bereich deckt
-# die Adressen ab, die Docker seinen Compose-Netzen gibt.
-http:
-  use_x_forwarded_for: true
-  trusted_proxies:
-    - 172.16.0.0/12
+# Kein `http:`-Block, und das ist Absicht. Caddy entfernt die
+# Weiterleitungs-Kopfzeilen, bevor die Anfrage hier ankommt (siehe Caddyfile),
+# also gibt es nichts, worüber Home Assistant stolpern könnte. Der Versuch,
+# es andersherum zu lösen — `use_x_forwarded_for: true` mit passenden
+# `trusted_proxies` — schlug auf zwei unabhängigen Aufbauten fehl, obwohl
+# `check_config` die Werte bestätigte.
 
 # Die Demo-Sensoren liefern Verbrauchswerte; damit lässt sich das
 # Energie-Dashboard in der Oberfläche einrichten und die App hat dort etwas
@@ -31,5 +29,7 @@ http:
 recorder:
   purge_keep_days: 3
 
-logger:
-  default: warning
+# Kein `logger:`-Block mit `default: warning`: das unterdrückt die
+# Startmeldungen und macht jede Fehlersuche blind. Die Standardstufe ist
+# gesprächiger, aber bei einer Instanz, die nur ein paar Tage läuft, ist das
+# kein Nachteil.
