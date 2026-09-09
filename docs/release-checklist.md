@@ -55,10 +55,10 @@ am heimischen Reverse Proxy hängt.
 - [x] Langlebigen Zugangstoken erzeugen (*Profil → Sicherheit*)
 - [x] `seed_demo.py` laufen lassen — legt Bereiche, Zuordnung, Dashboard und
       Energie-Dashboard in einem Durchlauf an
-- [ ] Ergebnis in der Oberfläche durchsehen. **Mindestens einen Tag vor der
+- [x] Ergebnis in der Oberfläche durchsehen. **Mindestens einen Tag vor der
       Einreichung**, sonst fehlen dem Energie-Dashboard die Statistiken
-- [ ] **Aus einem fremden Netz testen**, am einfachsten über Mobilfunk
-- [ ] Adresse, Benutzername und Passwort notieren — kommen in Schritt 10
+- [x] **Aus einem fremden Netz testen**, am einfachsten über Mobilfunk
+- [x] Adresse, Benutzername und Passwort notieren — kommen in Schritt 10
 
 ## 3 · Signing dauerhaft einrichten
 
@@ -116,14 +116,13 @@ Mindestens einer in **1920 × 1080**. Simulator: ⌘S. Gerät: Xcode →
 > Version und Build stehen auf `1.0` / `1`. Jeder weitere Upload braucht eine
 > höhere `CFBundleVersion` in `Resources/Info.plist`.
 
-## 7 · TestFlight
+## 7 · TestFlight — übersprungen
 
-Optional, fängt aber die Fehler ab, die sonst eine Ablehnung und eine
-Wartewoche kosten. Interne Tests brauchen keine Beta-Prüfung.
+Bewusst ausgelassen. Der Ablauf war zuvor vollständig auf dem echten Apple TV
+gegen die Demo-Instanz durchgegangen; TestFlight hätte dieselbe Prüfung ein
+zweites Mal gemacht.
 
-- [ ] *TestFlight → Interne Tests*, Gruppe anlegen, sich selbst hinzufügen
-- [ ] Auf dem Apple TV über TestFlight installieren
-- [ ] Kompletten Ablauf einmal durchgehen
+Für ein Update mit größeren Änderungen bleibt es der ratsame Umweg.
 
 ## 8 · Store-Eintrag ausfüllen
 
@@ -134,12 +133,12 @@ Alle Texte fertig in [`app-store-listing.md`](app-store-listing.md).
 - [x] Screenshots hochladen — braucht die laufende Demo-Instanz, siehe Schritt 5
 - [x] Support-URL `https://github.com/jan620/HA-Apple-TV`
 - [x] Datenschutz-URL `https://jan620.github.io/HA-Apple-TV/`
-- [ ] **App-Informationen → Kategorie**: primär *Dienstprogramme*,
+- [x] **App-Informationen → Kategorie**: primär *Dienstprogramme*,
       sekundär *Lifestyle*
-- [ ] **App-Informationen → Inhaltsrechte**: enthält die App Inhalte, Anzeigen
+- [x] **App-Informationen → Inhaltsrechte**: enthält die App Inhalte, Anzeigen
       oder Web-Ansichten Dritter? → **Nein**. Angezeigt werden nur die Daten der
       eingetragenen Instanz, und eine Web-Ansicht gibt es auf tvOS nicht
-- [ ] **Preise und Verfügbarkeit → Preis: Kostenlos.** Nicht optional: eine
+- [x] **Preise und Verfügbarkeit → Preis: Kostenlos.** Nicht optional: eine
       bezahlte App wäre mit der Erklärung „kein Händler" unvereinbar
 - [x] Altersfreigabe: alle Fragen mit Nein → ergibt 4+
 - [x] Copyright `2026 Yoga Ananthapavan Yogananthar`
@@ -149,7 +148,7 @@ Alle Texte fertig in [`app-store-listing.md`](app-store-listing.md).
 Begründungen in [`app-store-privacy.md`](app-store-privacy.md).
 
 - [x] *App-Datenschutz*: „Erfasst diese App Daten?" → **Nein**
-- [ ] Tracking über Apps und Websites hinweg → **Nein**. Sachlich eindeutig:
+- [x] Tracking über Apps und Websites hinweg → **Nein**. Sachlich eindeutig:
       keine einzige Fremdabhängigkeit, kein Analyse-SDK, keine IDFA-Abfrage —
       die App importiert ausschließlich Apple-Systemframeworks
 - [x] **Händlerstatus (DSA)** — steht **nicht** im App-Eintrag, sondern auf
@@ -172,16 +171,17 @@ Begründungen in [`app-store-privacy.md`](app-store-privacy.md).
 
 ## 10 · Einreichen
 
-- [ ] Build auswählen
-- [ ] **App Review Notes** ausfüllen — Text aus `app-store-listing.md`, nur
+- [x] Build auswählen
+- [x] **App Review Notes** ausfüllen — Text aus `app-store-listing.md`, nur
       Adresse und Zugangsdaten der Demo-Instanz einsetzen.
       **Ohne diesen Text wird die App abgelehnt**
-- [ ] Kontaktdaten für Rückfragen
-- [ ] Freigabe auf *manuell* stellen
-- [ ] Zur Prüfung einreichen
+- [x] Kontaktdaten für Rückfragen
+- [x] Freigabe auf *manuell* stellen
+- [x] Zur Prüfung einreichen
 
-> Dauert erfahrungsgemäß ein bis drei Tage. Bei einer Ablehnung antwortet man im
-> *Resolution Center*; oft genügt eine Erklärung ohne neuen Build.
+> **Eingereicht am 9. September 2026.** Dauert erfahrungsgemäß ein bis drei
+> Tage. Bei einer Ablehnung antwortet man im *Resolution Center*; oft genügt
+> eine Erklärung ohne neuen Build.
 
 ## 11 · Nach der Freigabe
 
