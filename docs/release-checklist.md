@@ -45,11 +45,11 @@ Nötige liegt fertig unter [`demo-instance/`](demo-instance/README.md) — auf
 einem Mietserver statt auf der NAS, damit die Erreichbarkeit von außen nicht
 am heimischen Reverse Proxy hängt.
 
-- [ ] Hetzner-Server anlegen (CX22, Ubuntu 24.04), Firewall auf 22, 80, 443
-- [ ] A-Eintrag auf die Server-IP setzen — **vor** dem ersten Start,
+- [x] Hetzner-Server anlegen (CX22, Ubuntu 24.04), Firewall auf 22, 80, 443
+- [x] A-Eintrag auf die Server-IP setzen — **vor** dem ersten Start,
       sonst bekommt Caddy kein Zertifikat
-- [ ] Docker installieren, Dateien kopieren, `DEMO_DOMAIN` in `.env` eintragen
-- [ ] `docker compose up -d`
+- [x] Docker installieren, Dateien kopieren, `DEMO_DOMAIN` in `.env` eintragen
+- [x] `docker compose up -d`
 - [ ] Oberfläche öffnen, Assistenten durchlaufen,
       **Administrator-Konto** anlegen (z. B. `appreview`)
 - [ ] Langlebigen Zugangstoken erzeugen (*Profil → Sicherheit*)
@@ -136,7 +136,7 @@ Begründungen in [`app-store-privacy.md`](app-store-privacy.md).
 - [ ] Tracking über Apps und Websites hinweg → **Nein**. Sachlich eindeutig:
       keine einzige Fremdabhängigkeit, kein Analyse-SDK, keine IDFA-Abfrage —
       die App importiert ausschließlich Apple-Systemframeworks
-- [ ] **Händlerstatus (DSA)** — steht **nicht** im App-Eintrag, sondern auf
+- [x] **Händlerstatus (DSA)** — steht **nicht** im App-Eintrag, sondern auf
       Account-Ebene: *Business → Tab Agreements → Abschnitt Compliance →
       Complete Compliance Requirements* neben *Digital Services Act*.
       Erfordert die Rolle **Account Holder oder Admin**; mit einer anderen
