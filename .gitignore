@@ -23,7 +23,7 @@ __pycache__/
 *.pyc
 _site/
 
-## Claude Code
+## Lokale Werkzeug- und Editorverzeichnisse
 .claude/
 
 ## Xcode-Signierung (lokal, nie committen)
