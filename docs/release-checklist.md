@@ -134,7 +134,13 @@ Alle Texte fertig in [`app-store-listing.md`](app-store-listing.md).
 - [x] Screenshots hochladen — braucht die laufende Demo-Instanz, siehe Schritt 5
 - [x] Support-URL `https://github.com/jan620/HA-Apple-TV`
 - [x] Datenschutz-URL `https://jan620.github.io/HA-Apple-TV/`
-- [x] Kategorie *Dienstprogramme*, sekundär *Lifestyle*
+- [ ] **App-Informationen → Kategorie**: primär *Dienstprogramme*,
+      sekundär *Lifestyle*
+- [ ] **App-Informationen → Inhaltsrechte**: enthält die App Inhalte, Anzeigen
+      oder Web-Ansichten Dritter? → **Nein**. Angezeigt werden nur die Daten der
+      eingetragenen Instanz, und eine Web-Ansicht gibt es auf tvOS nicht
+- [ ] **Preise und Verfügbarkeit → Preis: Kostenlos.** Nicht optional: eine
+      bezahlte App wäre mit der Erklärung „kein Händler" unvereinbar
 - [x] Altersfreigabe: alle Fragen mit Nein → ergibt 4+
 - [x] Copyright `2026 Yoga Ananthapavan Yogananthar`
 
