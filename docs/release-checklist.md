@@ -77,24 +77,28 @@ Projektdatei, und jeder `git pull` kollidiert.
 
 - [x] **⌘U** — Testtarget läuft im Simulator fehlerfrei durch. Der erste Lauf
       hat einen echten Fehler in `HAServer.normalizedURL` gefunden (PR #14)
-- [ ] Auf dem **echten Apple TV**: Anmeldung, Onboarding, ein Dashboard, die
+- [x] Auf dem **echten Apple TV**: Anmeldung, Onboarding, ein Dashboard, die
       Räume-Ansicht, das Energie-Dashboard
 - [ ] Zurück-Taste an mehreren Stellen — muss ins Menü führen, nicht aus der App
-- [ ] Bildschirmschoner über *Jetzt anzeigen*, einmal mit Hintergrundbildern
+- [x] Bildschirmschoner über *Jetzt anzeigen*
 
 ## 5 · Screenshots
 
 Mindestens einer in **1920 × 1080**. Simulator: ⌘S. Gerät: Xcode →
 *Window → Devices and Simulators → Take Screenshot*.
 
-- [ ] Ein Dashboard mit Karten
-- [ ] Die Räume-Ansicht
+- [x] Ein Dashboard mit Karten
+- [x] Die Räume-Ansicht
 - [ ] Das Energie-Dashboard mit dem Sankey-Diagramm
-- [ ] Der Bildschirmschoner mit Hintergrundbild
-- [ ] Eine Detailansicht (Lampe oder Klimaanlage)
+- [x] Der Bildschirmschoner
+- [x] Eine Detailansicht (Lampe oder Klimaanlage)
 
 > Räume wählen, in denen alles verfügbar ist — rote „Nicht verfügbar"-Zeilen
 > verkaufen die App schlecht. Und das Home-Assistant-Logo nie als Hauptmotiv.
+
+> **Zwischen den Aufnahmen ein paar Sekunden warten.** Sonst steht die
+> Einblendung „Bildschirmfoto aufgenommen" der vorherigen Aufnahme noch im
+> Bild und wird mitfotografiert.
 
 ## 6 · Bauen und hochladen
 
