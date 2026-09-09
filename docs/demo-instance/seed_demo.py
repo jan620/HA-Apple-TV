@@ -112,19 +112,49 @@ def group_by_domain(entity_ids: list[str]) -> dict[str, list[str]]:
     return grouped
 
 
-async def assign_areas(client: Client, areas: dict[str, str]) -> dict[str, list[str]]:
+def is_presentable(entity_id: str, states: dict[str, dict]) -> bool:
+    """Taugt die Entität für einen Screenshot?
+
+    Aussortiert werden Entitäten ohne Wert und Diagnosesensoren. Home Assistant
+    liefert unter anderem vier Backup-Sensoren, die dauerhaft auf „Unbekannt"
+    stehen — vier solche Zeilen auf einem App-Store-Screenshot verkaufen die
+    App schlecht.
+    """
+    state = states.get(entity_id)
+    if state is None:
+        return False
+    if state.get("state") in ("unknown", "unavailable", "", None):
+        return False
+
+    # Ein Messwert braucht eine Einheit, sonst ist es ein Zustandssensor wie
+    # „Letztes Backup" — technisch korrekt, aber nichts fürs Schaufenster.
+    if entity_id.startswith("sensor."):
+        attributes = state.get("attributes", {})
+        return bool(attributes.get("unit_of_measurement") or attributes.get("device_class"))
+
+    return True
+
+
+async def assign_areas(
+    client: Client,
+    areas: dict[str, str],
+    states: dict[str, dict],
+    reassign: bool = False,
+) -> dict[str, list[str]]:
     """Entitäten reihum auf die Bereiche verteilen.
 
     Je Domäne reihum, damit jeder Raum etwas Sichtbares bekommt statt alle
     Lampen im Wohnzimmer und sonst nichts.
     """
     registry = await client.send(type="config/entity_registry/list")
-    # Nur Einträge ohne Bereich anfassen — eine schon getroffene Zuordnung
-    # soll ein zweiter Lauf nicht durcheinanderbringen.
+    # Ohne --reassign nur Einträge ohne Bereich anfassen: eine von Hand
+    # getroffene Zuordnung soll ein zweiter Lauf nicht überschreiben.
     free = [
         entry["entity_id"]
         for entry in registry
-        if not entry.get("area_id") and not entry.get("disabled_by")
+        if (reassign or not entry.get("area_id"))
+        and not entry.get("disabled_by")
+        and is_presentable(entry["entity_id"], states)
     ]
 
     by_domain = group_by_domain(free)
@@ -165,7 +195,8 @@ async def build_dashboard(client: Client, states: dict[str, dict]) -> None:
     else:
         print(f"  Dashboard vorhanden: {DASHBOARD_TITLE}")
 
-    by_domain = group_by_domain(list(states))
+    zeigbar = [entity_id for entity_id in states if is_presentable(entity_id, states)]
+    by_domain = group_by_domain(zeigbar)
     cards: list[dict[str, Any]] = []
 
     entities = by_domain.get("light", [])[:4] + by_domain.get("sensor", [])[:4]
@@ -241,6 +272,11 @@ async def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--url", default="http://localhost:8123")
     parser.add_argument("--token", required=True, help="Langlebiger Zugangstoken")
+    parser.add_argument(
+        "--reassign",
+        action="store_true",
+        help="Bereits zugeordnete Entitäten neu verteilen statt sie zu überspringen",
+    )
     args = parser.parse_args()
 
     async with aiohttp.ClientSession() as session:
@@ -255,7 +291,7 @@ async def main() -> int:
             areas = await ensure_areas(client)
 
             print("\nZuordnung:")
-            await assign_areas(client, areas)
+            await assign_areas(client, areas, states, reassign=args.reassign)
 
             print("\nDashboard:")
             await build_dashboard(client, states)
