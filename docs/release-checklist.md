@@ -96,18 +96,22 @@ Mindestens einer in **1920 × 1080**. Simulator: ⌘S. Gerät: Xcode →
 > Räume wählen, in denen alles verfügbar ist — rote „Nicht verfügbar"-Zeilen
 > verkaufen die App schlecht. Und das Home-Assistant-Logo nie als Hauptmotiv.
 
+> **Die Reihenfolge im Store ist nicht egal.** Die erste Kachel wird am
+> größten gezeigt. Nach vorn gehört, was am meisten zeigt — Dashboard und
+> Räume —, nicht der Bildschirmschoner.
+
 > **Zwischen den Aufnahmen ein paar Sekunden warten.** Sonst steht die
 > Einblendung „Bildschirmfoto aufgenommen" der vorherigen Aufnahme noch im
 > Bild und wird mitfotografiert.
 
 ## 6 · Bauen und hochladen
 
-- [ ] `git pull && python3 Tools/generate_xcodeproj.py`
-- [ ] Ziel auf **Any tvOS Device (arm64)** stellen — sonst ist *Archive*
+- [x] `git pull && python3 Tools/generate_xcodeproj.py`
+- [x] Ziel auf **Any tvOS Device (arm64)** stellen — sonst ist *Archive*
       ausgegraut
-- [ ] *Product → Archive*
-- [ ] Organizer → *Distribute App → App Store Connect → Upload*
-- [ ] Warten, bis der Build unter *TestFlight* auftaucht (Minuten bis Stunde)
+- [x] *Product → Archive*
+- [x] Organizer → *Distribute App → App Store Connect → Upload*
+- [x] Warten, bis der Build unter *TestFlight* auftaucht (Minuten bis Stunde)
 
 > Version und Build stehen auf `1.0` / `1`. Jeder weitere Upload braucht eine
 > höhere `CFBundleVersion` in `Resources/Info.plist`.
@@ -127,7 +131,7 @@ Alle Texte fertig in [`app-store-listing.md`](app-store-listing.md).
 
 - [x] Name, Untertitel, Werbetext, Beschreibung, Keywords übernehmen —
       **den Markenhinweis am Ende der Beschreibung nicht kürzen**
-- [ ] Screenshots hochladen — braucht die laufende Demo-Instanz, siehe Schritt 5
+- [x] Screenshots hochladen — braucht die laufende Demo-Instanz, siehe Schritt 5
 - [x] Support-URL `https://github.com/jan620/HA-Apple-TV`
 - [x] Datenschutz-URL `https://jan620.github.io/HA-Apple-TV/`
 - [x] Kategorie *Dienstprogramme*, sekundär *Lifestyle*
