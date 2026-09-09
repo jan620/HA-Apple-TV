@@ -14,8 +14,6 @@ import os
 import re
 import sys
 
-import markdown
-
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOURCE = os.path.join(ROOT, "PRIVACY.md")
 DEFAULT_OUTPUT = os.path.join(ROOT, "_site")
@@ -157,6 +155,11 @@ def build(output_dir: str) -> str:
 
     for placeholder in check_placeholders(source):
         print(f"  Hinweis: Platzhalter noch offen — [{placeholder}]")
+
+    # Erst hier importiert: so lässt sich strip_editorial_note aus diesem
+    # Modul mitbenutzen, ohne die Abhängigkeit zu brauchen. Sie steckt nur im
+    # Pages-Workflow, nicht in jeder Umgebung.
+    import markdown
 
     body = markdown.markdown(
         strip_editorial_note(source),
