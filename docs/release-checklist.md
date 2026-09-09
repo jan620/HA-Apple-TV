@@ -65,10 +65,12 @@ am heimischen Reverse Proxy hängt.
 Ohne das schreibt Xcode die Team-ID immer wieder in die generierte
 Projektdatei, und jeder `git pull` kollidiert.
 
-- [ ] `grep -m1 -o 'DEVELOPMENT_TEAM = [A-Z0-9]*' Roomglance.xcodeproj/project.pbxproj`
-- [ ] `echo DEINE-TEAM-ID > Tools/development-team.txt`
-- [ ] `python3 Tools/generate_xcodeproj.py`
-- [ ] Kontrolle: `grep -c DEVELOPMENT_TEAM Roomglance.xcodeproj/project.pbxproj`
+- [x] Team-ID aus dem Developer-Portal holen: *Account → Membership details*.
+      Alternativ auf dem Mac `security find-identity -v -p codesigning` — die
+      zehn Zeichen in der Klammer
+- [x] `echo DEINE-TEAM-ID > Tools/development-team.txt`
+- [x] `python3 Tools/generate_xcodeproj.py`
+- [x] Kontrolle: `grep -c DEVELOPMENT_TEAM Roomglance.xcodeproj/project.pbxproj`
       muss **4** ergeben
 
 ## 4 · Prüfen

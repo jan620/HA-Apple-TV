@@ -410,6 +410,7 @@
 				3358B046659F8692A84A72D8,
 				4C21DC7309FCB92B673BAD22,
 				4F83869E082B2E8805511110,
+				528E16B8036FF8772DCDE269,
 				8EBB2F898B143CA309DE2E3D,
 				B3CD24C9D2F94571EC842977,
 			);
@@ -461,6 +462,10 @@
 			lastKnownFileType = sourcecode.swift;
 			path = Theme.swift;
 			sourceTree = "<group>";
+		};
+		528E16B8036FF8772DCDE269 = {
+			fileRef = ECEDB1A23785C5EC53A35B9D;
+			isa = PBXBuildFile;
 		};
 		546167ADC8B31A4E0B3BF4FC = {
 			children = (
@@ -621,6 +626,7 @@
 				DCD03C06BB03DA1E8AB15E3D,
 				E1BB9D2078860F155AC0D569,
 				E5A1DDEAB171CF6A962870EE,
+				ECEDB1A23785C5EC53A35B9D,
 			);
 			isa = PBXGroup;
 			path = Tests;
@@ -899,6 +905,12 @@
 		EA5489C18E0BC08C6E4ACABA = {
 			fileRef = 0A844C254EC87B80AE0AB093;
 			isa = PBXBuildFile;
+		};
+		ECEDB1A23785C5EC53A35B9D = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = ClimateTargetTests.swift;
+			sourceTree = "<group>";
 		};
 		ED2B73088895013E0E6D1631 = {
 			isa = PBXFileReference;
