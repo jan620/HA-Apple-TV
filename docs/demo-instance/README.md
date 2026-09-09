@@ -118,13 +118,19 @@ Der Aufruf läuft im Container, weil dort `aiohttp` schon vorhanden ist — auf
 dem Server müsste es erst installiert werden.
 
 Das Skript ist wiederholbar: vorhandene Bereiche werden erkannt, bereits
-zugeordnete Entitäten bleiben unangetastet.
+zugeordnete Entitäten bleiben unangetastet. Mit `--reassign` wird die Zuordnung
+zuerst vollständig gelöst und dann neu aufgebaut — nötig, wenn sich der Filter
+geändert hat und Entitäten aus den Räumen verschwinden sollen.
 
 Was es anlegt:
 
 - **Bereiche** Wohnzimmer, Küche, Schlafzimmer, Büro
-- **Zuordnung** je Domäne reihum, damit jeder Raum etwas Sichtbares hat und
-  nicht alle Lampen im Wohnzimmer landen
+- **Zuordnung** nach Namen, wo er eindeutig ist — „Kitchen Lights" landet in
+  der Küche, „Bed Light" im Schlafzimmer. Der Rest reihum, damit jeder Raum
+  etwas Sichtbares bekommt
+- **Aussortiert** werden Diagnose-Entitäten (`entity_category`), Werte auf
+  *Unbekannt* und Sensoren ohne Einheit — sie sähen auf einem Screenshot aus
+  wie Fehler
 - **Dashboard** „Demo" mit `entities`-, `thermostat`-, `weather-forecast`- und
   Rollladen-Karte — genau die Typen, die Roomglance nativ zeichnet
 - **Energie-Dashboard** mit dem ersten Sensor, der `device_class: energy` und
