@@ -8,7 +8,7 @@ import XCTest
 /// Weboberfläche daneben 21,0 und 24,0 anzeigte.
 final class ClimateTargetTests: XCTestCase {
     private func text(target: Double? = nil, low: Double? = nil, high: Double? = nil) -> String {
-        ThermostatCardView.targetText(target: target, low: low, high: high, unit: "°C")
+        ClimateControls.targetText(target: target, low: low, high: high, unit: "°C")
     }
 
     /// Bewusst ganze Zahlen: `HANumber.format` benutzt die Locale der Umgebung,
