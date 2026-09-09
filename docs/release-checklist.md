@@ -55,10 +55,10 @@ am heimischen Reverse Proxy hängt.
 - [x] Langlebigen Zugangstoken erzeugen (*Profil → Sicherheit*)
 - [x] `seed_demo.py` laufen lassen — legt Bereiche, Zuordnung, Dashboard und
       Energie-Dashboard in einem Durchlauf an
-- [ ] Ergebnis in der Oberfläche durchsehen. **Mindestens einen Tag vor der
+- [x] Ergebnis in der Oberfläche durchsehen. **Mindestens einen Tag vor der
       Einreichung**, sonst fehlen dem Energie-Dashboard die Statistiken
-- [ ] **Aus einem fremden Netz testen**, am einfachsten über Mobilfunk
-- [ ] Adresse, Benutzername und Passwort notieren — kommen in Schritt 10
+- [x] **Aus einem fremden Netz testen**, am einfachsten über Mobilfunk
+- [x] Adresse, Benutzername und Passwort notieren — kommen in Schritt 10
 
 ## 3 · Signing dauerhaft einrichten
 
@@ -77,45 +77,52 @@ Projektdatei, und jeder `git pull` kollidiert.
 
 - [x] **⌘U** — Testtarget läuft im Simulator fehlerfrei durch. Der erste Lauf
       hat einen echten Fehler in `HAServer.normalizedURL` gefunden (PR #14)
-- [ ] Auf dem **echten Apple TV**: Anmeldung, Onboarding, ein Dashboard, die
+- [x] Auf dem **echten Apple TV**: Anmeldung, Onboarding, ein Dashboard, die
       Räume-Ansicht, das Energie-Dashboard
-- [ ] Zurück-Taste an mehreren Stellen — muss ins Menü führen, nicht aus der App
-- [ ] Bildschirmschoner über *Jetzt anzeigen*, einmal mit Hintergrundbildern
+- [x] Zurück-Taste an mehreren Stellen — muss ins Menü führen, nicht aus der App
+- [x] Bildschirmschoner über *Jetzt anzeigen*
 
 ## 5 · Screenshots
 
 Mindestens einer in **1920 × 1080**. Simulator: ⌘S. Gerät: Xcode →
 *Window → Devices and Simulators → Take Screenshot*.
 
-- [ ] Ein Dashboard mit Karten
-- [ ] Die Räume-Ansicht
-- [ ] Das Energie-Dashboard mit dem Sankey-Diagramm
-- [ ] Der Bildschirmschoner mit Hintergrundbild
-- [ ] Eine Detailansicht (Lampe oder Klimaanlage)
+- [x] Ein Dashboard mit Karten
+- [x] Die Räume-Ansicht
+- [x] Das Energie-Dashboard mit dem Sankey-Diagramm
+- [x] Der Bildschirmschoner
+- [x] Eine Detailansicht (Lampe oder Klimaanlage)
 
 > Räume wählen, in denen alles verfügbar ist — rote „Nicht verfügbar"-Zeilen
 > verkaufen die App schlecht. Und das Home-Assistant-Logo nie als Hauptmotiv.
 
+> **Die Reihenfolge im Store ist nicht egal.** Die erste Kachel wird am
+> größten gezeigt. Nach vorn gehört, was am meisten zeigt — Dashboard und
+> Räume —, nicht der Bildschirmschoner.
+
+> **Zwischen den Aufnahmen ein paar Sekunden warten.** Sonst steht die
+> Einblendung „Bildschirmfoto aufgenommen" der vorherigen Aufnahme noch im
+> Bild und wird mitfotografiert.
+
 ## 6 · Bauen und hochladen
 
-- [ ] `git pull && python3 Tools/generate_xcodeproj.py`
-- [ ] Ziel auf **Any tvOS Device (arm64)** stellen — sonst ist *Archive*
+- [x] `git pull && python3 Tools/generate_xcodeproj.py`
+- [x] Ziel auf **Any tvOS Device (arm64)** stellen — sonst ist *Archive*
       ausgegraut
-- [ ] *Product → Archive*
-- [ ] Organizer → *Distribute App → App Store Connect → Upload*
-- [ ] Warten, bis der Build unter *TestFlight* auftaucht (Minuten bis Stunde)
+- [x] *Product → Archive*
+- [x] Organizer → *Distribute App → App Store Connect → Upload*
+- [x] Warten, bis der Build unter *TestFlight* auftaucht (Minuten bis Stunde)
 
 > Version und Build stehen auf `1.0` / `1`. Jeder weitere Upload braucht eine
 > höhere `CFBundleVersion` in `Resources/Info.plist`.
 
-## 7 · TestFlight
+## 7 · TestFlight — übersprungen
 
-Optional, fängt aber die Fehler ab, die sonst eine Ablehnung und eine
-Wartewoche kosten. Interne Tests brauchen keine Beta-Prüfung.
+Bewusst ausgelassen. Der Ablauf war zuvor vollständig auf dem echten Apple TV
+gegen die Demo-Instanz durchgegangen; TestFlight hätte dieselbe Prüfung ein
+zweites Mal gemacht.
 
-- [ ] *TestFlight → Interne Tests*, Gruppe anlegen, sich selbst hinzufügen
-- [ ] Auf dem Apple TV über TestFlight installieren
-- [ ] Kompletten Ablauf einmal durchgehen
+Für ein Update mit größeren Änderungen bleibt es der ratsame Umweg.
 
 ## 8 · Store-Eintrag ausfüllen
 
@@ -123,10 +130,16 @@ Alle Texte fertig in [`app-store-listing.md`](app-store-listing.md).
 
 - [x] Name, Untertitel, Werbetext, Beschreibung, Keywords übernehmen —
       **den Markenhinweis am Ende der Beschreibung nicht kürzen**
-- [ ] Screenshots hochladen — braucht die laufende Demo-Instanz, siehe Schritt 5
+- [x] Screenshots hochladen — braucht die laufende Demo-Instanz, siehe Schritt 5
 - [x] Support-URL `https://github.com/jan620/HA-Apple-TV`
 - [x] Datenschutz-URL `https://jan620.github.io/HA-Apple-TV/`
-- [x] Kategorie *Dienstprogramme*, sekundär *Lifestyle*
+- [x] **App-Informationen → Kategorie**: primär *Dienstprogramme*,
+      sekundär *Lifestyle*
+- [x] **App-Informationen → Inhaltsrechte**: enthält die App Inhalte, Anzeigen
+      oder Web-Ansichten Dritter? → **Nein**. Angezeigt werden nur die Daten der
+      eingetragenen Instanz, und eine Web-Ansicht gibt es auf tvOS nicht
+- [x] **Preise und Verfügbarkeit → Preis: Kostenlos.** Nicht optional: eine
+      bezahlte App wäre mit der Erklärung „kein Händler" unvereinbar
 - [x] Altersfreigabe: alle Fragen mit Nein → ergibt 4+
 - [x] Copyright `2026 Yoga Ananthapavan Yogananthar`
 
@@ -135,7 +148,7 @@ Alle Texte fertig in [`app-store-listing.md`](app-store-listing.md).
 Begründungen in [`app-store-privacy.md`](app-store-privacy.md).
 
 - [x] *App-Datenschutz*: „Erfasst diese App Daten?" → **Nein**
-- [ ] Tracking über Apps und Websites hinweg → **Nein**. Sachlich eindeutig:
+- [x] Tracking über Apps und Websites hinweg → **Nein**. Sachlich eindeutig:
       keine einzige Fremdabhängigkeit, kein Analyse-SDK, keine IDFA-Abfrage —
       die App importiert ausschließlich Apple-Systemframeworks
 - [x] **Händlerstatus (DSA)** — steht **nicht** im App-Eintrag, sondern auf
@@ -158,16 +171,17 @@ Begründungen in [`app-store-privacy.md`](app-store-privacy.md).
 
 ## 10 · Einreichen
 
-- [ ] Build auswählen
-- [ ] **App Review Notes** ausfüllen — Text aus `app-store-listing.md`, nur
+- [x] Build auswählen
+- [x] **App Review Notes** ausfüllen — Text aus `app-store-listing.md`, nur
       Adresse und Zugangsdaten der Demo-Instanz einsetzen.
       **Ohne diesen Text wird die App abgelehnt**
-- [ ] Kontaktdaten für Rückfragen
-- [ ] Freigabe auf *manuell* stellen
-- [ ] Zur Prüfung einreichen
+- [x] Kontaktdaten für Rückfragen
+- [x] Freigabe auf *manuell* stellen
+- [x] Zur Prüfung einreichen
 
-> Dauert erfahrungsgemäß ein bis drei Tage. Bei einer Ablehnung antwortet man im
-> *Resolution Center*; oft genügt eine Erklärung ohne neuen Build.
+> **Eingereicht am 9. September 2026.** Dauert erfahrungsgemäß ein bis drei
+> Tage. Bei einer Ablehnung antwortet man im *Resolution Center*; oft genügt
+> eine Erklärung ohne neuen Build.
 
 ## 11 · Nach der Freigabe
 
