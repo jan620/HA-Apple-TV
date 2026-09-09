@@ -79,7 +79,7 @@ Projektdatei, und jeder `git pull` kollidiert.
       hat einen echten Fehler in `HAServer.normalizedURL` gefunden (PR #14)
 - [x] Auf dem **echten Apple TV**: Anmeldung, Onboarding, ein Dashboard, die
       Räume-Ansicht, das Energie-Dashboard
-- [ ] Zurück-Taste an mehreren Stellen — muss ins Menü führen, nicht aus der App
+- [x] Zurück-Taste an mehreren Stellen — muss ins Menü führen, nicht aus der App
 - [x] Bildschirmschoner über *Jetzt anzeigen*
 
 ## 5 · Screenshots
@@ -89,7 +89,7 @@ Mindestens einer in **1920 × 1080**. Simulator: ⌘S. Gerät: Xcode →
 
 - [x] Ein Dashboard mit Karten
 - [x] Die Räume-Ansicht
-- [ ] Das Energie-Dashboard mit dem Sankey-Diagramm
+- [x] Das Energie-Dashboard mit dem Sankey-Diagramm
 - [x] Der Bildschirmschoner
 - [x] Eine Detailansicht (Lampe oder Klimaanlage)
 
