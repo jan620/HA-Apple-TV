@@ -6,6 +6,65 @@ wurden.
 
 ---
 
+## Bildschirmschoner: Farbe und Schrift in der Auswahl zeigen
+
+Unter **Darstellung** stehen zwei Auswahlreihen, die beide nur ihren eigenen
+Namen anzeigen: „Blau", „Bernstein", „Grün" … und „Rund", „Standard", „Serif",
+„Technisch". Man muss die Auswahl schließen und den Bildschirmschoner starten,
+um zu sehen, was man gewählt hat.
+
+Beides lässt sich in der Auswahl selbst zeigen:
+
+- **Farbe** — einen gefüllten Punkt in der jeweiligen Akzentfarbe vor den
+  Namen setzen. Die Farben stehen in `ScreensaverPalette.accent`.
+- **Schrift** — den Namen in der Schrift setzen, die er benennt. „Serif" in
+  einer Serifenschrift, „Technisch" dicktengleich. Die Zuordnung steht in
+  `ScreensaverTypeface.design`.
+
+Dafür muss `RemoteOptionPicker` in `Sources/UI/FocusControls.swift` (Zeile 141)
+mehr können als heute: die Beschriftung ist dort auf `(String) -> String`
+festgelegt und wird als einfacher `Text` gezeichnet. Entweder bekommt der
+Picker eine zweite Fassung mit `@ViewBuilder`-Beschriftung, oder die beiden
+Reihen in `ScreensaverSettingsView.swift` (Zeilen 181–199) benutzen eine eigene
+Variante. Die übrigen Aufrufe des Pickers sollen unverändert weiterlaufen.
+
+---
+
+## Bildschirmschoner: Uhrzeit sitzt nicht mittig
+
+Die Uhr steht sichtbar links von der Mitte. Am deutlichsten fällt es auf, wenn
+im Hintergrund zwei Bilder nebeneinander stehen — deren Kante ist eine feste
+senkrechte Linie, und der Doppelpunkt der Uhrzeit liegt nicht darauf.
+
+Der wahrscheinliche Grund steht in `Sources/Screensaver/ScreensaverView.swift`,
+Zeilen 36–38 und 72:
+
+```swift
+let horizontal = sin(seconds / 47) * 70
+let vertical   = cos(seconds / 61) * 45
+...
+.offset(x: horizontal, y: vertical)
+```
+
+Das ist die Einbrennschutz-Wanderung. Sie verschiebt Uhr und Kacheln um bis zu
+70 Punkte nach links oder rechts, mit einer Periode von knapp fünf Minuten. Wer
+kurz hinschaut, sieht keine Bewegung, sondern eine falsch zentrierte Uhr.
+
+**Erst prüfen, dann ändern**: `horizontal` und `vertical` versuchsweise auf `0`
+setzen. Steht die Uhr dann mittig, ist die Ursache bestätigt; steht sie weiter
+links, liegt eine echte Asymmetrie im Aufbau vor und die Wanderung ist
+unschuldig.
+
+Wenn es die Wanderung ist, gibt es zwei Wege. Entweder den Hintergrund
+mitwandern lassen — leicht vergrößert, damit an den Rändern nichts Schwarzes
+auftaucht — sodass es im Bild keine feste Bezugslinie mehr gibt. Oder den
+Ausschlag deutlich verkleinern und die Periode verlängern, sodass die
+Abweichung unter der Wahrnehmungsschwelle bleibt. Der Einbrennschutz darf dabei
+nicht wegfallen: die Ansicht läuft stundenlang unbeaufsichtigt auf einem
+Fernsehpanel.
+
+---
+
 ## Energie-Ansicht: „Strombezug" umbenennen
 
 Im Energie-Dashboard stehen zwei Kacheln nebeneinander, deren Namen sich kaum
